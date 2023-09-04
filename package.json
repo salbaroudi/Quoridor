@@ -4,8 +4,10 @@
   "description": "Quoridor app for Urbit",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "hoonscript": "echo \"Error: no test specified\" && exit 1",
+    "startserver": "browser-sync start --server -f -w"
   },
+  "repository": {},
   "author": "Sean al-Baroudi",
   "license": "MIT"
 }
