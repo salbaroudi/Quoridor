@@ -1,0 +1,11 @@
+{
+  "name": "quoridor",
+  "version": "0.0.1",
+  "description": "Quoridor app for Urbit",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Sean al-Baroudi",
+  "license": "MIT"
+}
