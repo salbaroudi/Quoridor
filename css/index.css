@@ -98,3 +98,47 @@ body {background-color:#000;}
 .console.hidden {
   visibility:hidden;
 }
+
+.white-subtitle { color:white;}
+
+.one-cell-obj { 
+  width: 250px; 
+  height: 250px; 
+  background-color:red;
+}
+
+
+.corner-square {  height: 20px; background-color:blue;}
+
+.horiz-wall { height: 20px; background-color:blue;}
+
+
+.top-cell {
+  display: grid;
+  grid-template-columns: 11.1% 77.7% 11.1%;
+}
+
+
+#grid {
+  background-color: red;
+  display: grid;
+  height: 250px;
+  width:500px;
+  grid-template-rows: 8% 80% 8%;
+  grid-template-columns: 8% 80% 8%;
+  grid-gap:2%;
+}
+
+.orange {
+  background-color: orange;
+}
+
+.blue {
+  background-color: blue;
+}
+
+
+#areaA {
+  background-color: lime;
+}
+
