@@ -119,110 +119,22 @@ body {background-color:#000;}
   background-color: blue;
 }
 
-
-/* Three Cell Types Experiment */
-
-.outer-grid {
-display:grid;
-}
-
-.l-cell-grid {
-  background-color: black;
-  display: grid;
-  height: 250px;
-  width:250px;
-  grid-template-rows: 9% 78% 9%;
-  grid-template-columns: 9% 78% 9%;
-  grid-gap:2%;
-
-}
-
-.l-cell-square {
-  background-color:orange;
-  grid-column-start: 2;
-  grid-column-end: 3;
-  grid-row-start: 2;
-  grid-row-end: 3;
-}
-
-.l-cell-r-wall {
-  background-color: blue;
-  grid-column-start: 3;
-  grid-column-end: 4;
-  grid-row-start: 2;
-  grid-row-end: 3;
-}
-
-.l-cell-b-wall {
-  background-color: blue;
-  grid-column-start: 2;
-  grid-column-end: 3;
-  grid-row-start: 3;
-  grid-row-end: 4;
-}
-
-.r-cell-grid {
-  background-color: black;
-  display: grid;
-  height: 250px;
-  width:250px;
-  grid-template-rows: 9% 78% 9%;
-  grid-template-columns: 9% 78% 9%;
-  grid-gap:2%;
-
-}
-
-.r-cell-square {
-  background-color:orange;
-  grid-column-start: 2;
-  grid-column-end: 3;
-  grid-row-start: 2;
-  grid-row-end: 3;
-  
-}
-.r-cell-b-wall {
-  background-color: blue;
-  grid-column-start: 2;
-  grid-column-end: 3;
-  grid-row-start: 3;
-  grid-row-end: 4;
-}
-
-
-.b-cell-grid {
-  background-color: black;
-  display: grid;
-  height: 250px;
-  width:250px;
-  grid-template-rows: 9% 78% 9%;
-  grid-template-columns: 9% 78% 9%;
-  grid-gap:2%;
-
-}
-
-.b-cell-square {
-  background-color:orange;
-  grid-column-start: 2;
-  grid-column-end: 3;
-  grid-row-start: 2;
-  grid-row-end: 3;
-  
-}
-.b-cell-r-wall {
-  background-color: blue;
-  grid-column-start: 3;
-  grid-column-end: 4;
-  grid-row-start: 2;
-  grid-row-end: 3;
+.ref-cell-container {
+  display:grid;
+  width: 625px;
+  grid-template-columns: 33% 33% 33%;
+  row-gap:10px;
+  column-gap: 4px;
+  background-color:black;
 }
 
 .ref-cell-grid {
   background-color: black;
   display: grid;
   height: 200px;
-  width:200px;
+  width: 200px;
   grid-template-columns: 3% 88% 3% 10%;
-  grid-template-rows: 3% 85% 3% 13%;
+  grid-template-rows: 3% 88% 3% 10%;
 }
 
 .ref-cell-square {
