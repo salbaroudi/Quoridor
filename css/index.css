@@ -1,7 +1,7 @@
 body {background-color:#000;}
 
 .grid-container {
-  display: grid;
+  display: none;
   grid-template-columns: 11.1% 11.1% 11.1% 11.1% 11.1% 11.1% 11.1% 11.1% 11.1%;
   background-color: #222;
   width: 800px;
@@ -101,44 +101,150 @@ body {background-color:#000;}
 
 .white-subtitle { color:white;}
 
-.one-cell-obj { 
-  width: 250px; 
-  height: 250px; 
-  background-color:red;
-}
+/* Single Cell Grid Experiment */
 
-
-.corner-square {  height: 20px; background-color:blue;}
-
-.horiz-wall { height: 20px; background-color:blue;}
-
-
-.top-cell {
+.grid {
+  background-color: black;
   display: grid;
-  grid-template-columns: 11.1% 77.7% 11.1%;
-}
-
-
-#grid {
-  background-color: red;
-  display: grid;
-  height: 250px;
-  width:500px;
-  grid-template-rows: 8% 80% 8%;
-  grid-template-columns: 8% 80% 8%;
+  height: 350px;
+  width:350px;
+  grid-template-rows: 9% 78% 9%;
+  grid-template-columns: 9% 78% 9%;
   grid-gap:2%;
 }
-
 .orange {
   background-color: orange;
 }
-
 .blue {
   background-color: blue;
 }
 
 
-#areaA {
-  background-color: lime;
+/* Three Cell Types Experiment */
+
+.outer-grid {
+display:grid;
 }
 
+.l-cell-grid {
+  background-color: black;
+  display: grid;
+  height: 250px;
+  width:250px;
+  grid-template-rows: 9% 78% 9%;
+  grid-template-columns: 9% 78% 9%;
+  grid-gap:2%;
+
+}
+
+.l-cell-square {
+  background-color:orange;
+  grid-column-start: 2;
+  grid-column-end: 3;
+  grid-row-start: 2;
+  grid-row-end: 3;
+}
+
+.l-cell-r-wall {
+  background-color: blue;
+  grid-column-start: 3;
+  grid-column-end: 4;
+  grid-row-start: 2;
+  grid-row-end: 3;
+}
+
+.l-cell-b-wall {
+  background-color: blue;
+  grid-column-start: 2;
+  grid-column-end: 3;
+  grid-row-start: 3;
+  grid-row-end: 4;
+}
+
+.r-cell-grid {
+  background-color: black;
+  display: grid;
+  height: 250px;
+  width:250px;
+  grid-template-rows: 9% 78% 9%;
+  grid-template-columns: 9% 78% 9%;
+  grid-gap:2%;
+
+}
+
+.r-cell-square {
+  background-color:orange;
+  grid-column-start: 2;
+  grid-column-end: 3;
+  grid-row-start: 2;
+  grid-row-end: 3;
+  
+}
+.r-cell-b-wall {
+  background-color: blue;
+  grid-column-start: 2;
+  grid-column-end: 3;
+  grid-row-start: 3;
+  grid-row-end: 4;
+}
+
+
+.b-cell-grid {
+  background-color: black;
+  display: grid;
+  height: 250px;
+  width:250px;
+  grid-template-rows: 9% 78% 9%;
+  grid-template-columns: 9% 78% 9%;
+  grid-gap:2%;
+
+}
+
+.b-cell-square {
+  background-color:orange;
+  grid-column-start: 2;
+  grid-column-end: 3;
+  grid-row-start: 2;
+  grid-row-end: 3;
+  
+}
+.b-cell-r-wall {
+  background-color: blue;
+  grid-column-start: 3;
+  grid-column-end: 4;
+  grid-row-start: 2;
+  grid-row-end: 3;
+}
+
+.ref-cell-grid {
+  background-color: black;
+  display: grid;
+  height: 200px;
+  width:200px;
+  grid-template-columns: 3% 88% 3% 10%;
+  grid-template-rows: 3% 85% 3% 13%;
+}
+
+.ref-cell-square {
+  background-color:orange;
+  grid-column-start: 2;
+  grid-column-end: 3;
+  grid-row-start: 2;
+  grid-row-end: 3;
+}
+
+.ref-cell-r-wall {
+  background-color: blue;
+  grid-column-start: 4;
+  grid-column-end: 5;
+  grid-row-start: 2;
+  grid-row-end: 3;
+}
+
+.ref-cell-b-wall {
+  background-color: blue;
+  grid-column-start: 2;
+  grid-column-end: 3;
+  grid-row-start: 4;
+  grid-row-end: 5;
+}
