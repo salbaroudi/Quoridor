@@ -1,0 +1,130 @@
+<!doctype html>
+
+<html lang="en">
+
+<head>
+
+  <title>~ Quoridor on Urbit ~</title>
+
+  <link rel="stylesheet" href="./css/app.css">
+
+</head>
+
+<body>
+
+<center><h1>~ Quoridor ~</h1></center>
+<div class="app-container">
+    <div class="board-container">
+        <div class="ref-cell-container"> 
+            <div id="1" class="ref-cell-grid">
+              <div class="ref-cell-square"></div> 
+              <div class="ref-cell-r-wall"></div> 
+              <div class="ref-cell-b-wall"></div> 
+            </div>
+            <div id="2" class="ref-cell-grid">
+              <div class="ref-cell-square"></div> 
+              <div class="ref-cell-r-wall"></div> 
+              <div class="ref-cell-b-wall"></div> 
+            </div>
+            <div id="3" class="ref-cell-grid">
+              <div class="ref-cell-square"></div> 
+              <div class="ref-cell-r-wall"></div> 
+              <div class="ref-cell-b-wall"></div> 
+            </div>
+            <div id="4" class="ref-cell-grid">
+              <div class="ref-cell-square"></div> 
+              <div class="ref-cell-b-wall"></div> 
+            </div>
+            <div id="5" class="ref-cell-grid">
+              <div class="ref-cell-square"></div> 
+              <div class="ref-cell-r-wall"></div> 
+              <div class="ref-cell-b-wall"></div> 
+            </div>
+            <div id="6" class="ref-cell-grid">
+              <div class="ref-cell-square"></div> 
+              <div class="ref-cell-r-wall"></div> 
+              <div class="ref-cell-b-wall"></div> 
+            </div>
+            <div id="7" class="ref-cell-grid">
+              <div class="ref-cell-square"></div> 
+              <div class="ref-cell-r-wall"></div> 
+              <div class="ref-cell-b-wall"></div> 
+            </div>
+            <div id="8" class="ref-cell-grid">
+              <div class="ref-cell-square"></div> 
+              <div class="ref-cell-b-wall"></div> 
+            </div>
+            <div id="9" class="ref-cell-grid">
+              <div class="ref-cell-square"></div> 
+              <div class="ref-cell-r-wall"></div> 
+              <div class="ref-cell-b-wall"></div> 
+            </div>
+            <div id="10" class="ref-cell-grid">
+              <div class="ref-cell-square"></div> 
+              <div class="ref-cell-r-wall"></div> 
+              <div class="ref-cell-b-wall"></div> 
+            </div>
+            <div id="11" class="ref-cell-grid">
+              <div class="ref-cell-square"></div> 
+              <div class="ref-cell-r-wall"></div> 
+              <div class="ref-cell-b-wall"></div> 
+            </div>
+            <div id="12" class="ref-cell-grid">
+              <div class="ref-cell-square"></div> 
+              <div class="ref-cell-b-wall"></div> 
+            </div>
+            <div id="13" class="ref-cell-grid">
+              <div class="ref-cell-square"></div> 
+              <div class="ref-cell-r-wall"></div> 
+            </div>
+            <div id="14" class="ref-cell-grid">
+              <div class="ref-cell-square"></div> 
+              <div class="ref-cell-r-wall"></div> 
+            </div>
+            <div id="15" class="ref-cell-grid">
+              <div class="ref-cell-square"></div> 
+              <div class="ref-cell-r-wall"></div> 
+            </div>
+            <div id="16" class="ref-cell-grid">
+              <div class="ref-cell-square"></div> 
+            </div>
+          </div>
+          
+    </div>
+    <div class="status-container">
+        <div id="player1" class="player-stats">
+            <div class="player-title-invert">Player 1:</div>
+            <div class="wall-chart">
+                <div id="p1w1" class="wall">Wall #1</div>
+                <div id="p1w2" class="wall">Wall #2</div>
+                <div id="p1w3" class="wall">Wall #3</div>
+                <div id="p1w4" class="wall">Wall #4</div>
+            </div>
+        </div>
+        <div id="player2" class="player-stats">
+            <div class="player-title">Player 2:</div>
+            <div class="wall-chart">
+                <div id="p2w1" class="wall">Wall #1</div>
+                <div id="p2w2" class="wall">Wall #2</div>
+                <div id="p2w3" class="wall">Wall #3</div>
+                <div id="p2w4" class="wall">Wall #4</div>
+            </div>
+        </div>
+        <img src="./img/blue_pawn_rs.png" />
+        <img src="./img/orange_pawn_rs.png" />
+        <img src="./img/green_pawn_rs.png" />
+        <img src="./img/purple_pawn_rs.png" />
+
+    </div>
+</div>
+
+
+
+
+  <br />
+
+  <div id="consolebox" class="console hidden"> Setting up IPFS Node...Checking if contact made.</div>
+
+</body>
+
+</html>

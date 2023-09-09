@@ -1,0 +1,116 @@
+body {background-color:#000;}
+
+.warningtext {
+  color: red;
+}
+.blinking{
+	animation:blinkingText 2s infinite;
+  font-size:20pt;
+}
+@keyframes blinkingText{
+	0%{background-color: #F00;	color: #000;}
+	50%{background-color: #000;	color: #F00;}
+	100%{background-color: #F00;	color: #000;}
+}
+.console{
+  background-color:#000;
+  color:#F00;
+  font-size: 16pt;
+  height:20%;
+}
+.console.hidden {
+  visibility:hidden;
+}
+
+h1 {color:orange;font-size:32pt;}
+.app-container{
+    display:grid;
+    grid-template-columns: 70% 30%;
+}
+.board-container {
+    background-color:black;
+}
+.status-container {
+    display:grid;
+    grid-template-columns: 100%;
+}
+
+.player-stats-container {
+    display:grid;
+    grid-template-columns:100%;
+}
+
+.player-stats {
+    background-color:black;
+}
+
+.player-title {
+    font-size:24pt;
+    background-color: black;
+    color:orange;
+    border-radius:5px;
+}
+
+.player-title-invert {
+        font-size:24pt;
+        background-color:orange;
+        color:black;
+        border-radius:5px;
+}
+
+.wall-chart {
+    display:grid;
+    width: 500px;
+    grid-template-columns: 100%;
+}
+
+.wall {
+    margin: 1% 1% 2% 25%;
+    text-align:end;
+    width: 50%;
+    background-color: blue;
+    color: orange;
+}
+
+.ref-cell-container {
+  display:grid;
+  width: 600px;
+  grid-template-columns: 25% 25% 25% 25%;
+  row-gap:9px;
+  column-gap: 9px;
+  background-color:black;
+  margin: 10% 25% 10% 25%;
+}
+
+.ref-cell-grid {
+  background-color: black;
+  display: grid;
+  height: 150px;
+  width: 150px;
+  grid-template-columns: 3% 88% 3% 10%;
+   grid-template-rows: 3% 88% 3% 10%; 
+}
+
+.ref-cell-square {
+  background-color: rgb(0,0,75);
+  grid-column-start: 2;
+  grid-column-end: 3;
+  grid-row-start: 2;
+  grid-row-end: 3;
+}
+
+.ref-cell-r-wall {
+  background-color: rgb(0,0,150);
+  grid-column-start: 4;
+  grid-column-end: 5;
+  grid-row-start: 2;
+  grid-row-end: 3;
+}
+
+.ref-cell-b-wall {
+  background-color: rgb(0,0,150);
+  grid-column-start: 2;
+  grid-column-end: 3;
+  grid-row-start: 4;
+  grid-row-end: 5;
+}
