@@ -27,14 +27,25 @@ function playerinit(num) {
     return tuple;
 }
 
-function initialzeGame() {
-    GameState = new State();
-    //At start, the Start Game Panel is visible, and User Panels are hidden.
-    //We need to set an event that triggers when Send Request is hit.
-    var $test = $(".send-request-button");
-    console.log($test);
-    $test.on( "click", function() { alert("hello!");});
+function start_game_request() {
+    //First get the user name from the input box.
+    let p1name = "~sampel-palnet";
+    //Next Make two players 1 and 2.
+    let p2name = $("#at-p").val();
+    //Error check...?
+    //Else, lets build our objects.
+    gameState.add_player(new Player(p1name, playerinit(1)));
+    gameState.add_player(new Player(p2name, playerinit(2))); 
+    UIChanges.start_game_request(p1name,p2name);
+    console.log(gameState);
+    //Next, we begin our game loop.
+    UIChanges.setup_board("0.4","6.2");
+}
 
+
+function initialzeGame() {
+    gameState = new State();
+    $(".send-request-button").on( "click", start_game_request);
 }
 
 

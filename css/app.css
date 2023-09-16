@@ -122,6 +122,10 @@ h1 {color:orange;font-size:32pt;}
 background-color:black;
 }
 
+.connect-container-hidden {
+visibility:hidden;
+}
+
 .input-label {
   color:orange;
 }

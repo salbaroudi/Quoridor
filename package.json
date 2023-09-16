@@ -5,9 +5,13 @@
   "main": "index.js",
   "scripts": {
     "hoonscript": "echo \"Error: no test specified\" && exit 1",
-    "startserver": "browser-sync start --server -f -w"
+    "startserver": "browser-sync start --server -f -w",
+    "startserver2": "browser-sync start --server"
   },
   "repository": {},
   "author": "Sean al-Baroudi",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "browser-sync": "^2.29.3"
+  }
 }
