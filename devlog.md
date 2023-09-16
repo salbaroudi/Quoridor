@@ -104,4 +104,53 @@ Things simplfied / changed:
 - Each player object stores the current position. Yes it is a pain to get each position for the rule set. 
     => Simplicity of maintaining state is worth the extra boilerplate to access the data. Just deal with it (⌐ ͡■ ͜ʖ ͡■)
 
-    
+
+(5)  Event Loop:
+
+- The backend will be implemented last. For now, we need a main event loop to test our UI. 
+- I will ignore the networking stuff, and the step-by-step rule checker. We need some basic play, for now.
+
+- First, the game initializes. 
+    - We make a gamestate object.
+    => UI Change: In the walls box, we have an input for an @p, and a request button. 
+    - We wait for the user to type an @p for us to send a request.
+    - User types in an @p, and we make a network call.
+- Next, our session setup occurs (communication between clients). This uses our network functionality.
+- Once set up, we start the game. For simplicity, we will ignore network calls/packets, and simulate in our JS script.
+
+- Use fake credentials to create Player 1 and 2.
+    => UI Change: Remove @p box. 
+    => UI Change: Setup two player boxes. 
+    => UI Change:  Highlight Player 1 to start.
+
+- Start event loop:
+    - wait for player to move.
+        - Default: Move Pawn mode.
+        - Alternate: Select Wall, enter wall mode.
+            - This mode can be cancelled by pressing the ESC key.
+    - Once Move is made, update data-structures.
+    - Update the board accordingly.
+        => UI Change: Move pawn to new square (no restrictions for now!).
+        => UI Change Add a wall to the board.
+
+- Restart loop....call next_player and loop around again.
+
+
+(6)  Separating our classes and code.
+
+- I will avoid node.js imports for now, and just import things in the right order using the <script tag>. THe following separate files are needed:
+
+- app.js:
+    - holds our main event loop.
+    - holds initilizer function.
+
+- network.js:
+    - makes all of our network requests, unpacks/packs them, talks to the backend thru ames, gall, etc...
+
+- UIChange.js
+    - just one big Class with static methods, that we call on to do UI Changes.
+
+- RuleChecker.js
+    - rule checking code goes here.
+
+- Data Container.js: Contains all of our data structures we defined so far.
