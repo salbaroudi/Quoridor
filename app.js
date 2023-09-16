@@ -1,43 +1,72 @@
-//Lets create our state objects, using JS constructors.
-//Global State Object
+/*
+Global State Object
+
+This stores the entire state of the game. It also references other classes that control various aspects and components of the game.
+
+Fields:
+- Timestamp: this references a unique timestamp to make our current game unique.
+- Turn_Count: Simply counts how many turns have elapsed so far.
+- P_Queue: Used to determine the next players turn. An object data-structure that should not be mutated directly.
+- Curr_Player: Gives the integer value of the player (Player 1, 2, 3...)
+- Wall_List: stores a list of all placed walls in the game.
+
+*/
 class State {
-    constructor(tstamp) {
+    //This is run when the App initializes.
+    constructor() {
         //Initialization value in time.
-        this.timestamp = tstamp;
-        this.turn_count = 0;
+        this.Timestamp = Date.now();
+        this.Turn_Count = 0;
         //Player Queue.
-        this.p_queue = [];
+        this.P_Queue = [];
+        this.Wall_List = new WallList();
         //Player running this particular app.
-        this.curr_player = 1;
+        this.Curr_Player = 0;  //Defaults to zero (need to negotiate session first).
+        this.Num_Players = 0; // ""
     }
 
-    addplayer(player) {
-        this.p_queue.push(player);
+    add_player(player) {
+        if (!(player instanceof Player)) {
+            console.error("Error: addPlayer - input not a Player Object");
+        }
+        this.P_Queue.push(player);
     }
 
-    nextplayer() {
-        let next = this.p_queue.shift();
-        this.p_queue.push(next);
+    //Get the next player. Do not mutate directly. Use this.
+    next_player() {
+        let next = this.P_Queue.shift();
+        this.P_Queue.push(next);
         return next;
     }
-}
 
-//Shortens our constuctor inputs, and makes initialization easier.
-//Could also use a map, but this is fixed so w/e.
+    turncount_incr() {
+        this.Turn_Count = this.Turn_Count + 1;
+    }
+
+    numplayers_incr() {
+        this.Num_Players = this.Num_Players + 1;
+    }
+
+}
+/*
+Shortens our constuctor inputs, and makes initialization easier.
+Input: Integers: 1,2,3,4 only. Report error otherwise.
+*/
+
 function playerinit(num) {
     let tuple = 0;
     switch(num) {
         case 1:
-            tuple = [1,"blue", 0.4];
+            tuple = [1,"blue",4,"0.4"];
             break;
         case 2:
-            tuple = [2,"orange", 6.2];
+            tuple = [2,"orange",4,"6.2"];
             break;
         case 3:
-            tuple = [3,"green", 2.0];
+            tuple = [3,"green", 4,"2.0"];
             break;
         case 4:
-            tuple = [4,"purple", 4.6];
+            tuple = [4,"purple",4,"4.6"];
             break;
         default:
             console.error("Error: Player Number not recognized.");
@@ -45,62 +74,60 @@ function playerinit(num) {
     return tuple;
 }
 
-//Player Object
+/*
+Our Player Object. Stores most of the details, segmented by player. 
+Fields:
+- Name: An @p shipname.
+- P_Number: A number, 1-4.
+- Colour: String that indicates pawn colour.
+- Board_Pos: Pawn's current position on the board.
+- Path_List: An object class that stores the path our current pawn has taken.
+- Wall_Count: Number of walls player has left. From 0-X only.
+*/
 class Player {
-    constructor(shipName, tuple) {
-        this.name = shipName;
-        this.p_number = tuple[0];
-        this.color = tuple[1]
-        this.board_pos = tuple[2];
-        this.path_list = new PathList(tuple[2]);
-        this.wall_list = new WallList();
-        this.wall_count = 4;    
+    //Use player init function to initialize properly. Initialized after session negotiation.
+    constructor(shipName) {
+        this.Name = shipName;  //Immutable Propeties - set on Init.
+        this.P_Number = tuple[0]; this.Colour = tuple[1];
+        this.Wall_Count = tuple[2];  //Mutable Properties
+        this.Board_Pos = tuple[3];
+        this.Wall_List = new WallList();
     }
+
+    //Input: string of format "X.Y" where X and Y are whole numbers in board range.
+    update_board_pos(pos) {
+        if (!(typeof pos === "string")) {
+            console.error("Error: Board position update not a string. Check input.");
+        }
+        this.Board_Pos = pos;
+    }
+
+    /*
+        Wall Format: "<start pos>,<end pos>".
+        When the user is selecting a wall, we check if its a valid wall there.
+        By this point, we assume that we are inputting a valid wall, and check the formatting only.
+    */
+    push_wall_list(wall) {
+        //Error checking here [!!!]
+        this.Wall_List.push(wall);
+    }
+
+    get_wall_list() {
+        return this.Wall_List;
+    }
+
+    wall_count_dec() {
+        this.Wall_Count = this.Wall_Count  - 1;
+        if (this.Wall_Count <= 0) {
+            console.error("Error: Wall Count decrement at wc = 0. Error in Game State.");
+        }
+    }
+
+
 }
-
-function PathList(startPos) {
-    this.path_list = [];
-    this.getpathlist = function() {
-        return  this.path_list;
-    }
-
-    //Use decimal notation for our square coordinates. X.Y means row X, col Y.
-    //The bound parameters will need to be changed for a 9x9 later [!!!]
-    this.addPath = function(decimal) {
-        let row = -1; let col = -1;
-        if ((decimal % 1) != 0) {
-            row = Math.floor(decimal);
-            col = (decimal % 1).toFixed(2)*10;
-        }
-        if ((row > -1 &&  row < 7) && (col > -1 && col < 7)) {
-            this.path_list.push(decimal);
-        }
-        else {
-            console.error("Error: Invalid square. Did not update path");
-        }
-    }
-
-    this.returnPath = function(){
-        return this.path_list;
-    }
-
-    this.getPosition = function(){
-        if (this.path_list.length == 0){
-            console.log("Error: Path List is empty!");
-        }
-        return this.path_list.slice(-1);
-    }
-}
-
-class Rectangle {
-    constructor(height, width) {
-      this.height = height;
-      this.width = width;
-    }
-  }
-
 function WallList() {
-    this.wall_list = [];
+    this.Wall_List = [];
+    this.Unused_Walls = 8;
     this.getpathlist = function() {
         return [];
     }
@@ -109,15 +136,8 @@ function WallList() {
 
     }
 }
-/*
-let GameState = new State(Date.now());
-GameState.addPlayer(new Player("~sampel-palnet", 1));
-GameState.addPlayer(new Player("~docdyl-todsup", 2));
-GameState.addPlayer(new Player("~sorrec-livtul", 3));
-GameState.addPlayer(new Player("~haptul-morroc",4));
-*/
 
-let GameState = new State(Date.now());
+let GameState = new State();
 GameState.addplayer(new Player("~sampel-palnet", playerinit(1)));
 GameState.addplayer(new Player("~docdyl-todsup",  playerinit(2)));
 GameState.addplayer(new Player("~sorrec-livtul",  playerinit(3)));
