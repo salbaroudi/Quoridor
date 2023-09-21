@@ -18,3 +18,21 @@ If time permits, other features such as:
     - Hooking up a Quoridor AI
 
 Could be considered.
+
+
+### Simple Boot Commands:
+
+1) Download the Latest Dev Pill:  https://bootstrap.urbit.org/dev-latest.pill
+
+2) Download the latest urbit binary: 
+`curl -L https://urbit.org/install/linux-x86_64/latest | tar xzk --transform='s/.*/urbit/g' && ./urbit`
+
+3) Run the following commands:
+
+```
+## Installing it.
+urbit -B dev-20221111.pill -F zod
+
+## Or if you want to get the binary to DL it.
+urbit -u https://storage.googleapis.com/media.urbit.org/developers/dev-latest.pill -F zod
+```

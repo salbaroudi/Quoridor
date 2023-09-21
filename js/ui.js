@@ -18,10 +18,13 @@ class UIChanges {
     //Place our pieces on the board
     static setup_board(p1start,p2start) {
         //Grab board div, insert an image. in each slot.
-        var img = document.createElement("IMG");
-        img.src = "./img/blue_pawn_rs.png";
-        $("#0.4").html(img);
-        $("#" + p2start).html(UIChanges.gen_image_code("orange"));
+        var myImg = $('<img />', {
+            id: 'bluepawn',
+            src: './img/blue_pawn_rs.png',
+            alt: 'Alt text'
+         });
+        $("#0.4").html(myImg);
+        //$("#0.6").html(UIChanges.gen_image_code("orange"));
     }
 
     static gen_image_code(color) {

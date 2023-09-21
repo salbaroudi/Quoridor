@@ -154,3 +154,14 @@ Things simplfied / changed:
     - rule checking code goes here.
 
 - Data Container.js: Contains all of our data structures we defined so far.
+
+
+September 21st:
+
+- Time is ticking on. I have finished ASL3. Once ASL4 is complete, I will have all the tools to build my app.
+
+- For today, I will focus on getting testing -threads running, and building a shell script to transfer files over to my desk.
+
+- I also get moons fake/zods sorted out (in terms of testing.)
+
+- FlappyBird and other tutorials will be moved to another folder. My dev folder is getting messy!
