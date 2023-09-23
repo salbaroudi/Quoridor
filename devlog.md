@@ -156,12 +156,29 @@ Things simplfied / changed:
 - Data Container.js: Contains all of our data structures we defined so far.
 
 
-September 21st:
+### September 21st:
 
 - Time is ticking on. I have finished ASL3. Once ASL4 is complete, I will have all the tools to build my app.
-
 - For today, I will focus on getting testing -threads running, and building a shell script to transfer files over to my desk.
-
-- I also get moons fake/zods sorted out (in terms of testing.)
-
 - FlappyBird and other tutorials will be moved to another folder. My dev folder is getting messy!
+- latest dev pill used to make a fake zod and nec. Backup folders made for quick recovery.
+- backend folder stores a copy of our BE files, which are carted over to a ship's directory using the transport.sh script.
+    - This is done, so if my zod crashes, I can easily recover it.
+        - just pull the backup copy, and use transport.sh to recopy over the BE files.
+
+
+### September 23rd:  Meeting with Sam:
+
+- can I just drop by the hacker house whenever, or are there specific times. 
+- what questions should I field to Sam v.s experts?
+- next steps.
+    - Our presented app must interface wiht Tlon's Landscape?
+        - this is why react is necessary.
+    - Flap method => can just use no frameworks, more raw JS and do it by hand.
+    - I have to decide what I am doing (high road or low road). Got 9 days to get a large chunk of BE done.
+        - ship of theseus => Use delta-> echo app, and build on that.
+        - or the flap app.
+
+
+
+- I figured out the img in div problem with jQeury: you can't name IDs starting with numbers. Changed the cell names accordingly.

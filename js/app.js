@@ -39,13 +39,17 @@ function start_game_request() {
     UIChanges.start_game_request(p1name,p2name);
     console.log(gameState);
     //Next, we begin our game loop.
-    UIChanges.setup_board("0.4","6.2");
+    UIChanges.setup_board("c0-4","c6-2");
 }
 
 
 function initialzeGame() {
     gameState = new State();
     $(".send-request-button").on( "click", start_game_request);
+}
+
+function mainturnLoop() {
+    return 0;
 }
 
 

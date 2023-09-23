@@ -1,5 +1,5 @@
 class UIChanges {
-    constructor() {}
+        constructor() {}
 
     //Mainly deal with the status side bar, and set everything up.
     static start_game_request(p1name,p2name) {
@@ -17,14 +17,18 @@ class UIChanges {
 
     //Place our pieces on the board
     static setup_board(p1start,p2start) {
-        //Grab board div, insert an image. in each slot.
-        var myImg = $('<img />', {
+        const bluePawn = $('<img />', {
             id: 'bluepawn',
             src: './img/blue_pawn_rs.png',
-            alt: 'Alt text'
          });
-        $("#0.4").html(myImg);
-        //$("#0.6").html(UIChanges.gen_image_code("orange"));
+        const orangePawn = $('<img />', {
+            id: 'orangepawn',
+            src: './img/orange_pawn_rs.png',
+         });
+        const blueCell = $("#" + p1start);
+        const orangeCell = $("#" + p2start);
+        bluePawn.appendTo(blueCell);
+        orangePawn.appendTo(orangeCell);
     }
 
     static gen_image_code(color) {
