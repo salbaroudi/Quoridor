@@ -13,7 +13,10 @@
     ^-  action
     %.  jon
     %-  of
-    :~  [%push (ot ~[target+(se %p) value+ni])]
+        ::what do these look like when they hit the agent. Like this:
+        ::[%push target=~zod value=12]
+    :~  [%push (ot ~[target+(se %p) value+ni])]  
+        ::[%pop target=~zod]
         [%pop (se %p)]
     ==
   --

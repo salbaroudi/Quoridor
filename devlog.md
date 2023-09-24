@@ -267,3 +267,9 @@ Something is weirdly formatted. We need to rebuild the app again...This time foc
 => removing the shit code did nothing. What have I concluded:
 
 - I need to build my code FROM SCRATCH, carefully. You cant just text substitute an intermediate folder from some other project.
+
+- I made a quoridor-starter folder, and placed it for safekeeping in my zod_storage. I am NEVER going through that again.
+
+- Now that I have a working project, it is time to work on some basics:
+- A sur file with all our basic structures (walls, moves, termination / win signals)
+
