@@ -7,7 +7,7 @@
     "hoonscript": "echo \"Error: no test specified\" && exit 1",
     "startserver": "browser-sync start --server -f -w",
     "startserver2": "browser-sync start --server",
-    "transportfiles": "./backend/transport.sh"
+    "cp2zod": "./scripts/transport.sh"
   },
   "repository": {},
   "author": "Sean al-Baroudi",

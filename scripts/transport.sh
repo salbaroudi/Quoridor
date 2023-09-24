@@ -1,0 +1,1 @@
+cp -r ./quoridor/desk/* ./zod/quoridor/

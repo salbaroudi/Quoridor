@@ -179,6 +179,91 @@ Things simplfied / changed:
         - ship of theseus => Use delta-> echo app, and build on that.
         - or the flap app.
 
+- how do I test my app with real ships? Just install on Tlon's Grid?
+- can I just poke an external ship via Dojo? I have only seen poke notation for apps.
+- how do we test for a ship being on the network? Send scries to our Ames vane of our running ship, and it does it?
 
 
 - I figured out the img in div problem with jQeury: you can't name IDs starting with numbers. Changed the cell names accordingly.
+
+
+Designing the Interaction between two ships:
+
+- assumptions: both players store a copy of the game on their ships. There is only one game. 
+- Let our two ships be called P1 and P2. 
+
+A Typical Interaction:
+
+- P1 loads the %Quoridor Application.
+- P1 types in an @p of another ship. 
+    - The user interface grabs the ship name, and then sends it back to our back-end.
+        -Q how do we send a request to the backend?
+- P1 BE recieves the @p shipname for P2. [we assume P2 is running the App].
+    - P1 must formulate a request to P2, to initiate a session.
+- P1 must send a subscribe request to P2.
+    -P1 sends additional data: It is player 1.
+- P2 gets a subscription
+        - P2 checks to see if there is a saved game. If so, it is deleted.
+        - P2 responds with an %init ack for the request. If a game was deleted, this is indicated in our %init ack.
+- P2 sends a subscription. Indicating that it is the 2nd player.
+        - P1 checks to see if there is a saved game. If so, it is deleted.
+        - P1 responds with an %init ack for the request. If a game was deleted, this is indicated in our %init ack.
+- P1 sends an %init ack for the subscription.
+    - P2 is now ready, and waiting for P1s move (?)
+- On the FE P1 makes a move.
+    - FE Javascript must update.
+    - This is encoded by JS, and sent as a POKE to the BE.
+        %marks: %move and %wall
+- P1 BE recieves the %move poke with small amount of data.
+    - P1 BE writes the move to our bowl, and saves the bowl to a file (just overwrite or append).
+- P1 BE sends a poke with a %move to P2.
+    - P2 unpacks the move, sees that it is P1 and what the move actually is.
+    - P2 stores the move in the bowl, and writes it to clay.
+- P2 sends a response to the FE, telling the user that it is now their turn. The move player 1 took is also sent along, and updated on their screen.
+    - P2 FE updates P1s move. It indicates that P2 must make a move.
+- P2 makes a move on screen.
+    - again, P2 FE sends a poke to P2 Backend, with the move.
+    - P2 BE recieves poke, adds move to bowl, writes to file.
+    - P2 now sends a poke with move to P1.
+    - P1 processes the move, and sends a poke to FE.
+- The cycle continues.
+
+
+What can be gleaned from this sample interaction, above? A MI (Minimum Implementation).
+    - initiation needs to be setup. Can a dual subscription
+    - don't need to worry about writing to clay. Lets just store a move set in each agents bowl.
+    - structures in /sur:
+        - %position:  [%position @cd @cd] [%position 4 2]
+        - %wall [%wall [%position ..] [%position ..]]
+    - pokes with marks:
+        - positions and walls encoded with 
+        [%move <player number> <new position>]
+        [%wall <player number> <wall position>]
+        %win - just a simple flag
+        %terminate - ""
+
+- How to start: Ship of theseus method on the %echo app. Start transforming it in the %Quoridor app that you wanted.
+
+
+## Sept 24th
+
+- just wasted 3 hours trying to get echo -> quorridor working.
+
+- Q: If our current echo (from ASL4 works), why can't we just copy echo, and rename everything quoridor in all of the directories and files. In theory, it should work!
+    - This allows me to generate infinite ready to go folders.
+
+    => Result. We still get /mar/json/hoon build errors. The file looks fine.
+    => Either the outside desk is fucked, or our zod is fucked.
+    => The development zod is a strange looking beast.
+
+- Now, I will try copying the echo files from the working zod, BACK to the outer echo folder. And then copying that and transforming it to a zod.
+
+=> It still failed! I have noticed a front end error, however.
+
+"index-3c4df9b2.js:41 gall: poke cast fail :quoridor [a=%json b=%quoridor-action]"
+
+Something is weirdly formatted. We need to rebuild the app again...This time focusing on the UI, and doing a new npm rebuild
+
+=> removing the shit code did nothing. What have I concluded:
+
+- I need to build my code FROM SCRATCH, carefully. You cant just text substitute an intermediate folder from some other project.
