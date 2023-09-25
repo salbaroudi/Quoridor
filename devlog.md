@@ -306,5 +306,10 @@ Something is weirdly formatted. We need to rebuild the app again...This time foc
 
 - From the above, a basic /sur file was created. Now I need to test it.
 - need to make a generator, that takes an input and can cast with our sur file.
-is this possible?
+- is this possible?
 
+- I figured it out: =mygen -build-file /=/quoridor/=/gen/testsur2/hoon on dojo cmd line.
+
+- Ford Imports:
+/-  import from /sur
+/+ import from /lib
