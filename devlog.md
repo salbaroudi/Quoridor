@@ -273,3 +273,38 @@ Something is weirdly formatted. We need to rebuild the app again...This time foc
 - Now that I have a working project, it is time to work on some basics:
 - A sur file with all our basic structures (walls, moves, termination / win signals)
 
+
+#Sept 25th:
+
+- Still working on a basic FE -> mar -> app pipeline, stuck on gall compilation.
+- Found the %chess app github: https://github.com/thecommons-urbit/chess
+
+- In the mean time, I need to design some structures for my app, and test them by hand.
+
+- Basic Structures:
+    - Position [r=@ud c=@ud]  : both numbers must be even.
+    - Wall Position [position1 position2] :one number must be odd.
+
+- Player Data:
+    - Player Name  @p
+    - Player Number  @ud
+    - Number of Walls Left [@ud] : from 0 to 8
+    - Current Position [position]
+
+- Game State Data:
+    - Player list: [player structures]: 1 to 4 allowed
+    - 
+    - structures in /sur
+        - %position:  [%position @cd @cd] [%position 4 2]
+        - %wall [%wall [%position ..] [%position ..]]
+    - pokes with marks:
+        - positions and walls encoded with 
+        [%move <player number> <new position>]
+        [%wall <player number> <wall position>]
+        %win - just a simple flag
+        %terminate - ""
+
+- From the above, a basic /sur file was created. Now I need to test it.
+- need to make a generator, that takes an input and can cast with our sur file.
+is this possible?
+

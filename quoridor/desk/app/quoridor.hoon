@@ -23,32 +23,28 @@
   ^-  (quip card _this)
   `this(state !<(state-0 old))
 ++  on-poke
-  |=  [=mark =vase]  ::get a mark and vase IN
-  ^-  (quip card _this) ::return a list of cards to send
-  =/  act  !<(action vase)  ::use action struct to interpret vase
-  ?:  ?=(%quoridor-action mark) ::+ve Assert: is our mark a %q-a?
-    ?-  -.act  ::now we have a [%mark %inputs...] cases below.
-          %push  ::if its a push, and we are target, add to stack (values)
-        ?:  =(our.bowl target.act)
-          :_  this(values [value.act values])  ::put value.act at head of values list
-          ::give a fact card, on path /values, pass mark, make vase
-          [%give %fact ~[/values] %quoridor-update !>(`update`act)]~
-        ?>  =(our.bowl src.bowl)
-        :_  this
-        [%pass /pokes %agent [target.act %quoridor] %poke mark vase]~
-          %pop
-        ?:  =(our.bowl target.act)
-          :_  this(values ?~(values ~ t.values))
-          [%give %fact ~[/values] %quoridor-update !>(`update`act)]~
-        ?>  =(our.bowl src.bowl)
-        :_  this
-        [%pass /pokes %agent [target.act %quoridor] %poke mark vase]~
-    ==
-    ?>  ?=(%quoridor-position mark)
-      ?-  -.act
-          %pos
-          ~&  'Our vase is:'  act
-      ==
+  |=  [=mark =vase]
+  ^-  (quip card _this)
+  ?>  ?=(%quoridor-action mark)
+  =/  act  !<(action vase)
+  ?-    -.act
+      %push
+    ?:  =(our.bowl target.act)
+      :_  this(values [value.act values])
+      [%give %fact ~[/values] %quoridor-update !>(`update`act)]~
+    ?>  =(our.bowl src.bowl)
+    :_  this
+    [%pass /pokes %agent [target.act %quoridor] %poke mark vase]~
+  ::
+      %pop
+    ?:  =(our.bowl target.act)
+      :_  this(values ?~(values ~ t.values))
+      [%give %fact ~[/values] %quoridor-update !>(`update`act)]~
+    ?>  =(our.bowl src.bowl)
+    :_  this
+    [%pass /pokes %agent [target.act %quoridor] %poke mark vase]~
+  ==
+
 ++  on-peek
   |=  =path
   ^-  (unit (unit cage))
