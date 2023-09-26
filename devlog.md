@@ -313,3 +313,59 @@ Something is weirdly formatted. We need to rebuild the app again...This time foc
 - Ford Imports:
 /-  import from /sur
 /+ import from /lib
+
+- you just write urbitID names ~nodsup-halnux. You don't need to express them as a cord!
+
+- From Jack:
+    - for agents, marks are imported automatically.
+    - the /- gets us our sur files.
+    - the sig at the end makes a reversed unit. Not sure why this is necessary?
+
+
+### September 26th:
+
+- Focus for today:
+    - Get the data pipeline basically fleshed out.  App.js -> Eyre -> Mark -> app.hoon and all the way back.
+    - start integrating jQuery into our node.js.
+    - App School
+    - Need to basically get HW4 done.
+
+
+- My modified echo app is too fucked up now. It has all sorts of bugs. Gotta pull echo out of zod_storage and start again.
+- Really, there are three things I need to do to progress.
+    - read though echo.app again. I don't think I fully grasped it. [X]
+    - Restart your echo -> quoridor app. Just save your /sur file, and remove all the crap.
+
+    - The flappy Bird app has an equally simple mark/sur structure. Read through it. 
+        => This i will do after I get the data pipeline and front end working.
+        => Flappy Bird gives us Pals integration, and horizonal communication. This is a **bonus at the end, not a goal now**.
+
+- what does update.hoon do?
+
+  ::frond: produce a $json formatted object (just a tagged structure) from a key value pair
+  ::pairs: Given a list of keys and values, produce a larger object.
+  ::scot just converts a type from one to another.
+  ++  json
+    =,  enjs:format  ::we go from native -> $json. Import namespace.
+    ^-  ^json  ::what does ^json do??
+    ?-    -.upd
+     :: make a key value %o cell. first cell is pop, second is a ship name of string type.
+     ::[%o p=[n=[p='pop' q=[%s p='~zod']] l=~ r=~]] -->  {pop: "~someship"}
+      %pop   (frond 'pop' s+(scot %p target.upd))  
+      :: make a KV %o cell, first cell init, second is a list of values. ++turn applies numb to our list.
+      :: would not compile (?) ... -> {init: [1,2,3,4,5,6...]}
+      %init  (frond 'init' a+(turn values.upd numb))
+      %move  (frond 'move' )
+      ::  again a cell, push at front, and then another cell with a target and value pair nested inside.
+      :: [ %o p [   n [ p='push' q [ %o p [ n=[p='target' q=[%s p='~zod']] l=~ r=[n=[p='value' q=[%n p=~.5]] l={} r={}] ]]]
+      :: --> {push: {target:"~zod", value=5}}
+      %push  %+  frond  'push'
+             %-  pairs
+             :~  ['target' s+(scot %p target.upd)]
+                 ['value' (numb value.upd)]
+              ==
+    ==
+  --
+
+
+[ %o p [   n [ p='push' q [ %o p [ n=[p='target' q=[%s p='~zod']] l=~ r=[n=[p='value' q=[%n p=~.5]] l={} r={}] ]]]

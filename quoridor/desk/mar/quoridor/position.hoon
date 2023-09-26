@@ -13,7 +13,7 @@
     ^-  position
     %.  jon
     %-  of  ::dont touch these yet!
-    :~  [%pos (ot ~[r+ni c+ni])]
+    :~  [%move (ot ~[r+ni c+ni])]
     ==
   --
 ++  grad  %noun

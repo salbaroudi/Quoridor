@@ -5,7 +5,6 @@ import { AppTile } from './components/AppTile'
 const api = new Urbit( '', '', window.desk )
 api.ship = window.ship
 
-//Our reducer takes React actions, and alters our Global State (which is just a stack array)
 function reducer( state, action ) {
   let newState = [ ...state ]
   switch ( action.type ) {
@@ -17,11 +16,14 @@ function reducer( state, action ) {
     case 'pop':
       newState.shift()
       return newState
-    default:
+    case 'move':
+      console.log(action)
+      console.log(state)
+      default:
+      console.log("Reached the default case!")
       return state
   }
 }
-
 
 export function App() {
   const [ state, dispatch ] = useReducer( reducer, [] )
@@ -34,7 +36,6 @@ export function App() {
     init()
   }, [] )
 
-
   const handleUpdate = ( upd ) => {
     if ( 'init' in upd ) {
       dispatch({type:'init', init:upd.init})
@@ -44,6 +45,9 @@ export function App() {
     }
     else if ( 'pop' in upd ) {
       dispatch( { type:'pop' } )
+    }
+    else if ( 'move' in upd) {
+      dispatch( { type:'move' } )
     }
   }
 
@@ -69,10 +73,11 @@ export function App() {
   const move = () => {
     api.poke( {
       app: 'quoridor',
-      mark: 'quoridor-position',
-      json: {r:"4",c:"2"}
+      mark: 'quoridor-action',
+      json: { move: { target:`~${window.ship}`, row:2}}
     } )
   }
+
 
   return (
     <main className="flex flex-col items-center justify-center min-h-screen">
@@ -85,7 +90,8 @@ export function App() {
           return (<li key={index}>{eachValue}</li>)
         })}
       </div>
-      <button onClick={() => move()} style={{width:100}} className='border p-2 text-black-400'>Move Position</button>
+      <button onClick={() => move()} style={{width:100}} className='border p-2 text-black-400'>Move!</button>
+
     </main>
   )
 }

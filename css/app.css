@@ -77,8 +77,8 @@ h1 {color:orange;font-size:32pt;}
 
 .ref-cell-container {
   display:grid;
-  width: 600px;
-  grid-template-columns: 25% 25% 25% 25%;
+  width: 720px;
+  grid-template-columns: 11.1% 11.1% 11.1% 11.1% 11.1% 11.1% 11.1% 11.1% 11.1%;
   row-gap:9px;
   column-gap: 9px;
   background-color:black;
@@ -88,8 +88,8 @@ h1 {color:orange;font-size:32pt;}
 .ref-cell-grid {
   background-color: black;
   display: grid;
-  height: 150px;
-  width: 150px;
+  height: 80px;
+  width: 80px;
   grid-template-columns: 3% 88% 3% 10%;
    grid-template-rows: 3% 88% 3% 10%; 
 }
