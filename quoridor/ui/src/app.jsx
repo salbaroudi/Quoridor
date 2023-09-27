@@ -77,7 +77,7 @@ export function App() {
     api.poke( {
       app: 'quoridor',
       mark: 'quoridor-action',
-      json: { move: { target:`~${window.ship}`, row:2, col:2}}
+      json: { move: { target:`~${window.ship}`, pos: {row:2, col:2}}}
     } )
   }
 
@@ -85,7 +85,7 @@ export function App() {
     api.poke( {
       app: 'quoridor',
       mark: 'quoridor-action',
-      json: { wall: { target:`~${window.ship}`, p1: {row:1, col:0}, p2:{row:1, col:2}}},
+      json: { wall: { target:`~${window.ship}`, pos1: {row:1, col:0}, pos2:{row:1, col:2}}},
     } )
   }
 

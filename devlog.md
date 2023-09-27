@@ -341,7 +341,6 @@ Something is weirdly formatted. We need to rebuild the app again...This time foc
         => Flappy Bird gives us Pals integration, and horizonal communication. This is a **bonus at the end, not a goal now**.
 
 - what does update.hoon do?
-
   ::frond: produce a $json formatted object (just a tagged structure) from a key value pair
   ::pairs: Given a list of keys and values, produce a larger object.
   ::scot just converts a type from one to another.
@@ -367,5 +366,59 @@ Something is weirdly formatted. We need to rebuild the app again...This time foc
     ==
   --
 
+- I have the quoridor app running by this point. It very basically works. Now, perhaps I can finally build.
 
-[ %o p [   n [ p='push' q [ %o p [ n=[p='target' q=[%s p='~zod']] l=~ r=[n=[p='value' q=[%n p=~.5]] l={} r={}] ]]]
+### Sept 27th:
+
+- Finished HW4 last night. THat is a relief. React isn't quite a scary as I remember it to be. Perhaps I just had bad sources, or was retarted in the past.
+- I got the app working. Next Steps:
+
+- Fulfill the move and wall moves.
+    - flesh out the data passing pipeline, basic test
+    - start adjusting the bowl and state.
+    - state revisioning, or just |nuke?
+        => Nuke it. Easier for now, and there will be **many* state changes over the coming weeks.
+
+
+-no need to have nested updates from native -> $json notation. The chess app gives flat single cell updates. I will do the same.
+    - nested fronds and pairs will be a debugging PITA.
+
+Sample Structures Transmitted: For Push:
+app.jsx { push: { target:`~${window.ship}`, value:val } }
+at quoridor.app:    [%push target=~zod value=7]
+at update.hooon:    [%push target=~zod value=8]
+
+So they look the same. This flattened native strucutre is what we expect at update.
+
+- Conceptual Error: In action.hoon, I was trying to mach a strucutre:
+-  [%move (ot ~[target+(se %p) pos+(ot ~[position])])] 
+-  [%move (ot ~[target+(se %p) pos+(ot ~[row+ni col+ni])])] 
+- but that doesn't work. We import a sur file but we don't match the structure. Instead, our formatter just dives into our input structure and
+  looks for fields. we can actually change the shape of our $json structure. We don't need to keep the same rigid shape throughout.
+  - to be more explicit: you can just drop tags, fields, whatever. Hoon doesn't care.
+
+- Example of The de-js to $json structure. It looks like:
+raw json form: {move: { target:~zod, pos: {row:2, col:2}}
+$json form:
+[ %o p [   n [ p='move' q [ %o p [ n=[p='target' q=[%s p='~zod']] l=~ r [   n
+    [ p='pos' q [ %o p [ n=[p='row' q=[%n p=~.2]] l=~ r=[n=[p='col' q=[%n p=~.2]] l={} r={}]]]] l={} r={}]]]] l=~ r=~]]
+
+- i wanted a nested update strucutre, but frond doesnt work this way. Made it flat instad.
+
+      %wall  ~&  "our move update"  ~&  upd
+          %+  frond  'wall'
+            %-  pairs
+            :~  ['target' s+(scot %p target.upd)]
+            ==
+            %+  frond  'pos1'
+              %-  pairs
+              :~  ['row' (numb row.pos1.upd)]
+                  ['col' (numb col.pos1.upd)]
+               ==
+            %+  frond  'pos2'
+              %-  pairs
+              :~  ['row' (numb row.pos2.upd)]
+                  ['col' (numb col.pos2.upd)]
+               ==
+
+- looks like I can't put action structures on multiple lines either. Must all be on one line.

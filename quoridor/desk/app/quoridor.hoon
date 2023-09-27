@@ -29,6 +29,7 @@
   =/  act  !<(action vase)
   ?-    -.act
       %push
+    ~&  "our push act"  ~&  act 
     ?:  =(our.bowl target.act)
       :_  this(values [value.act values])
       [%give %fact ~[/values] %quoridor-update !>(`update`act)]~
@@ -37,6 +38,7 @@
     [%pass /pokes %agent [target.act %quoridor] %poke mark vase]~
   ::
       %pop
+    ~&  "our pop act"  ~&  act 
     ?:  =(our.bowl target.act)
       :_  this(values ?~(values ~ t.values))
       [%give %fact ~[/values] %quoridor-update !>(`update`act)]~
@@ -45,7 +47,12 @@
     [%pass /pokes %agent [target.act %quoridor] %poke mark vase]~
   ::
     %move
-    ::~&  "our bowl"  ~&  bowl  ~&  "our act"  ~&  act  
+    ~&  "our move act"  ~&  act
+    ?>  =(our.bowl target.act)
+      :_  this  [%give %fact ~[/values] %quoridor-update !>(`update`act)]~
+  ::
+    %wall
+    ~&  "our wall act"  ~&  act
     ?>  =(our.bowl target.act)
       :_  this  [%give %fact ~[/values] %quoridor-update !>(`update`act)]~
   ==

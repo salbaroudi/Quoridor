@@ -1,12 +1,12 @@
 |%
 +$  row  @ud
 +$  col  @ud
-+$  pos  [row=row col=col]
++$  position  [row=row col=col]
 +$  action
-  $%  [%push target=@p value=@]
+  $%  [%push target=@p value=@] ::[%push target=~zod value=8] looks as it should
       [%pop target=@p]
-      [%move target=@p pos=pos]
-      [%wall target=@p pos1=pos pos2=pos]
+      [%move target=@p pos=position]
+      [%wall target=@p pos1=position pos2=position]
   ==
 +$  update
   $%  [%init values=(list @)]
