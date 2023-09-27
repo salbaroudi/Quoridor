@@ -16,10 +16,7 @@ function reducer( state, action ) {
     case 'pop':
       newState.shift()
       return newState
-    case 'move':
-      console.log(action)
-      console.log(state)
-      default:
+    default:
       console.log("Reached the default case!")
       return state
   }
@@ -37,6 +34,8 @@ export function App() {
   }, [] )
 
   const handleUpdate = ( upd ) => {
+    console.log("our update:")
+    console.log(upd)
     if ( 'init' in upd ) {
       dispatch({type:'init', init:upd.init})
     }
@@ -49,6 +48,10 @@ export function App() {
     else if ( 'move' in upd) {
       dispatch( { type:'move' } )
     }
+  }
+
+  const scall = () => {
+    console.log("We got a respones back!")
   }
 
   const push = () => {
@@ -74,10 +77,17 @@ export function App() {
     api.poke( {
       app: 'quoridor',
       mark: 'quoridor-action',
-      json: { move: { target:`~${window.ship}`, row:2}}
+      json: { move: { target:`~${window.ship}`, row:2, col:2}}
     } )
   }
 
+  const wall = () => {
+    api.poke( {
+      app: 'quoridor',
+      mark: 'quoridor-action',
+      json: { wall: { target:`~${window.ship}`, p1: {row:1, col:0}, p2:{row:1, col:2}}},
+    } )
+  }
 
   return (
     <main className="flex flex-col items-center justify-center min-h-screen">
@@ -90,8 +100,8 @@ export function App() {
           return (<li key={index}>{eachValue}</li>)
         })}
       </div>
-      <button onClick={() => move()} style={{width:100}} className='border p-2 text-black-400'>Move!</button>
-
+      <button onClick={() => move()} style={{width:100}} className='border p-2 text-black-400'>Send Move</button>
+      <button onClick={() => wall()} style={{width:100}} className='border p-2 text-black-400'>Send Wall</button>
     </main>
   )
 }

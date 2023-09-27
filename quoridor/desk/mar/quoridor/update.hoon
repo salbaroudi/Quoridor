@@ -14,7 +14,8 @@
              :~  ['target' s+(scot %p target.upd)]
                  ['value' (numb value.upd)]
               ==
-      %move  %+  frond  'push'
+      %move  ~&  "our update"  ~&  upd
+           %+  frond  'move'
              %-  pairs
              :~  ['target' s+(scot %p target.upd)]
                  ['row' (numb row.upd)]

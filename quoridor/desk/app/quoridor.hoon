@@ -45,6 +45,7 @@
     [%pass /pokes %agent [target.act %quoridor] %poke mark vase]~
   ::
     %move
+    ::~&  "our bowl"  ~&  bowl  ~&  "our act"  ~&  act  
     ?>  =(our.bowl target.act)
       :_  this  [%give %fact ~[/values] %quoridor-update !>(`update`act)]~
   ==
