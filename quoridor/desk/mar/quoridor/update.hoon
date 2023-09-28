@@ -31,6 +31,11 @@
                 ['p2row' (numb row.pos2.upd)]
                 ['p2col' (numb col.pos2.upd)]
             ==
+      %sendplayer  ~&  "our sendplayer update"  ~&  upd
+          %+  frond  'sendplayer'
+            %-  pairs
+            :~  ['target' s+(scot %p target.upd)]
+            ==
     ==
   --
 ++  grab

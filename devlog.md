@@ -422,3 +422,106 @@ $json form:
                ==
 
 - looks like I can't put action structures on multiple lines either. Must all be on one line.
+
+- what variables should be in our bowl state?
+- players list
+    - player types
+
+
+### September 28TH:
+
+- reminded myself about states.
+
+- Need to start working on the state processing of my Quoridor app. Requirements:
+    - for now, just nuke and make a new state.
+    - State of the app must hold the following:
+        - Players List
+            => Just program it with the FE, and copy it into both slots.
+        - turn number.
+
+- you don't need to produce a card at the end of a poke branch. Consider:
+
+++  on-poke
+  |=  [=mark =vase]
+  ~&  >  state=state
+  ~&  got-poked-with-data=mark
+  =.  state  +(state)
+  `this
+::
+
+- got a PUT: 400 error from FE, after nuking and reloading app. 
+    => Zod needs to be reloaded. 400 is a bad request error. It SHOULD subscribe just fine
+    - reloading zod, and npm run bulid seemingly fixes this.
+
+- understanding this(...) notation:
+    - this is SS for centis - which resolves wings of a tree and alters them.
+    - Tall form example: 
+    - %=  this
+              ::  reset potential states on draw
+              potential-states  (~(put by potential-states) game-id.action ~)
+
+    - Another Example (SS:)
+```
+=foo [a=1 b=2 c=3]
+foo(a 5,b 10,c 15)
+```
+- use comma SS notation to alter our state. this() refers to a  wing, and the stuff inside the parens are the things in the wing we change.
+    - its all binary trees in the end, Jake.
+- our player structure should already be properly formed by action.hoon - no need to do complicated changes in quoridor.hoon.
+
+- what does " potential-states  (~(put by potential-states) game-id.action ~)" mean??
+%-  %~  put  by  <map>  [key value pair]
+%- calls a one argument gate
+%~ evaluates the arm of a door.
+
+- it looks like I am having conceptual difficulties with maps. Back to the Hoon School notes...
+
+(~(put by potential-states) game-id.action)
+- outer parens are a gate call with %-
+~() refers to %~
+    - put is our arm
+    - by is our door
+    - potential-states is our sample
+    - game-id.action is our input - what we want to change.
+
+- designing state incrementally is poor development, and I am tired of small scale tinkering. This is a necessary milestone, and it needs to be solved **now**.
+
+- It is time to design our basic state, and initialization of our agents.
+
+Basic Agent State:
+
++$  state-0
+  $:  [%0 values=(list @)]
+      [%1 pmap=playermap]
+      [%2 tcount=@ud]
+  ==
+
+
+- Values is legacy stuff, just leave it for now
+- pmap is a player map. All player data is stored in player objects.
+- turn count is obv.
+- for this demo, we have one BE agent, and two FE agents.
+- first the FE connects and subscribes, we send the current state object of the app back
+    => We should not alter the state with a subscribe (!)
+        - so a values list, a player list, and a turn count. is send back => (This will signal intial state later)
+    - Each FE agent has a button that initializes the player. P1 presses the button.
+        - this consists of a player name, number of walls remaining and a target in our JSON object
+            => We don't know what the player number is yet. Let the agent decide what it is.
+        - this gets conveted to an action %register, and is converted to a head tagged tuple.
+        - we switch in the ++on-poke arm with our action.
+            BRANCH: first we check to see if the player map is empty.
+            YES:  
+                - construct a player tuple: 
+                - set player number to 1.
+                - insert into dictionary. 
+                - update state, and send a card to FE.
+            NO: 
+                - construct a player tuple:
+                - set player number to two
+                - insert into dictionary
+                - update state, and send a card to FE
+            
+
+
+    - 
+

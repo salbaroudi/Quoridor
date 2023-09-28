@@ -18,7 +18,8 @@
 +$  ppos  position  ::Player position
 +$  wallcount  @ud  :: From 10...0
 +$  name  @p  
-    +$  pnum  @ud  ::Player Number
++$  pnum  @ud  ::Player Number
 +$  player  [pnum name ppos wallcount]  
+
 +$  playermap  (map pnum player)  ::pnum -> player structure
 --

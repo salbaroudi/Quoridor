@@ -6,6 +6,8 @@
   ==
 +$  state-0
   $:  [%0 values=(list @)]
+      [%1 pmap=playermap]
+      [%2 tcount=@ud]
   ==
 +$  card  card:agent:gall
 --
@@ -55,6 +57,23 @@
     ~&  "our wall act"  ~&  act
     ?>  =(our.bowl target.act)
       :_  this  [%give %fact ~[/values] %quoridor-update !>(`update`act)]~
+    %sendplayer  ::could also use dbug...
+    ~&  "our sendplayer act"  ~&  act  
+    :::_  this(values [value.act values],pmap (~))
+    =/ playernum pnum.act
+    
+    :: Get player number from request.
+    :: is there an entry with player number Y or N?
+    :: if yes, update the player
+    ::  get the player structure.
+    ::  rewrite the cell and insert
+    :: if no, insert new player:
+    :: build a player structure
+    :: inset into the map.
+    :: 
+    
+      [%give %fact ~[/values] %quoridor-update !>(`update`act)]~
+
   ==
 ::
 ++  on-peek

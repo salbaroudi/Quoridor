@@ -89,6 +89,14 @@ export function App() {
     } )
   }
 
+const sendplayer = (name,num) => {
+  api.poke( {
+    app: 'quoridor',
+    mark: 'quoridor-action',
+    json: { sendplayer: { target:`~${window.ship}`, pnum: num, pname: name}}
+  } )
+}
+
   return (
     <main className="flex flex-col items-center justify-center min-h-screen">
       <input style={{width:200}} className='border' type='text' value={inputValue} onChange={(e) => setInputValue(e.target.value)}/>
@@ -102,6 +110,8 @@ export function App() {
       </div>
       <button onClick={() => move()} style={{width:100}} className='border p-2 text-black-400'>Send Move</button>
       <button onClick={() => wall()} style={{width:100}} className='border p-2 text-black-400'>Send Wall</button>
+      <button onClick={() => sendplayer("~nodsup",1)} style={{width:100}} className='border p-2 text-black-400'>Send P1</button>
+      <button onClick={() => sendplayer("~todsup",2)} style={{width:100}} className='border p-2 text-black-400'>Send P2</button>
     </main>
   )
 }
