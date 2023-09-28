@@ -7,10 +7,11 @@
       [%pop target=@p]
       [%move target=@p pos=position]
       [%wall target=@p pos1=position pos2=position]
-      [%sendplayer target=@p pnum=@ud pname=@p]
+      [%sendplayer target=@p pname=@p wcount=@ud]
   ==
 +$  update
-  $%  [%init values=(list @)]
+  $%  [%init val=(list @) tc=@ud]
+      [%playeradd pnum=@ud]
       action
   ==
 +$  ppos  position  ::Player position
@@ -20,3 +21,4 @@
 +$  player  [pnum name ppos wallcount]  
 +$  playermap  (map pnum player)  ::pnum -> player structure
 --
+

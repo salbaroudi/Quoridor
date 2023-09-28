@@ -27,17 +27,18 @@ export function App() {
   const [ inputValue, setInputValue ] = useState( "" )
 
   useEffect(() => {
-    async function init() {
+    async function init() {  //we don't go through action.hoon, because we are doing a subscribe.
       api.subscribe( { app:"quoridor", path: '/values', event: handleUpdate } )
     }
     init()
   }, [] )
 
+  //all acks and data sent back will go through here...
   const handleUpdate = ( upd ) => {
     console.log("our update:")
     console.log(upd)
     if ( 'init' in upd ) {
-      dispatch({type:'init', init:upd.init})
+      dispatch({type:'init', init:upd.init.val})
     }
     else if ( 'push' in upd ) {
       dispatch({type:'push', val:upd.push.value})
@@ -89,11 +90,11 @@ export function App() {
     } )
   }
 
-const sendplayer = (name,num) => {
+const initplayer = (name) => {
   api.poke( {
     app: 'quoridor',
     mark: 'quoridor-action',
-    json: { sendplayer: { target:`~${window.ship}`, pnum: num, pname: name}}
+    json: { sendplayer: { target:`~${window.ship}`, pname: name, wcount: 10}}
   } )
 }
 
@@ -110,8 +111,8 @@ const sendplayer = (name,num) => {
       </div>
       <button onClick={() => move()} style={{width:100}} className='border p-2 text-black-400'>Send Move</button>
       <button onClick={() => wall()} style={{width:100}} className='border p-2 text-black-400'>Send Wall</button>
-      <button onClick={() => sendplayer("~nodsup",1)} style={{width:100}} className='border p-2 text-black-400'>Send P1</button>
-      <button onClick={() => sendplayer("~todsup",2)} style={{width:100}} className='border p-2 text-black-400'>Send P2</button>
+      <button onClick={() => initplayer("~nodsup")} style={{width:100}} className='border p-2 text-black-400'>Send P1</button>
+      <button onClick={() => initplayer("~todsup")} style={{width:100}} className='border p-2 text-black-400'>Send P2</button>
     </main>
   )
 }

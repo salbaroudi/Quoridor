@@ -530,7 +530,80 @@ Basic Agent State:
         - on wall:
             - same as above, but a bit more fiddly.
 
-- 
+nest-fail
+- have
+[ [%a it(#1)]
+    p
+    ^#1
+  ?(
+    [%a p=?(%~ [i=#1 t=?(%~ [i=#1 t=it(#1)])])]
+    [%b p=?(%.y %.n)]
+    %~
+    [%n p=@ta]
+    [ %o
+        p
+      ?(
+        %~
+        [ n=[p=@t q=#1]
+            l
+          ?(
+            %~
+            [n=[p=@t q=#1] l=nlr([p=@t q=#1]) r=nlr([p=@t q=#1])]
+          )
+            r
+          ?(
+            %~
+            [n=[p=@t q=#1] l=nlr([p=@t q=#1]) r=nlr([p=@t q=#1])]
+          )
+        ]
+      )
+    ]
+    [%s p=@t]
+  )
+]
+- need
+?(
+  [%a p=?(%~ [i=#2 t=?(%~ [i=#2 t=it(#2)])])]
+  [%b p=?(%.y %.n)]
+  %~
+  [%n p=@ta]
+  [ %o
+      p
+      ^#1
+    ?(
+      %~
+      [ n=[p=@t q=#2]
+          l
+        ?(%~ [n=[p=@t q=#2] l=nlr([p=@t q=#2]) r=nlr([p=@t q=#2])])
+          r
+        ?(
+          %~
+          [ n=[p=@t q=#2]
+            l=nlr([p=@t q=#2])
+              r
+            nlr(
+              [ p=@t
+                  q
+                  ^#2
+                ?(
+                  [%a p=?(%~ [i=#2 t=?(%~ [i=#2 t=it(#2)])])]
+                  [%b p=?(%.y %.n)]
+                  %~
+                  [%n p=@ta]
+                  [%o p=#1]
+                  [%s p=@t]
+                )
+              ]
+            )
+          ]
+        )
+      ]
+    )
+  ]
+  [%s p=@t]
+)
+
+
 
 
     - 

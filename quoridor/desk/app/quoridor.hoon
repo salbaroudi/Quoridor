@@ -5,9 +5,9 @@
   $%  state-0
   ==
 +$  state-0
-  $:  [%0 values=(list @)]
-      [%1 pmap=playermap]
-      [%2 tcount=@ud]
+  $:  values=(list @)
+      pmap=playermap
+      tcount=@ud
   ==
 +$  card  card:agent:gall
 --
@@ -23,7 +23,7 @@
 ++  on-load  
   |=  old=vase
   ^-  (quip card _this)
-  `this(state !<(state-0 old))
+  `this(state !<(state-0 old))  ::form a unit. Alter a wing (state), take an old vase and interpret it as a state-0.
 ++  on-poke
   |=  [=mark =vase]
   ^-  (quip card _this)
@@ -57,23 +57,15 @@
     ~&  "our wall act"  ~&  act
     ?>  =(our.bowl target.act)
       :_  this  [%give %fact ~[/values] %quoridor-update !>(`update`act)]~
-    %sendplayer  ::could also use dbug...
-    ~&  "our sendplayer act"  ~&  act  
-    :::_  this(values [value.act values],pmap (~))
-    =/ playernum pnum.act
-    
-    :: Get player number from request.
-    :: is there an entry with player number Y or N?
-    :: if yes, update the player
-    ::  get the player structure.
-    ::  rewrite the cell and insert
-    :: if no, insert new player:
-    :: build a player structure
-    :: inset into the map.
-    :: 
-    
-      [%give %fact ~[/values] %quoridor-update !>(`update`act)]~
-
+    %sendplayer
+    ~&  "our sendplayer act"  ~&  act
+    ?:  =(pmap ~)  ::is our map empty?
+      =/  playnum  1
+      =/  pstrut  ^-  player  [playnum pname.act *ppos wcount.act]
+      :_  this(state  (~(put by pmap) playnum pstrut)) ::need to work on my maps...and struts
+      [%give %fact ~[/values] %quoridor-update !>(`update`[%playeradd pnum=playnum])]~
+    ::if not empty, do nothing for now.
+    `this
   ==
 ::
 ++  on-peek
@@ -86,8 +78,10 @@
   |=  =path
   ^-  (quip card _this)
   ?>  ?=([%values ~] path)
+  ~&  [%init val=values tc=tcount]  
   :_  this
-  [%give %fact ~ %quoridor-update !>(`update`[%init values])]~
+  ::we need to match our update structure
+  [%give %fact ~ %quoridor-update !>(`update`[%init val=values tc=tcount])]~
 ++  on-arvo   on-arvo:default
 ++  on-leave  on-leave:default
 ++  on-agent  on-agent:default

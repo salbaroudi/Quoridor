@@ -6,9 +6,21 @@
   ++  json
     =,  enjs:format
     ^-  ^json
+    ~&  "upd in update.hoon"  ~&  upd  
     ?-    -.upd
       %pop  (frond 'pop' s+(scot %p target.upd)) 
-      %init  (frond 'init' a+(turn values.upd numb))
+      ::%init  (frond 'init' a+(turn val.upd numb))
+      %playeradd
+           %+  frond  'playeradd'
+             %-  pairs
+             :~  ['pnum' (numb pnum.upd)]
+              ==
+      %init 
+           %+  frond  'init'
+             %-  pairs
+             :~  ['val' a+(turn val.upd numb)]
+                 ['tc' (numb tc.upd)]
+              ==
       %push  ~&  "our push update"  ~&  upd  ::coming in from q.app, to send back to FE, looks like: [%push target=~zod value=8] 
            %+  frond  'push'
              %-  pairs
@@ -30,11 +42,6 @@
                 ['p1col' (numb col.pos1.upd)]
                 ['p2row' (numb row.pos2.upd)]
                 ['p2col' (numb col.pos2.upd)]
-            ==
-      %sendplayer  ~&  "our sendplayer update"  ~&  upd
-          %+  frond  'sendplayer'
-            %-  pairs
-            :~  ['target' s+(scot %p target.upd)]
             ==
     ==
   --

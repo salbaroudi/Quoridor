@@ -1,5 +1,25 @@
 body {background-color:#000;}
 
+@font-face {
+  font-family: excelerate;
+  src: url(fonts/excelerate/Excelateo.ttf);
+}
+
+@font-face {
+  font-family: induction;
+  src: url(fonts/induction/Induction.otf);
+}
+
+@font-face {
+  font-family: lollipoptron;
+  src: url(fonts/lollipoptron/lollipoptron.ttf);
+}
+
+.excelfont {
+  font-family:excelerate;
+  font-size:36pt;
+}
+
 .warningtext {
   color: red;
 }
