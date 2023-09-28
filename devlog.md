@@ -520,7 +520,17 @@ Basic Agent State:
                 - set player number to two
                 - insert into dictionary
                 - update state, and send a card to FE
-            
+        
+        - After both player instances have pressed the button, we are technically ready to play. We should be able to send moves.
+        - on %move:
+            - extract player tuple.
+            - change position. 
+            - reinsert player object.
+            - send a response to FE
+        - on wall:
+            - same as above, but a bit more fiddly.
+
+- 
 
 
     - 
