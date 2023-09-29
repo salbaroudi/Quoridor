@@ -90,7 +90,7 @@ export function App() {
     } )
   }
 
-const initplayer = (name) => {
+const sendplayer = (name) => {
   api.poke( {
     app: 'quoridor',
     mark: 'quoridor-action',
@@ -111,8 +111,8 @@ const initplayer = (name) => {
       </div>
       <button onClick={() => move()} style={{width:100}} className='border p-2 text-black-400'>Send Move</button>
       <button onClick={() => wall()} style={{width:100}} className='border p-2 text-black-400'>Send Wall</button>
-      <button onClick={() => initplayer("~nodsup")} style={{width:100}} className='border p-2 text-black-400'>Send P1</button>
-      <button onClick={() => initplayer("~todsup")} style={{width:100}} className='border p-2 text-black-400'>Send P2</button>
+      <button onClick={() => sendplayer("~nodsup")} style={{width:100}} className='border p-2 text-black-400'>Send P1</button>
+      <button onClick={() => sendplayer("~todsup")} style={{width:100}} className='border p-2 text-black-400'>Send P2</button>
     </main>
   )
 }

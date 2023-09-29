@@ -10,8 +10,8 @@
       [%sendplayer target=@p pname=@p wcount=@ud]
   ==
 +$  update
-  $%  [%init val=(list @) tc=@ud]
-      [%playeradd pnum=@ud]
+  $%  [%init val=(list @) tc=@ud]  ::this doesn't appear in action, because this is a subscribe.
+      [%sendplayernum pnum=@ud]
       action
   ==
 +$  ppos  position  ::Player position

@@ -10,8 +10,10 @@
     ?-    -.upd
       %pop  (frond 'pop' s+(scot %p target.upd)) 
       ::%init  (frond 'init' a+(turn val.upd numb))
-      %playeradd
-           %+  frond  'playeradd'
+      %sendplayer  ::[Q: ]  we don't need this. Why does hoon complain??
+           %+  frond  'sendplayer'  ~
+      %sendplayernum
+           %+  frond  'sendplayernum'
              %-  pairs
              :~  ['pnum' (numb pnum.upd)]
               ==

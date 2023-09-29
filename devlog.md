@@ -530,78 +530,41 @@ Basic Agent State:
         - on wall:
             - same as above, but a bit more fiddly.
 
-nest-fail
-- have
-[ [%a it(#1)]
-    p
-    ^#1
-  ?(
-    [%a p=?(%~ [i=#1 t=?(%~ [i=#1 t=it(#1)])])]
-    [%b p=?(%.y %.n)]
-    %~
-    [%n p=@ta]
-    [ %o
-        p
-      ?(
-        %~
-        [ n=[p=@t q=#1]
-            l
-          ?(
-            %~
-            [n=[p=@t q=#1] l=nlr([p=@t q=#1]) r=nlr([p=@t q=#1])]
-          )
-            r
-          ?(
-            %~
-            [n=[p=@t q=#1] l=nlr([p=@t q=#1]) r=nlr([p=@t q=#1])]
-          )
-        ]
-      )
-    ]
-    [%s p=@t]
-  )
-]
-- need
-?(
-  [%a p=?(%~ [i=#2 t=?(%~ [i=#2 t=it(#2)])])]
-  [%b p=?(%.y %.n)]
-  %~
-  [%n p=@ta]
-  [ %o
-      p
-      ^#1
-    ?(
-      %~
-      [ n=[p=@t q=#2]
-          l
-        ?(%~ [n=[p=@t q=#2] l=nlr([p=@t q=#2]) r=nlr([p=@t q=#2])])
-          r
-        ?(
-          %~
-          [ n=[p=@t q=#2]
-            l=nlr([p=@t q=#2])
-              r
-            nlr(
-              [ p=@t
-                  q
-                  ^#2
-                ?(
-                  [%a p=?(%~ [i=#2 t=?(%~ [i=#2 t=it(#2)])])]
-                  [%b p=?(%.y %.n)]
-                  %~
-                  [%n p=@ta]
-                  [%o p=#1]
-                  [%s p=@t]
-                )
-              ]
-            )
-          ]
-        )
-      ]
-    )
-  ]
-  [%s p=@t]
-)
+- lost over an hour because I didn't update the sur file fml.
+
+### September 29th:
+
+- Basic code for player init is ready. Need to double check structures and maps. Will make a simple core/generator and play around with them.
+
+- define a structure:  
+=bankaccount $:  $=  name  @p  $=  num  @ud  ==
+^-  bankaccount  [name=~zod num=5]
+
+Note that you can use the mold to **pin the faces**, you don't have to do it!
+^-  bankaccount  [~zod 5]
+>> [name=~zod, num=5]
+
+Syntax forms:
+We can sugar the  $= (which pins faces), but we can't sugar the $:
+=bankaccount $:  name=@p  num=@ud  ==
+^-  bankaccount  [~zod 5]
+
+However, we need to enter structure mode with a comma if we make it full SS:
+
+=bankaccount ,[name=@p num=@ud]
+`bankaccount`[~fes 256]
+
+If you **forget the comma**, you get:  -find.$ error. Your mold gets run as a gate.
+
+**Playing around with Maps:**
+- upgraded my testsur.hoon file to run gates with map operations inside. I am more comfortable now.
+
+
+
+
+- changing state:
+- recall this(state  awing bexpr   cwing  dexpr) is calling centis %= gate. We take our state object (which is just a binary tree),
+- and mutate the cells. Our agent arm them returns the mutated state with the list of cards.
 
 
 

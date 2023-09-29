@@ -60,12 +60,12 @@
     %sendplayer
     ~&  "our sendplayer act"  ~&  act
     ?:  =(pmap ~)  ::is our map empty?
-      =/  playnum  1
-      =/  pstrut  ^-  player  [playnum pname.act *ppos wcount.act]
-      :_  this(state  (~(put by pmap) playnum pstrut)) ::need to work on my maps...and struts
-      [%give %fact ~[/values] %quoridor-update !>(`update`[%playeradd pnum=playnum])]~
-    ::if not empty, do nothing for now.
-    `this
+        =/  playnum  1  =/  playpos  ^-  position  [0 8]
+        =/  pstrut  ^-  player  [playnum pname.act playpos wcount.act]
+        :_  %=  this  pmap  (my ~[[playnum pstrut]])  ==
+        [%give %fact ~[/values] %quoridor-update !>(`update`[%sendplayernum pnum=playnum])]~    
+        ::Is not ~ case
+        `this  ::Do nothing...for now.
   ==
 ::
 ++  on-peek
