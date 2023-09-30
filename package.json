@@ -6,13 +6,14 @@
   "scripts": {
     "hoonscript": "echo \"Error: no test specified\" && exit 1",
     "startserver": "browser-sync start --server -f -w",
-    "startserver2": "browser-sync start --server",
+    "liveserver": "live-server app.html",
     "cp2zod": "./scripts/transport.sh"
   },
   "repository": {},
   "author": "Sean al-Baroudi",
   "license": "MIT",
   "dependencies": {
-    "browser-sync": "^2.29.3"
+    "browser-sync": "^2.29.3",
+    "live-server": "^1.2.2"
   }
 }

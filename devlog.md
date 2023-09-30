@@ -601,5 +601,13 @@ If you **forget the comma**, you get:  -find.$ error. Your mold gets run as a ga
     - Importing JQuery and testing it out.
         - just import $ jQuery, and throw functions in export function app() of app.jsx. IT works.
         - importing a javascript file.
-            - the simplest thing to do, is import a script tag...
+            - import * as appjs from './public/js/app.js'
+
+    - so that all works...time to put all the JS in our react app, and finish off the UI.
+    - first test the old functionality. 
+        - was going to import over a namespace, but files call eachother and are united in app.jsx...everything is in global namespace for now.
+        -quite a few issues here. Javascript
+        - dev strategy: just use live-server and do dev work in the old html/jquery files. and copy the code over.
+            => trying to run build and glob will eat up too much time.
+            
 

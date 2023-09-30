@@ -1,5 +1,7 @@
 body {background-color:#000;}
 
+.hidden {visibility: hidden;}
+
 @font-face {
   font-family: excelerate;
   src: url(fonts/excelerate/Excelateo.ttf);
@@ -43,9 +45,9 @@ body {background-color:#000;}
 }
 
 /* Fixing excess height: https://stackoverflow.com/questions/2920114/how-to-auto-adjust-the-div-height-according-to-content-in-it */
-
 .board-container {
   margin-top:-8.5%;
+  margin-right:5%;
   margin-bottom:2%;
   min-height:100px;
   background-color:black;
@@ -78,6 +80,19 @@ body {background-color:#000;}
   background-color:black;
 
 }
+
+/*for hovering */
+.square-lighter {background-color:rgb(0,0,150) !important;}
+
+/*for selection and placement, also current position */
+.square-lightest {background-color:rgb(0,0,225) !important;}
+
+/* for hovered walls */
+.wall-lighter {background-color:rgb(75,75,225) !important;}
+
+/* for placed and selected walls*/
+.wall-lightest {background-color:rgb(150,150,225) !important;}
+
 
 .player-stats {
   width:100%;

@@ -5,7 +5,6 @@
 @tailwind utilities;
 
 .mytest {color:red;background-color:green;}
-
 .onerow {width:50%; display:grid; grid-template-columns: 20% 20% 20% 20% 20%;}
 
 /*     src: url(fonts/excelerate/Excelateo.ttf); */

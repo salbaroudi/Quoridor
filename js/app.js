@@ -25,29 +25,41 @@ function playerinit(num) {
     return tuple;
 }
 
-function start_game_request() {
-    //First get the user name from the input box.
-    let p1name = "~sampel-palnet";
-    //Next Make two players 1 and 2.
-    let p2name = $("#at-p").val();
-    //Error check...?
-    //Else, lets build our objects.
-    gameState.add_player(new Player(p1name, playerinit(1)));
-    gameState.add_player(new Player(p2name, playerinit(2))); 
-    UIChanges.start_game_request(p1name,p2name);
-    console.log(gameState);
-    //Next, we begin our game loop.
-    UIChanges.setup_board("c0-4","c6-2");
-}
-
 
 function initialzeGame() {
     gameState = new State();
     $(".send-request-button").on( "click", start_game_request);
 }
 
+function start_game_request() {
+    //First get the user name from the input box.
+    //Here we send an async request to our Back end.
+    //We read the name of our ship from {window.ship}, which is provided by our react app.
+    let p1name = "~sampel-palnet"; //assume default for now.
+    //Next Make two players 1 and 2.
+    let p2name = $("#at-p").val();
+
+    gameState.add_player(new Player(p1name, playerinit(1)));
+    gameState.add_player(new Player(p2name, playerinit(2))); 
+    UIChanges.start_game_request(p1name,p2name);
+    console.log(gameState);
+    //Next, we begin our game loop.
+    UIChanges.setup_board("s0-8","s16-8");
+}
+
+function hoverSquare() {
+    return;
+}
+
+function hoverWall() {
+    return;
+}
+
+
 function mainturnLoop() {
-    return 0;
+//We need functions that activate a game mode: Player 1 must make a move.
+//We need to enable hover and click events for the walls, or the boards. This is done with highlighting.
+return;
 }
 
 

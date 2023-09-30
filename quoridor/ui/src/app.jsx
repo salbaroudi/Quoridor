@@ -3,8 +3,11 @@ import Urbit from '@urbit/http-api'
 import $ from 'jquery'
 import orangepawn from "./public/img/orange_pawn_rs_small.png"
 import bluepawn from "./public/img/blue_pawn_rs_small.png"
-import * as appjs from './public/js/app.js'
 
+// (!) Doing this, we need to be careful of namespace collisions (!)
+//import './public/js/datamodel.js'
+//import './public/js/ui.js'
+import {playerinit, start_game_request, initializeGame, mainturnLoop,testDSO1} from './public/js/app.js'
 
 const api = new Urbit( '', '', window.desk )
 api.ship = window.ship
@@ -33,14 +36,20 @@ export function App() {
   
   useEffect(() => {
     async function init() {  //we don't go through action.hoon, because we are doing a subscribe.
-      console.log(appjs.playerinit(1));
       api.subscribe( { app:"quoridor", path: '/values', event: handleUpdate } )
     }
     init()
+    console.log(playerinit(2))
   }, [] )
 
-  appjs.playerinit(1);
 
+/*  useEffect(() => {
+    function init() {
+      console.log(aj.playerinit(2))
+    }
+    init()
+  }, [])
+*/
   //all acks and data sent back will go through here...
   const handleUpdate = ( upd ) => {
     console.log("our update:")
@@ -57,10 +66,6 @@ export function App() {
     else if ( 'move' in upd) {
       dispatch( { type:'move' } )
     }
-  }
-
-  const scall = () => {
-    console.log("We got a respones back!")
   }
 
 const jQueryTest = () =>
@@ -115,7 +120,6 @@ const sendplayer = (name) => {
 }
 
 //className=flex flex-col items-center justify-center min-h-screen
-
   return (
     <main className="">
       <input style={{width:200}} className='border' type='text' value={inputValue} onChange={(e) => setInputValue(e.target.value)}/>
@@ -136,10 +140,6 @@ const sendplayer = (name) => {
       </div>
 
         <br /><hr /><br />
-      
-
-
-
 
       <div class="main-container">
         <div class="excelfont"><b> Quoridor </b></div>
@@ -603,12 +603,7 @@ const sendplayer = (name) => {
               </div>
           </div>
         </div>
-
-
-
       </div>
-
-
     </main>
   )
 }
