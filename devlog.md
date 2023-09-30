@@ -568,6 +568,38 @@ If you **forget the comma**, you get:  -find.$ error. Your mold gets run as a ga
 
 
 
+### Sept 30th:  
 
-    - 
+- I am coming up to the end of my development week. I have done a lot of experimentation, and learned a lot about the FE-BE pipeline for gall apps.
+- Its time to achieve a limited-functionality milestone, and get everything cleaned up.
+    - I need my front end basic design nailed down.
+    - My FE code needs to be integrated into react and running.
+    - A basic initialization session needs coded, and moves on the screen need to be animated.
+
+- I am going to work from the FE to the BE, linearly. Its easier, as I get to start with UI changes and thats a nice start.
+
+- FE Design:
+    - css must be changed.
+    - I want my Quoridor app to fit in 50% of the screen, centered. This helps with cellphone displays in the future.
+    - It also looks better
+    - got it basically working. Some -negative margin hacks to get things lined up. And the @p box doesn't compress when we make it hidden.
+    - it is functional and looks better than it did, will leave for now.
+
+- Integrating with React:
+    - trying to get live-server working casues a lot of erors.
+        - this is because our module paths are relative to %docket, and %docket generates missing files when we upload via the glob.
+        - so I have to glob everytime to check if things work. This will slow down testing :( .
+
+        - CSS and HTML were just pasted into index.css and app.html. No issues with this.
+
+    - First Problem: Assets (images) are not found, because of the %docket magic in the background. When I run npm build, how do I get it 
+    to include the images in the dist folder, and map the right path??
+    - this was solved by just importing images directly into app.jsx, and plugging them into src with {variables}
+        - https://create-react-app.dev/docs/adding-images-fonts-and-files/
+    - font issues were solved by using the /public/ folder trick. css is importd in main.jsx.
+        - https://create-react-app.dev/docs/using-the-public-folder/
+    - Importing JQuery and testing it out.
+        - just import $ jQuery, and throw functions in export function app() of app.jsx. IT works.
+        - importing a javascript file.
+            - the simplest thing to do, is import a script tag...
 

@@ -1,5 +1,3 @@
-
-
 let gameState = 0;
 
 /*

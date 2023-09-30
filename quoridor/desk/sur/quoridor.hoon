@@ -6,12 +6,12 @@
   $%  [%push target=@p value=@] ::[%push target=~zod value=8] looks as it should
       [%pop target=@p]
       [%move target=@p pos=position]
-      [%wall target=@p pos1=position pos2=position]
+      [%sendwall target=@p pos1=position pos2=position]
       [%sendplayer target=@p pname=@p wcount=@ud]
   ==
 +$  update
   $%  [%init val=(list @) tc=@ud]  ::this doesn't appear in action, because this is a subscribe.
-      [%sendplayernum pnum=@ud]
+      [%sendplayerinfo pnum=@ud pstart=position]
       action
   ==
 +$  ppos  position  ::Player position

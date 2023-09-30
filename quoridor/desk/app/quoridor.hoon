@@ -53,7 +53,7 @@
     ?>  =(our.bowl target.act)
       :_  this  [%give %fact ~[/values] %quoridor-update !>(`update`act)]~
   ::
-    %wall
+    %sendwall
     ~&  "our wall act"  ~&  act
     ?>  =(our.bowl target.act)
       :_  this  [%give %fact ~[/values] %quoridor-update !>(`update`act)]~
@@ -63,9 +63,12 @@
         =/  playnum  1  =/  playpos  ^-  position  [0 8]
         =/  pstrut  ^-  player  [playnum pname.act playpos wcount.act]
         :_  %=  this  pmap  (my ~[[playnum pstrut]])  ==
-        [%give %fact ~[/values] %quoridor-update !>(`update`[%sendplayernum pnum=playnum])]~    
-        ::Is not ~ case
-        `this  ::Do nothing...for now.
+        [%give %fact ~[/values] %quoridor-update !>(`update`[%sendplayerinfo pnum=playnum pstart=playpos])]~    
+        ::Not case 
+        =/  playnum  2  =/  playpos  ^-  position  [16 8]
+        =/  pstrut  ^-  player  [playnum pname.act playpos wcount.act]
+        :_  %=  this  pmap  (~(put by pmap) [playnum pstrut])  ==
+        [%give %fact ~[/values] %quoridor-update !>(`update`[%sendplayerinfo pnum=playnum pstart=playpos])]~    
   ==
 ::
 ++  on-peek

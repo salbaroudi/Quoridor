@@ -6,11 +6,14 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "serve": "vite preview"
+    "serve": "vite preview",
+    "startdev": "npm run build && live-server dist"
   },
   "dependencies": {
     "@urbit/api": "^2.3.0",
     "@urbit/http-api": "^2.3.0",
+    "jquery": "^3.7.1",
+    "live-server": "^1.2.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },

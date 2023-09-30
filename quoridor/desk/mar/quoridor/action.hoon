@@ -19,7 +19,7 @@
         :: [%move [%target 'zod'] [%pos  [row=X col=Y]]
         [%move (ot ~[target+(se %p) pos+(ot ~[row+ni col+ni])])] 
         ::[%wall [%target 'zod'] [%pos1  [row=X col=Y] [%pos1  [row=X col=Y]]
-        [%wall (ot ~[target+(se %p) pos1+(ot ~[row+ni col+ni]) pos2+(ot ~[row+ni col+ni])])] 
+        [%sendwall (ot ~[target+(se %p) pos1+(ot ~[row+ni col+ni]) pos2+(ot ~[row+ni col+ni])])] 
         [%sendplayer (ot ~[target+(se %p) pname+(se %p) wcount+ni])]
     ==
   --

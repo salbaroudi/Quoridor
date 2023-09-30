@@ -12,10 +12,12 @@
       ::%init  (frond 'init' a+(turn val.upd numb))
       %sendplayer  ::[Q: ]  we don't need this. Why does hoon complain??
            %+  frond  'sendplayer'  ~
-      %sendplayernum
+      %sendplayerinfo
            %+  frond  'sendplayernum'
              %-  pairs
              :~  ['pnum' (numb pnum.upd)]
+                 ['pstartrow' (numb row.pstart.upd)]
+                 ['pstartcol' (numb col.pstart.upd)]
               ==
       %init 
            %+  frond  'init'
@@ -36,7 +38,7 @@
                  ['row' (numb row.pos.upd)]
                  ['col' (numb col.pos.upd)]
               ==
-      %wall  ~&  "our move update"  ~&  upd
+      %sendwall  ~&  "our move update"  ~&  upd
           %+  frond  'wall'
             %-  pairs
             :~  ['target' s+(scot %p target.upd)]
