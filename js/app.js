@@ -45,13 +45,33 @@ function start_game_request() {
     console.log(gameState);
     //Next, we begin our game loop.
     UIChanges.setup_board("s0-8","s16-8");
+    mainturnLoop();
 }
 
 function hoverSquare() {
+    $('div[id^="sq-"]').hover(function() {
+        // This function is executed on hover (mouseenter)
+        // You can add your hover-related code here
+        $(this).attr("class", "ref-cell-square square-lighter");// Example: Change background color
+      }, function() {
+        // This function is executed when the hover ends (mouseleave)
+        // You can add code for when the mouse leaves the element
+        $(this).attr("class", "ref-cell-square"); // Example: Reset background color
+      });
     return;
 }
 
+//we actually cant do a class change trick, because we have two types of wall (!)
 function hoverWall() {
+    $('div[id^="wa-"]').hover(function() {
+        // This function is executed on hover (mouseenter)
+        // You can add your hover-related code here
+        $(this).css('background-color', '#0000E1'); // Example: Change background color
+      }, function() {
+        // This function is executed when the hover ends (mouseleave)
+        // You can add code for when the mouse leaves the element
+        $(this).css('background-color', '#000096'); // Example: Reset background color
+      });
     return;
 }
 
@@ -59,6 +79,8 @@ function hoverWall() {
 function mainturnLoop() {
 //We need functions that activate a game mode: Player 1 must make a move.
 //We need to enable hover and click events for the walls, or the boards. This is done with highlighting.
+hoverSquare();
+hoverWall();
 return;
 }
 
