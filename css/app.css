@@ -141,6 +141,7 @@ visibility:hidden;
     margin: 1% 1% 2% 25%;
     border-radius:2px;
     text-align:center;
+    background-color:rgb(0,0,150);
     color: orange;
 }
 

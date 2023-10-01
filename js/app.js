@@ -8,16 +8,16 @@ function playerinit(num) {
     let tuple = 0;
     switch(num) {
         case 1:
-            tuple = [1,"blue",4,"0.4"];
+            tuple = [1,"blue",4,"sq-0-8"];
             break;
         case 2:
-            tuple = [2,"orange",4,"6.2"];
+            tuple = [2,"orange",4,"sq-16-8"];
             break;
         case 3:
-            tuple = [3,"green", 4,"2.0"];
+            tuple = [3,"green", 4,"sq-8-16"];
             break;
         case 4:
-            tuple = [4,"purple",4,"4.6"];
+            tuple = [4,"purple",4,"sq-8-0"];
             break;
         default:
             console.error("Error: Player Number not recognized.");
@@ -25,63 +25,58 @@ function playerinit(num) {
     return tuple;
 }
 
-
 function initialzeGame() {
     gameState = new State();
     $(".send-request-button").on( "click", start_game_request);
 }
 
 function start_game_request() {
-    //First get the user name from the input box.
-    //Here we send an async request to our Back end.
-    //We read the name of our ship from {window.ship}, which is provided by our react app.
+    //First Get the user name from the input box.
     let p1name = "~sampel-palnet"; //assume default for now.
     //Next Make two players 1 and 2.
     let p2name = $("#at-p").val();
-
+    //[!!!] Here we send an async request to our Back end, perform the negotiation.
+    //[!!!] We read the name of our ship from {window.ship}, which is provided by our react app
     gameState.add_player(new Player(p1name, playerinit(1)));
-    gameState.add_player(new Player(p2name, playerinit(2))); 
-    UIChanges.start_game_request(p1name,p2name);
-    console.log(gameState);
-    //Next, we begin our game loop.
-    UIChanges.setup_board("s0-8","s16-8");
-    mainturnLoop();
-}
-
-function hoverSquare() {
-    $('div[id^="sq-"]').hover(function() {
-        // This function is executed on hover (mouseenter)
-        // You can add your hover-related code here
-        $(this).attr("class", "ref-cell-square square-lighter");// Example: Change background color
-      }, function() {
-        // This function is executed when the hover ends (mouseleave)
-        // You can add code for when the mouse leaves the element
-        $(this).attr("class", "ref-cell-square"); // Example: Reset background color
-      });
-    return;
-}
-
-//we actually cant do a class change trick, because we have two types of wall (!)
-function hoverWall() {
-    $('div[id^="wa-"]').hover(function() {
-        // This function is executed on hover (mouseenter)
-        // You can add your hover-related code here
-        $(this).css('background-color', '#0000E1'); // Example: Change background color
-      }, function() {
-        // This function is executed when the hover ends (mouseleave)
-        // You can add code for when the mouse leaves the element
-        $(this).css('background-color', '#000096'); // Example: Reset background color
-      });
-    return;
+    gameState.add_player(new Player(p2name, playerinit(2)));
+    //update status container UI.
+    player_status_init(p1name,p2name);
+    console.log(gameState);  
+    //Not **supposed** to access player directly, but this is just done once
+    //[!!!] This code needs ot be parameterized/generalized.
+    setup_board(playerinit(1)[3],playerinit(2)[3]);
+    main_turn_loop();
 }
 
 
-function mainturnLoop() {
-//We need functions that activate a game mode: Player 1 must make a move.
-//We need to enable hover and click events for the walls, or the boards. This is done with highlighting.
-hoverSquare();
-hoverWall();
-return;
+function main_turn_loop() {
+    //select next player from the data model.
+    let currPlayer = gameState.next_player();
+    let playerMode = "not-selected";
+    console.log("Main Turn Loop: Our current player" + currPlayer);
+    //toggle player's status box, turn off the others.
+    toggle_player_status(currPlayer);
+    
+    //Set On Hover and On Click events.
+    hover_square_on();
+    hover_wall_on();
+    click_square_on();
+    click_wall_on();
+    // at this point, we are just waiting for our click callback to work (on walls or squares)...
+}
+
+//When player clicks a square...
+function player_clicked_square() {
+// Get the #ID of the square that was clicked.
+let id = $(this).attr("id");
+console.log("Div clicked ID:" + id );
+// Call the rulecheck function: is it a valid move?
+check_pawn_move();
+
+// Move the pawn.
+    //Delete Image from appended Div
+    //Add image to a new div
+//un-highlight the square you are on.
 }
 
 

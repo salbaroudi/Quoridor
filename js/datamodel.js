@@ -36,7 +36,7 @@ Fields:
             console.error("Error: addPlayer - input not a Player Object");
         }
         this.P_Queue.push(player);
-        this.update_num_players;
+        this.update_num_players();
     }
 
     //Called for this instance. Must set the Curr_Player field.
@@ -66,7 +66,6 @@ Fields:
     numplayers_incr() {
         this.Num_Players = this.Num_Players + 1;
     }
-
 }
 
 /*
@@ -94,6 +93,14 @@ Fields:
             console.error("Error: Board position update not a string. Check input.");
         }
         this.Board_Pos = pos;
+    }
+
+    get_board_pos() {
+        return this.Board_Pos;
+    }
+
+    get_number() {
+        return this.P_Number;
     }
 }
 

@@ -609,5 +609,9 @@ If you **forget the comma**, you get:  -find.$ error. Your mold gets run as a ga
         -quite a few issues here. Javascript
         - dev strategy: just use live-server and do dev work in the old html/jquery files. and copy the code over.
             => trying to run build and glob will eat up too much time.
-            
 
+
+### October 1st:
+
+- stated using chatGPT to assist in coding. It gave good advice on library imports, and jQuery hacks.
+- For my UI, my initialization sequence breaks my model of not accessing player objects directly. I will try to maintain this rule for the main turn loop, and leave init as a special case (where it is allowed).
