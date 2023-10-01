@@ -87,22 +87,24 @@ function hover_wall_on() {
 
 //Called from app which is loaded by <script> after ui..., 
 //but JS does not have issues with mutual dependencies between two files (app and ui). 
-// TFG!!
-function click_square_on() {
-    $('div[id^="sq-"]').click(player_clicked_square());
-    return;
-}
-//we actually cant do a class change trick, because we have two types of wall (!)
-function click_wall_on() {
-    $('div[id^="wa-"]').hover(function() {
-        $(this).css('background-color', '#0000E1'); // Example: Change background color
-      }, function() {
-        $(this).css('background-color', '#000096'); // Example: Reset background color
-      });
-    return;
+
+function main_click_on(currPlayer) {
+    //Before we do anything, we need to clear our old click events.
+    //If we don't do this, multiple click events build up and we get many turns taken at once (!!).
+    main_click_off_squares();
+    main_click_off_walls();
+    //Attach only one set of events.
+    $('div[id^="sq-"]').click(function() { player_click_move(currPlayer,$(this).attr("id"))});
+    $('div[id^="wa-"]').click(function() { player_click_wall(currPlayer,$(this).attr("id"))});
 }
 
+function main_click_off_squares() {
+    $('div[id^="sq-"]').off("click");
+}
 
+function main_click_off_walls() {
+    $('div[id^="wa-"]').off("click");
+}
 
 function hover_square_off() {
     $('div[id^="sq-"]').off("mouseenter mouseleave");
@@ -112,6 +114,26 @@ function hover_wall_off() {
     $('div[id^="wa-"]').off("mouseenter mouseleave");
 }
 
+function select_wall_segment(newId) {
+    //Need to check if its a vertical or horizontal wall, and act accordingly.
+    $("#" + newId).attr("css", "");
+}
+
+function move_pawn(oldId,newId,color) {
+    const oldCell = $("#" + oldId);
+    const newCell = $("#" + newId);
+    let pPawn = bluePawnImg;
+    if (color == "orange") {
+        pPawn = orangePawnImg;
+    }
+
+    //empty old cell, place image in new cell
+    oldCell.empty();
+    pPawn.appendTo("#" + newId);
+    //remove old square highlight.
+    oldCell.attr("css", "ref-cell-square");
+    newCell.attr("css", "ref-cell-square");
+}
 
 
 

@@ -59,6 +59,10 @@ Fields:
         return next;
     }
 
+    get_turncount() {
+        return this.Turn_Count;
+    }
+
     turncount_incr() {
         this.Turn_Count = this.Turn_Count + 1;
     }
@@ -97,6 +101,10 @@ Fields:
 
     get_board_pos() {
         return this.Board_Pos;
+    }
+
+    get_colour() {
+        return this.Colour;
     }
 
     get_number() {

@@ -52,31 +52,48 @@ function start_game_request() {
 function main_turn_loop() {
     //select next player from the data model.
     let currPlayer = gameState.next_player();
-    let playerMode = "not-selected";
-    console.log("Main Turn Loop: Our current player" + currPlayer);
+
+    //Console print out, for reference:
+    console.log("Turn:"  + gameState.get_turncount() + " has begun!");
+    console.log("Our Player Selected is:");
+    console.log(currPlayer);
+
     //toggle player's status box, turn off the others.
+    //[!!!] two fixed args instad of access to player directly?
     toggle_player_status(currPlayer);
-    
+
     //Set On Hover and On Click events.
     hover_square_on();
     hover_wall_on();
-    click_square_on();
-    click_wall_on();
-    // at this point, we are just waiting for our click callback to work (on walls or squares)...
+
+    //The price we pay for having click events in ui.js is carting an argument back and forth >:S
+    main_click_on(currPlayer);
+    // We now sit and wait, once a player clicks, we jump to the player_click() function and continue our loop.
 }
 
-//When player clicks a square...
-function player_clicked_square() {
-// Get the #ID of the square that was clicked.
-let id = $(this).attr("id");
-console.log("Div clicked ID:" + id );
-// Call the rulecheck function: is it a valid move?
-check_pawn_move();
+//When player clicks a square...notice that our callback is in ui.js. I place this function here
+//because i want the main control loop sequence all juxtaposed together.
+//Thankfully, JS allows for out of order dependencies, and patches things up at the end (⌐ ͡■ ͜ʖ ͡■)
+function player_click_move(currPlayer,newId) {
+    const oldId = currPlayer.get_board_pos();
+    check_pawn_move(oldId);
+    move_pawn(oldId,newId,currPlayer.get_colour())
+    //Update our player, update our turn count.
+    currPlayer.update_board_pos(newId);
+    gameState.turncount_incr();
+    //Next move!
+    main_turn_loop()
 
-// Move the pawn.
-    //Delete Image from appended Div
-    //Add image to a new div
-//un-highlight the square you are on.
+}
+
+function player_click_wall(currPlayer, newId) {
+    //First, deactivate all click moves for squares. Player has made their choice.
+    main_click_off_squares();
+    //highlight wall next
+    select_wall_segment(newId);
+    //Next, we need two more callbacks.
+    //One callback is for a keyboard press
+    //Another callback is for the selection of a second wall point.
 }
 
 
