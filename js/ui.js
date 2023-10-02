@@ -90,13 +90,28 @@ function hover_wall_on() {
 
 function main_click_on(currPlayer) {
     //Before we do anything, we need to clear our old click events.
-    //If we don't do this, multiple click events build up and we get many turns taken at once (!!).
+    //If we don't do this, multiple click events build up and we get many turns taken at once.
     main_click_off_squares();
     main_click_off_walls();
     //Attach only one set of events.
     $('div[id^="sq-"]').click(function() { player_click_move(currPlayer,$(this).attr("id"))});
     $('div[id^="wa-"]').click(function() { player_click_wall(currPlayer,$(this).attr("id"))});
 }
+
+function set_w2_keypress() {
+    //Clean up old events, again.
+    main_click_off_walls();
+    //just leave the hover events on for now
+    // add keyboard scan and onclick for each wall, again.
+    $("body").keydown(function(event) {
+        //This is for the escape key on the keyboard
+        if (event.keyCode === 27) {
+            keyboard_abort(); //args??
+        }
+    })  //currPlayer,$(this).attr("id")
+    $('div[id^="wa-"]').click(function() { second_wall_click()});
+}
+
 
 function main_click_off_squares() {
     $('div[id^="sq-"]').off("click");
@@ -114,9 +129,35 @@ function hover_wall_off() {
     $('div[id^="wa-"]').off("mouseenter mouseleave");
 }
 
+//In this function, we
+
+function wall_point_orientation(parseId) {
+//id format:  "wa-ROW-COL"
+//A horizontal wall has an odd number in the row slot.
+//A vertical wall has an odd number in the column slot.
+let result ="";
+let splits = parseId.split("-");
+if ((splits[0] != "wa")  && (splits.length != 3)){
+    console.error("Error: Improper wall id passed to parse_wall_point_orientation(). ");
+    return;
+}
+//horizontal wall.
+if (parseInt(splits[1]) % 2  != 0) { result = "horizontal";}
+//vertical wall.
+else if (parseInt(splits[2]) % 2  != 0) { result = "vertical"; }
+else { console.error("Eror: No odd number in row or col slot. Erroneous state.")}
+return result;
+}
+
 function select_wall_segment(newId) {
     //Need to check if its a vertical or horizontal wall, and act accordingly.
-    $("#" + newId).attr("css", "");
+    let result = wall_point_orientation(newId);
+    let classes = "";
+
+    if (result == "horizontal") { classes = "ref-cell-b-wall wall-lightest";}
+    else if (result == "vertical") { classes = "ref-cell-r-wall wall-lightest";}
+
+    $("#" + newId).attr("css", classes);
 }
 
 function move_pawn(oldId,newId,color) {

@@ -86,14 +86,28 @@ function player_click_move(currPlayer,newId) {
 
 }
 
+//If any keyboard button is clicked during wall selection, abort move.
+
 function player_click_wall(currPlayer, newId) {
-    //First, deactivate all click moves for squares. Player has made their choice.
+    //First, deactivate all click moves for squares. Player has made their choice already.
     main_click_off_squares();
     //highlight wall next
     select_wall_segment(newId);
     //Next, we need two more callbacks.
-    //One callback is for a keyboard press
+    //One callback is for a keyboard press, the other for our second wall...
+    set_w2_keypress()
+
     //Another callback is for the selection of a second wall point.
+}
+
+function keyboard_abort(event) {
+  //If we get here, we need to reset everything and go back to player click move
+}
+
+function second_wall_click() {
+    //If we get here, we construct our wall from the two points, add it, print it to console, 
+    //..reset everything,and then go back to main_turn_loop()
+
 }
 
 
