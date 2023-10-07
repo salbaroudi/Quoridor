@@ -25,71 +25,88 @@ function playerinit(num) {
     return tuple;
 }
 
+/*
+    Called onLoad() of application. 
+*/
 function initialzeGame() {
     gameState = new State();
     $(".send-request-button").on( "click", start_game_request);
 }
 
+/*
+    Game starts when user enters @p and hits Send Request button.
+    This function initializes a game session.
+*/
 function start_game_request() {
-    //First Get the user name from the input box.
-    let p1name = "~sampel-palnet"; //assume default for now.
-    //Next Make two players 1 and 2.
+    //[!!!] Get user name from {window.ship}
+    let p1name = "~sampel-palnet"; 
     let p2name = $("#at-p").val();
     //[!!!] Here we send an async request to our Back end, perform the negotiation.
-    //[!!!] We read the name of our ship from {window.ship}, which is provided by our react app
     gameState.add_player(new Player(p1name, playerinit(1)));
     gameState.add_player(new Player(p2name, playerinit(2)));
     //update status container UI.
     player_status_init(p1name,p2name);
-    console.log(gameState);  
+    console.log(gameState);
     setup_board(playerinit(1)[3],playerinit(2)[3]);
     main_turn_loop();
 }
 
 
 function main_turn_loop() {
-    //select next player from the data model.
+    //select next player, incr turn count.
     let currPlayer = gameState.next_player();
 
     //Console print out, for reference:
-    console.log("Turn:"  + gameState.get_turncount() + " has begun!");
-    console.log("Our Player Selected is:");
+    console.log("Turn:"  + gameState.get_turncount() + " has begun.");
+    console.log("Our Player Selected is:" + currPlayer.get_ship_name());
+    // Inspect state at every turn, for now.
     console.log(currPlayer);
 
-    //toggle player's status box, turn off the others.
-    //[!!!] two fixed args instad of access to player directly?
     toggle_player_status(currPlayer);
 
-    //Start hovers and clicks  
     hovers_and_clicks(currPlayer);
-    // We now sit and wait, once a player clicks, 
-    //we jump to the player_click() function and continue our loop.
+    //Click events for Walls and Squares are set. Now we wait...
 }
 
-
+/*
+    These side-effects needed to be bundled together, because
+    we can prematurely exit from the Wall Movement code.
+    a player can press the [ESC] key to cancel, or click the wrong
+    wall for its second point. So we have to reset the players move 
+    without calling next_player().
+*/
 function hovers_and_clicks(currPlayer) {
-    //Set On Hover and On Click events.
     hover_square_on();
     hover_wall_on();
-    //The price we pay for having click events in ui.js is carting an argument back and forth >:S
     main_click_on(currPlayer);
-
 }
 
+/*
+    This starts our move sequence for a selected player.
+    Click events are turned off to start, to stop old events piling up.
+    Player can make one of two moves: {movePawn or placeWall}.
+    */
+function main_click_on(currPlayer) {
+    main_click_off_squares();
+    main_click_off_walls();
+    //Attach only **one** set of events.
+    $('div[id^="sq-"]').click(function() { player_click_move(currPlayer,$(this).attr("id"))});
+    $('div[id^="wa-"]').click(function() { player_click_wall(currPlayer,$(this).attr("id"))});
+}
 
-//When player clicks a square...notice that our callback is in ui.js. I place this function here
-//because i want the main control loop sequence all juxtaposed together.
-//Thankfully, JS allows for out of order dependencies, and patches things up at the end (⌐ ͡■ ͜ʖ ͡■)
+/*
+    Signature:  (playerObject, newId)  -->  Void (side-effect) 
+    Player clicking a square selects a move sequence. Perform the necessary actions.
+    */
 function player_click_move(currPlayer,newId) {
     const oldId = currPlayer.get_board_pos();
-    check_pawn_move(oldId);
-    move_pawn(oldId,newId,currPlayer.get_colour())
+    unhighlight_old_pos(oldId);
+    check_pawn_move(oldId,newId);
+    move_pawn(oldId,newId,currPlayer.get_colour());
     //Update our player, update our turn count.
     currPlayer.update_board_pos(newId);
-    gameState.turncount_incr();
-    //Next move!
+    //Next move. Go back to start.
     main_turn_loop()
-
 }
 
 //If any keyboard button is clicked during wall selection, abort move.

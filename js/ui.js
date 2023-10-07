@@ -9,8 +9,7 @@ const orangePawnImg = $('<img />', {
     });
 
 
-//Mainly deal with the status side bar, and set everything up.
-//[!!!] Need a single place pawn function that is called for each player.
+// Hide the connect bar, and show the player boards.
 function player_status_init(p1name,p2name) {
     //hide the start game console.
     $("#connect-container").attr("class",
@@ -67,6 +66,10 @@ function status_box_off() {
     $('div[id^="player-title"]').attr("class", "player-title");
 }
 
+function unhighlight_old_pos(oldId) {
+    $("#" + oldId).attr("class", "ref-cell-square");
+}
+
 function hover_square_on() {
     $('div[id^="sq-"]').hover(function() {
         $(this).attr("class", "ref-cell-square square-lighter");
@@ -75,6 +78,7 @@ function hover_square_on() {
       });
     return;
 }
+
 //we actually cant do a class change trick, because we have two types of wall (!)
 function hover_wall_on() {
     $('div[id^="wa-"]').hover(function() {
@@ -85,18 +89,6 @@ function hover_wall_on() {
     return;
 }
 
-//Called from app which is loaded by <script> after ui..., 
-//but JS does not have issues with mutual dependencies between two files (app and ui). 
-
-function main_click_on(currPlayer) {
-    //Before we do anything, we need to clear our old click events.
-    //If we don't do this, multiple click events build up and we get many turns taken at once.
-    main_click_off_squares();
-    main_click_off_walls();
-    //Attach only one set of events.
-    $('div[id^="sq-"]').click(function() { player_click_move(currPlayer,$(this).attr("id"))});
-    $('div[id^="wa-"]').click(function() { player_click_wall(currPlayer,$(this).attr("id"))});
-}
 
 function set_w2_keypress(currPlayer,w1Id) {
     //Clean up old events, again.
@@ -148,6 +140,8 @@ function wall_point_orientation(parseId) {
 
 }
 
+
+//[!!!] We currently don't check if wall segments are in a line...
 function select_wall_segment(newId) {
     //Need to check if its a vertical or horizontal wall, and act accordingly.
     let result = wall_point_orientation(newId);

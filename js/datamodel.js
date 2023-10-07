@@ -52,10 +52,11 @@ Fields:
         this.Num_Players = this.P_Queue.length;
     }
 
-    //Get the next player. Do not mutate directly. Use this.
+    //returns next player object, update turn count.
     next_player() {
         let next = this.P_Queue.shift();
         this.P_Queue.push(next);
+        this.turncount_incr();
         return next;
     }
 
@@ -103,6 +104,9 @@ Fields:
         return this.Board_Pos;
     }
 
+    get_ship_name() {
+        return this.Name;
+    }
     get_colour() {
         return this.Colour;
     }
