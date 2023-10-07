@@ -164,7 +164,7 @@ visibility:hidden;
 }
 
 .ref-cell-r-wall {
-  background-color: rgb(0,0,150);
+  background-color: black;/*rgb(0,0,150);*/
   grid-column-start: 4;
   grid-column-end: 5;
   grid-row-start: 2;
@@ -172,7 +172,7 @@ visibility:hidden;
 }
 
 .ref-cell-b-wall {
-  background-color: rgb(0,0,150);
+  background-color: black; /*rgb(0,0,150); */
   grid-column-start: 2;
   grid-column-end: 3;
   grid-row-start: 4;

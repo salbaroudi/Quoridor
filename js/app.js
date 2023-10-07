@@ -1,3 +1,20 @@
+
+/* This is the main file, which knits together all of our functionality, and
+contains all of our event programming to run the game loop.
+
+It uses functions from other files to perform its work. Including:
+
+- ui.js
+- rulechecker.js
+- network.js
+
+These three files do what you would expect them to do.
+
+Some of the functionality between the files is intertwined, so it can't
+be perfectly separated. I have chosen to include all event setting/removal
+functions to be in ui.js, to keep this file a bit cleaner.
+*/
+
 let gameState = 0;
 
 /*
@@ -71,7 +88,7 @@ function main_turn_loop() {
 /*
     These side-effects needed to be bundled together, because
     we can prematurely exit from the Wall Movement code.
-    a player can press the [ESC] key to cancel, or click the wrong
+    A player can press the [ESC] key to cancel, or click the wrong
     wall for its second point. So we have to reset the players move 
     without calling next_player().
 */
@@ -79,19 +96,6 @@ function hovers_and_clicks(currPlayer) {
     hover_square_on();
     hover_wall_on();
     main_click_on(currPlayer);
-}
-
-/*
-    This starts our move sequence for a selected player.
-    Click events are turned off to start, to stop old events piling up.
-    Player can make one of two moves: {movePawn or placeWall}.
-    */
-function main_click_on(currPlayer) {
-    main_click_off_squares();
-    main_click_off_walls();
-    //Attach only **one** set of events.
-    $('div[id^="sq-"]').click(function() { player_click_move(currPlayer,$(this).attr("id"))});
-    $('div[id^="wa-"]').click(function() { player_click_wall(currPlayer,$(this).attr("id"))});
 }
 
 /*
@@ -109,36 +113,13 @@ function player_click_move(currPlayer,newId) {
     main_turn_loop()
 }
 
-//If any keyboard button is clicked during wall selection, abort move.
-
 function player_click_wall(currPlayer, newId) {
-    //First, deactivate all click moves for squares. Player has made their choice already.
+    //First, deactivate all click moves for squares.
     main_click_off_squares();
     //highlight wall next
-    select_wall_segment(newId);
-    //Next, we need two more callbacks.
-    //One callback is for a keyboard press, the other for our second wall...
     set_w2_keypress(currPlayer,newId);
-    //Another callback is for the selection of a second wall point.
-}
-
-function keyboard_escape(event, currPlayer) {
-         if (event.keyCode === 27) {
-            keyboard_abort(currPlayer);
-        }
-}
-
-function keyboard_abort(currPlayer) {
-  //If we get here, we need to reset everything and go back to player click move
-    console.log("Keyboard escape pressed. Aborting move")
-    //remove all click events
-    main_click_off_walls();
-    hover_square_off();
-    hover_wall_off();
-    keydown_off();
-
-    //reset turn loop without changing player. This player still needs to move.
-    hovers_and_clicks(currPlayer);
+    select_wall_segment(newId);
+    //Now we wait - player presses [ESC], or chooses a second wall.
 }
 
 function second_wall_click(currPlayer,w1Id,w2Id) {
@@ -155,73 +136,30 @@ function second_wall_click(currPlayer,w1Id,w2Id) {
     keydown_off();
 
     //Lets get the wall set, and highlihgted.
+    // [!!!] Doesn't work.
     select_wall_segment(w2Id);
     gameState.get_wall_list().push_new_wall(w1Id,w2Id);
-    
+
+    //A wall has been used, now take away a wall from a player
+    currPlayer.decr_wall_count();
+    status_remove_wall(currPlayer);
+
     //Switch to next player...
     main_turn_loop();
 }
 
+function keyboard_abort(currPlayer,id) {
+  //If we get here, we need to reset everything and go back to player click move
+    console.log("Keyboard escape pressed. Aborting move")
+    //remove all click events
+    main_click_off_walls();
+    hover_square_off();
+    hover_wall_off();
+    keydown_off();
+    unselect_wall_segment(id);
 
-/* Basic Test Script to test our Object and Data Structures 
-
-Script:
-- initialize game state.
-- set client to Player 1
-- create a player 2, add to the queue.
-- Move Player  1 a few times
-- Move Player 2 a few times
-- Place a few walls for player 1
-- Place a few walls for player 2
-- Print out game state.
-*/
-function testDSO1() {
-    let GameState = new State();
-    GameState.add_this_player(new Player("~sampel-palnet", playerinit(1)));
-    GameState.add_player(new Player("~docdyl-todsup",  playerinit(2)));
-
-    //Player Queue should have two players.
-    p1 = GameState.next_player();
-    p1.update_board_pos("0.6");
-
-    p2 = GameState.next_player();
-    p2.update_board_pos("6.0");
-
-    p1 = GameState.next_player();
-    p1.update_board_pos("2.6");
-
-    p2 = GameState.next_player();
-    p2.update_board_pos("4.0");
-
-    p1 = GameState.next_player();
-    p1.update_board_pos("2.4");
-
-    p2 = GameState.next_player();
-    p2.update_board_pos("4.2");
-
-    console.log("Player 1 Board Position: " + p1.Board_Pos);
-    console.log("Player 1 Board Position: " + p2.Board_Pos);
-
-    //Now lets add some walls.
-
-    p1 = GameState.next_player();
-    GameState.get_wall_list().push_new_wall("1.0","1.2");
-
-    p2 = GameState.next_player();
-    GameState.get_wall_list().push_new_wall("1.4","1.6");
-
-    p1 = GameState.next_player();
-    GameState.get_wall_list().push_new_wall("5.0","5.2");
-
-    p2 = GameState.next_player();
-    GameState.get_wall_list().push_new_wall("5.4","5.6");
-
-    //A little bit ugly. Hmm...
-    console.log("Our Walls:" + GameState.get_wall_list().get_wall_list());
-
-    console.log("Our number of walls remaining:" + GameState.get_wall_list().get_walls_remain());
-
-    console.log("END");
+    //reset turn loop without changing player. This player still needs to move.
+    hovers_and_clicks(currPlayer);
 }
 
 initialzeGame();
