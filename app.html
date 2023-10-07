@@ -3,7 +3,9 @@
 <head>
     <title>~ Quoridor on Urbit ~</title>
     <link rel="stylesheet" href="./css/app.css">
-</head>
+    <link rel="stylesheet" href="./css/consoles.css">
+
+  </head>
 
 <body>
 
@@ -434,35 +436,58 @@
         <div id="player1" class="player-stats">
             <div id="player-title1" class="player-title">Player 1:</div>
             <div class="wall-chart">
-              <div id="p1w1" class="wall"> W1</div>
-              <div id="p1w2" class="wall">W2</div>
-              <div id="p1w3" class="wall">W3</div>
-              <div id="p1w4" class="wall">W4</div>
-              <div id="p1w5" class="wall">W5</div>
-              <div id="p1w6" class="wall">W6</div>
-              <div id="p1w7" class="wall">W7</div>
-              <div id="p1w8" class="wall">W8</div>
-              <div id="p1w9" class="wall">W9</div>
-              <div id="p1w10" class="wall">W10</div>
+              <div id="p1w1" class="wall-indicator-on"> W1</div>
+              <div id="p1w2" class="wall-indicator-on">W2</div>
+              <div id="p1w3" class="wall-indicator-on">W3</div>
+              <div id="p1w4" class="wall-indicator-on">W4</div>
+              <div id="p1w5" class="wall-indicator-on">W5</div>
+              <div id="p1w6" class="wall-indicator-on">W6</div>
+              <div id="p1w7" class="wall-indicator-on">W7</div>
+              <div id="p1w8" class="wall-indicator-on">W8</div>
+              <div id="p1w9" class="wall-indicator-on">W9</div>
+              <div id="p1w10" class="wall-indicator-on">W10</div>
           </div>
         </div>
         <div id="player2" class="player-stats">
             <div id="player-title2" class="player-title">Player 2:</div>
             <div class="wall-chart">
-                <div id="p2w1" class="wall"> W1</div>
-                <div id="p2w2" class="wall">W2</div>
-                <div id="p2w3" class="wall">W3</div>
-                <div id="p2w4" class="wall">W4</div>
-                <div id="p2w5" class="wall">W5</div>
-                <div id="p2w6" class="wall">W6</div>
-                <div id="p2w7" class="wall">W7</div>
-                <div id="p2w8" class="wall">W8</div>
-                <div id="p2w9" class="wall">W9</div>
-                <div id="p2w10" class="wall">W10</div>
+                <div id="p2w1" class="wall-indicator-on"> W1</div>
+                <div id="p2w2" class="wall-indicator-on">W2</div>
+                <div id="p2w3" class="wall-indicator-on">W3</div>
+                <div id="p2w4" class="wall-indicator-on">W4</div>
+                <div id="p2w5" class="wall-indicator-on">W5</div>
+                <div id="p2w6" class="wall-indicator-on">W6</div>
+                <div id="p2w7" class="wall-indicator-on">W7</div>
+                <div id="p2w8" class="wall-indicator-on">W8</div>
+                <div id="p2w9" class="wall-indicator-on">W9</div>
+                <div id="p2w10" class="wall-indicator-on">W10</div>
             </div>
         </div>
     </div>
   </div>
+
+<!-- [!!!] Our console and Help Buttons are spawned here, and then just placed absolutely on the screen (for now)-->
+
+<button id="toggle-button-console"> &gt_ </button>
+<div id="console-container" class="console-hidden">
+    <pre id="console"></pre>
+</div>
+
+<button id="toggle-button-help"> ?! </button>
+<div id="help-box" class="console-hidden">
+  <b> How to Play:</b>
+
+  <ol>
+    <li> Enter an @p in the [Send Request Box] Below</li>
+    <li> When your turn starts, you may move your piece one square, or place a wall.</li>
+    <li> Placing a wall: Select two wall segments side-by-side, in a vertical or horizontal line. You may press the [Esc] key to cancel wall placement.</li>
+    <li> Goal: Get your piece to the other side of the board, before your opponent does so! </li>
+    <li> Place walls to lengthen your opponents path. You may <b>not</b> entrap an opponent (they must have a path to the exit at all times).</li>
+  </ol>
+
+</div>
+
+
 
 
 

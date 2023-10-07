@@ -115,6 +115,9 @@ Fields:
         return this.P_Number;
     }
 
+    get_wall_count() {
+        return this.Wall_Count;
+    }
     decr_wall_count() {
         if (this.Wall_Count > 0) {
             this.Wall_Count = this.Wall_Count - 1;

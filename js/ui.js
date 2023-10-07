@@ -106,23 +106,36 @@ function wall_point_orientation(parseId) {
 function select_wall_segment(newId) {
     //Need to check if its a vertical or horizontal wall, and act accordingly.
     let result = wall_point_orientation(newId);
-    let classes = "";
 
-    if (result == "horizontal") { classes = "ref-cell-b-wall wall-lightest";}
-    else if (result == "vertical") { classes = "ref-cell-r-wall wall-lightest";}
-    console.log("highlighted wall segment: "  +newId);
-    $("#" + newId).attr("css", classes);
+    if (result == "horizontal") { 
+        $("#" + newId).attr("class", "ref-cell-b-wall wall-lightest");
+    }
+    else if (result == "vertical") {
+        $("#" + newId).attr("class", "ref-cell-r-wall wall-lightest");
+    }
+    console.log("highlighted wall segment: "  + newId);
 }
 
 function unselect_wall_segment(newId) {
     //Need to check if its a vertical or horizontal wall, and act accordingly.
     let result = wall_point_orientation(newId);
-    let classes = "";
 
-    if (result == "horizontal") { classes = "ref-cell-b-wall";}
-    else if (result == "vertical") { classes = "ref-cell-r-wall";}
-    $("#" + newId).attr("css", classes);
+    if (result == "horizontal") { 
+        $("#" + newId).attr("class", "ref-cell-b-wall");
+    }
+    else if (result == "vertical") {
+        $("#" + newId).attr("class", "ref-cell-r-wall");
+    }
+    console.log("highlighted wall segment: "  + newId);
 }
+
+function status_remove_wall(currPlayer) {
+    let nextWallDiv = $("#p" + currPlayer.get_number() + "w" +currPlayer.get_wall_count());
+    console.log("selected: " + "#p" + currPlayer.get_number() + "w" +currPlayer.get_wall_count());
+    nextWallDiv.attr("class", "wall-indicator-off");
+    //exit
+}
+
 
 /* On Side-Effect Functions */
 
@@ -154,7 +167,13 @@ function hover_wall_on() {
         main_click_off_walls();
         //Attach only **one** set of events.
         $('div[id^="sq-"]').click(function() { player_click_move(currPlayer,$(this).attr("id"))});
-        $('div[id^="wa-"]').click(function() { player_click_wall(currPlayer,$(this).attr("id"))});
+        //Check if we even have any walls.
+        if (currPlayer.get_wall_count() > 0) {
+            $('div[id^="wa-"]').click(function() { player_click_wall(currPlayer,$(this).attr("id"))});
+        }  //Give the player a friendly reminder on console.
+        else {
+            $('div[id^="wa-"]').click(function() { console.log("Player has run out of walls. Invalid Move.")});            
+        }
     }
     
 

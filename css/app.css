@@ -90,8 +90,8 @@ body {background-color:#000;}
 /*for selection and placement, also current position */
 .square-lightest {background-color:rgb(0,0,225) !important;}
 
-/* for placed and selected walls*/
-.wall-lightest {background-color:rgb(150,150,225) !important;}
+/* for placed and selected walls rgb(150,150,225)*/
+.wall-lightest {background-color: orange !important;}
 
 
 .player-stats {
@@ -137,12 +137,20 @@ visibility:hidden;
     grid-template-columns: 10% 10% 10% 10% 10% 10% 10% 10% 10% 10%;
 }
 
-.wall {
+.wall-indicator-on {
     margin: 1% 1% 2% 25%;
     border-radius:2px;
     text-align:center;
     background-color:rgb(0,0,150);
     color: orange;
+}
+
+.wall-indicator-off {
+  margin: 1% 1% 2% 25%;
+  border-radius:2px;
+  text-align:center;
+  background-color:rgb(0, 0, 64);
+  color: rgb(95, 62, 0);
 }
 
 
@@ -164,7 +172,7 @@ visibility:hidden;
 }
 
 .ref-cell-r-wall {
-  background-color: black;/*rgb(0,0,150);*/
+  background-color: rgb(0,0,150);
   grid-column-start: 4;
   grid-column-end: 5;
   grid-row-start: 2;
@@ -172,7 +180,7 @@ visibility:hidden;
 }
 
 .ref-cell-b-wall {
-  background-color: black; /*rgb(0,0,150); */
+  background-color: rgb(0,0,150); 
   grid-column-start: 2;
   grid-column-end: 3;
   grid-row-start: 4;

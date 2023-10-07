@@ -25,16 +25,16 @@ function playerinit(num) {
     let tuple = 0;
     switch(num) {
         case 1:
-            tuple = [1,"blue",4,"sq-0-8"];
+            tuple = [1,"blue",10,"sq-0-8"];
             break;
         case 2:
-            tuple = [2,"orange",4,"sq-16-8"];
+            tuple = [2,"orange",10,"sq-16-8"];
             break;
         case 3:
-            tuple = [3,"green", 4,"sq-8-16"];
+            tuple = [3,"green", 5,"sq-8-16"];
             break;
         case 4:
-            tuple = [4,"purple",4,"sq-8-0"];
+            tuple = [4,"purple",5,"sq-8-0"];
             break;
         default:
             console.error("Error: Player Number not recognized.");
@@ -47,7 +47,10 @@ function playerinit(num) {
 */
 function initialzeGame() {
     gameState = new State();
+    setup_left_console();
+    setup_help_box();
     $(".send-request-button").on( "click", start_game_request);
+    log_to_console("Please enter an @p in the [Username] box to begin...");
 }
 
 /*
@@ -65,6 +68,7 @@ function start_game_request() {
     player_status_init(p1name,p2name);
     console.log(gameState);
     setup_board(playerinit(1)[3],playerinit(2)[3]);
+    log_to_console("Game Start!");
     main_turn_loop();
 }
 
@@ -74,13 +78,12 @@ function main_turn_loop() {
     let currPlayer = gameState.next_player();
 
     //Console print out, for reference:
-    console.log("Turn:"  + gameState.get_turncount() + " has begun.");
-    console.log("Our Player Selected is:" + currPlayer.get_ship_name());
+    log_to_console("Turn:"  + gameState.get_turncount() + " has begun.");
+    log_to_console("It's " + currPlayer.get_ship_name() + "'s turn.");
     // Inspect state at every turn, for now.
     console.log(currPlayer);
 
     toggle_player_status(currPlayer);
-
     hovers_and_clicks(currPlayer);
     //Click events for Walls and Squares are set. Now we wait...
 }
@@ -94,7 +97,7 @@ function main_turn_loop() {
 */
 function hovers_and_clicks(currPlayer) {
     hover_square_on();
-    hover_wall_on();
+    //hover_wall_on();
     main_click_on(currPlayer);
 }
 
@@ -109,6 +112,7 @@ function player_click_move(currPlayer,newId) {
     move_pawn(oldId,newId,currPlayer.get_colour());
     //Update our player, update our turn count.
     currPlayer.update_board_pos(newId);
+    log_to_console(currPlayer.get_ship_name() + "has moved to square: " + newId);
     //Next move. Go back to start.
     main_turn_loop()
 }
@@ -116,6 +120,7 @@ function player_click_move(currPlayer,newId) {
 function player_click_wall(currPlayer, newId) {
     //First, deactivate all click moves for squares.
     main_click_off_squares();
+    hover_square_off();
     //highlight wall next
     set_w2_keypress(currPlayer,newId);
     select_wall_segment(newId);
@@ -125,41 +130,61 @@ function player_click_wall(currPlayer, newId) {
 function second_wall_click(currPlayer,w1Id,w2Id) {
     //If we get here, we construct our wall from the two points, add it, print it to console, 
     //..reset everything,and then go back to main_turn_loop()
-    console.log("Second wall was clicked. Finalizing Move.");
-    console.log("Wp1:"  + w1Id);
-    console.log("Wp2:"  + w2Id);
+    log_to_console(currPlayer.get_ship_name() + " has placed a wall.");
 
     //Clean up all events.
     main_click_off_walls();
     hover_square_off();
-    hover_wall_off();
+    //hover_wall_off();
     keydown_off();
 
     //Lets get the wall set, and highlihgted.
-    // [!!!] Doesn't work.
     select_wall_segment(w2Id);
     gameState.get_wall_list().push_new_wall(w1Id,w2Id);
 
     //A wall has been used, now take away a wall from a player
-    currPlayer.decr_wall_count();
     status_remove_wall(currPlayer);
+    //This must be done after status_remove_wall()
+    currPlayer.decr_wall_count();
 
+    console.log(gameState.get_wall_list());
     //Switch to next player...
     main_turn_loop();
 }
 
 function keyboard_abort(currPlayer,id) {
   //If we get here, we need to reset everything and go back to player click move
-    console.log("Keyboard escape pressed. Aborting move")
+    log_to_console("[ESC] key pressed. Aborting move.");
     //remove all click events
-    main_click_off_walls();
-    hover_square_off();
-    hover_wall_off();
+    //hover_wall_off();
     keydown_off();
     unselect_wall_segment(id);
 
     //reset turn loop without changing player. This player still needs to move.
     hovers_and_clicks(currPlayer);
+}
+
+/*  Console and Help Box Support Functions */
+
+function setup_left_console() {
+    $('#toggle-button-console').click(function () {
+        $("#console-container").toggleClass("console-hidden");
+        console.log($("#console-container").attr("class"));
+    });
+}
+
+function setup_help_box() {
+    $('#toggle-button-help').click(function () {
+        $("#help-box").toggleClass("console-hidden");
+    });
+}
+
+
+function log_to_console(message) {
+    const consCont = $("#console-container");
+    consCont.append(message + "<br />");
+    // Scroll to the bottom to show the latest message
+    consCont.scrollTop(consCont[0].scrollHeight);
 }
 
 initialzeGame();
