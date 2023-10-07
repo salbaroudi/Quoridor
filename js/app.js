@@ -42,8 +42,6 @@ function start_game_request() {
     //update status container UI.
     player_status_init(p1name,p2name);
     console.log(gameState);  
-    //Not **supposed** to access player directly, but this is just done once
-    //[!!!] This code needs ot be parameterized/generalized.
     setup_board(playerinit(1)[3],playerinit(2)[3]);
     main_turn_loop();
 }
@@ -62,14 +60,22 @@ function main_turn_loop() {
     //[!!!] two fixed args instad of access to player directly?
     toggle_player_status(currPlayer);
 
+    //Start hovers and clicks  
+    hovers_and_clicks(currPlayer);
+    // We now sit and wait, once a player clicks, 
+    //we jump to the player_click() function and continue our loop.
+}
+
+
+function hovers_and_clicks(currPlayer) {
     //Set On Hover and On Click events.
     hover_square_on();
     hover_wall_on();
-
     //The price we pay for having click events in ui.js is carting an argument back and forth >:S
     main_click_on(currPlayer);
-    // We now sit and wait, once a player clicks, we jump to the player_click() function and continue our loop.
+
 }
+
 
 //When player clicks a square...notice that our callback is in ui.js. I place this function here
 //because i want the main control loop sequence all juxtaposed together.
@@ -95,19 +101,48 @@ function player_click_wall(currPlayer, newId) {
     select_wall_segment(newId);
     //Next, we need two more callbacks.
     //One callback is for a keyboard press, the other for our second wall...
-    set_w2_keypress()
-
+    set_w2_keypress(currPlayer,newId);
     //Another callback is for the selection of a second wall point.
 }
 
-function keyboard_abort(event) {
-  //If we get here, we need to reset everything and go back to player click move
+function keyboard_escape(event, currPlayer) {
+         if (event.keyCode === 27) {
+            keyboard_abort(currPlayer);
+        }
 }
 
-function second_wall_click() {
+function keyboard_abort(currPlayer) {
+  //If we get here, we need to reset everything and go back to player click move
+    console.log("Keyboard escape pressed. Aborting move")
+    //remove all click events
+    main_click_off_walls();
+    hover_square_off();
+    hover_wall_off();
+    keydown_off();
+
+    //reset turn loop without changing player. This player still needs to move.
+    hovers_and_clicks(currPlayer);
+}
+
+function second_wall_click(currPlayer,w1Id,w2Id) {
     //If we get here, we construct our wall from the two points, add it, print it to console, 
     //..reset everything,and then go back to main_turn_loop()
+    console.log("Second wall was clicked. Finalizing Move.");
+    console.log("Wp1:"  + w1Id);
+    console.log("Wp2:"  + w2Id);
 
+    //Clean up all events.
+    main_click_off_walls();
+    hover_square_off();
+    hover_wall_off();
+    keydown_off();
+
+    //Lets get the wall set, and highlihgted.
+    select_wall_segment(w2Id);
+    gameState.get_wall_list().push_new_wall(w1Id,w2Id);
+    
+    //Switch to next player...
+    main_turn_loop();
 }
 
 

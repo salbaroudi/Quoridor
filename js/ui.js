@@ -98,20 +98,18 @@ function main_click_on(currPlayer) {
     $('div[id^="wa-"]').click(function() { player_click_wall(currPlayer,$(this).attr("id"))});
 }
 
-function set_w2_keypress() {
+function set_w2_keypress(currPlayer,w1Id) {
     //Clean up old events, again.
     main_click_off_walls();
     //just leave the hover events on for now
     // add keyboard scan and onclick for each wall, again.
-    $("body").keydown(function(event) {
-        //This is for the escape key on the keyboard
-        if (event.keyCode === 27) {
-            keyboard_abort(); //args??
-        }
-    })  //currPlayer,$(this).attr("id")
-    $('div[id^="wa-"]').click(function() { second_wall_click()});
+    $("body").keydown(function(event) { keyboard_escape(event,currPlayer)});
+    $('div[id^="wa-"]').click(function() { second_wall_click(currPlayer,w1Id,$(this).attr("id"))});
 }
 
+function keydown_off() {
+    $("body").off("keydown");
+}
 
 function main_click_off_squares() {
     $('div[id^="sq-"]').off("click");
@@ -125,28 +123,29 @@ function hover_square_off() {
     $('div[id^="sq-"]').off("mouseenter mouseleave");
 }
 
+// [!!!]  Any placed wall segment must be ignored.
 function hover_wall_off() {
     $('div[id^="wa-"]').off("mouseenter mouseleave");
 }
 
 //In this function, we
-
 function wall_point_orientation(parseId) {
 //id format:  "wa-ROW-COL"
 //A horizontal wall has an odd number in the row slot.
 //A vertical wall has an odd number in the column slot.
-let result ="";
-let splits = parseId.split("-");
-if ((splits[0] != "wa")  && (splits.length != 3)){
-    console.error("Error: Improper wall id passed to parse_wall_point_orientation(). ");
-    return;
-}
-//horizontal wall.
-if (parseInt(splits[1]) % 2  != 0) { result = "horizontal";}
-//vertical wall.
-else if (parseInt(splits[2]) % 2  != 0) { result = "vertical"; }
-else { console.error("Eror: No odd number in row or col slot. Erroneous state.")}
-return result;
+    let result ="";
+    let splits = parseId.split("-");
+    if ((splits[0] != "wa")  && (splits.length != 3)){
+        console.error("Error: Improper wall id passed to parse_wall_point_orientation(). ");
+        return;
+    }
+    //horizontal wall.
+    if (parseInt(splits[1]) % 2  != 0) { result = "horizontal";}
+    //vertical wall.
+    else if (parseInt(splits[2]) % 2  != 0) { result = "vertical"; }
+    else { console.error("Error: No odd number in row or col slot. Erroneous state.")}
+    return result;
+
 }
 
 function select_wall_segment(newId) {
@@ -156,7 +155,6 @@ function select_wall_segment(newId) {
 
     if (result == "horizontal") { classes = "ref-cell-b-wall wall-lightest";}
     else if (result == "vertical") { classes = "ref-cell-r-wall wall-lightest";}
-
     $("#" + newId).attr("css", classes);
 }
 

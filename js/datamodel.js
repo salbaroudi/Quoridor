@@ -139,6 +139,7 @@ Fields:
     push_new_wall(p1,p2) {
         //Error checking here [!!!]
         let ourWall = "<" + p1 +  "," + p2 + ">";
+        console.log("push_new_wall(): wall added: " +ourWall);
         this.Wall_List.push(ourWall);
         this.wall_count_dec(); 
     }
