@@ -63,12 +63,12 @@
         =/  playnum  1  =/  playpos  ^-  position  [0 8]
         =/  pstrut  ^-  player  [playnum pname.act playpos wcount.act]
         :_  %=  this  pmap  (my ~[[playnum pstrut]])  ==
-        [%give %fact ~[/values] %quoridor-update !>(`update`[%sendplayerinfo pnum=playnum pstart=playpos])]~    
+        [%give %fact ~[/values] %quoridor-update !>(`update`[%sendplayerinfo pnum=playnum pstart=playpos])]~
         ::Not case 
         =/  playnum  2  =/  playpos  ^-  position  [16 8]
         =/  pstrut  ^-  player  [playnum pname.act playpos wcount.act]
         :_  %=  this  pmap  (~(put by pmap) [playnum pstrut])  ==
-        [%give %fact ~[/values] %quoridor-update !>(`update`[%sendplayerinfo pnum=playnum pstart=playpos])]~    
+        [%give %fact ~[/values] %quoridor-update !>(`update`[%sendplayerinfo pnum=playnum pstart=playpos])]~
   ==
 ::
 ++  on-peek

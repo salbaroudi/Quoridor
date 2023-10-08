@@ -1,5 +1,5 @@
 #console-container {
-    position: fixed;
+    position: absolute;
     bottom: 275px;
     left: 20px;
     width: 645px;
@@ -36,7 +36,7 @@
 
 
 #help-box {
-    position: fixed;
+    position: absolute;
     bottom: 275px;
     right: 20px;
     width: 600px;

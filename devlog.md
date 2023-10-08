@@ -615,3 +615,68 @@ If you **forget the comma**, you get:  -find.$ error. Your mold gets run as a ga
 
 - stated using chatGPT to assist in coding. It gave good advice on library imports, and jQuery hacks.
 - For my UI, my initialization sequence breaks my model of not accessing player objects directly. I will try to maintain this rule for the main turn loop, and leave init as a special case (where it is allowed).
+
+### October 7th:
+
+- Finished the wall placement event calls.
+- Cleaned up code a lot.
+    - more commenting for functions.
+    - separating and grouping sets of functions, between UI and APP.js
+- Used chatGPT to generate a help box and console box for the application - took the code and integrated it into the UI.
+- I now log events to the application console. Wall lists and Player objects are printed to the inspection console after every move, still.
+- Wall selection animaitons have been simplified:  There is no on-hover highlight. You just click on a wall segment and it turns orange.
+- Critical mistakes:
+    - mixed up "css" and "class" attributes, could not get highlights to work for a long time.
+    - wasn't aware of the .toggleClass() feature jQuery has. This makes css class swapping (for hidden/visibility) much simpler.
+
+
+### October 8th:
+
+- The UI now basically functions: Our turn loops don't crash, and we can move/place a wall, inspect an event console, and click on a chat box. Wall indicators also
+    decrease when a player places a wall.
+        - There is still no rule checking, however.
+
+- (!) Now all of the JS/HTML/CSS files must be integrated into our React Front end (!).
+
+- Recall from before, the following imports syntax needs to be used:  `import {fun1, fun2 ...} from './js/whatever/js'` in order to get our functions to be recognized by the react app. We can't do `import './dir/whatever'`, as this gives us void (0) errors on runtime in the browser.
+
+- If I remember correctly, I made changes to the backend without commiting. I will have to sort all this out first, and double check...
+
+- So far my quorridor app is running OK. I Have not recommited changs. Best to just integrate the JS first, before we play with backend...
+
+#### Steps to Integrate our jQuery Front-ENd:
+
+1) Paste HTML into app.js render loop. Remove all <script> tags at the bottom (will use ESM imports instead).
+    - remove any comments in the file, close the </input> tag, etc.
+2) Copy over the two CSS files. Place both files into the index.css file (for now).
+    - keep the tailwind stuff and /font0family tag at the top (it has the proper /public path).
+
+**At this point, npm run build and test the rendering in the browser.**
+
+3) All of the javascript files now need to be copied over. For each file, do so, and prepend each function/class name with the keyword "export".
+    - If new functions have been added, add them to the  `import {} as ...` statements at the top of app.jsx
+    - Exceptions:
+        - in ui.js, don't export Pawn Images (these are imported by app.jsx directly)
+        - dont need testscripts.js or network.js....yet.
+        - Class state -> GameState, as it clashes with a State Object with React.
+        - class Player -> GamePlayer, as there is an unforseen namespace error with React (I can't find it!)
+        - class WallList also struggles...changed to Wall_List
+        - remove initializeGame() from the JS file.
+
+- at this point I am stuck, because GameState is not recognized (a class in datamodel.js). The module is imported correctly, there are no issues.
+- Changes:
+    - Slammed everything into one javascript file (megafile.js)
+    - just did one big import {...} from megafile.
+    - imported $ from 'jquery' in app.jsx, and my megafile together.
+
+    - and now my code works!
+
+
+
+
+
+
+Errors Encountered on Build:
+
+"input is a void element tag and must neither have `children` nor use `dangerouslySetInnerHTML`."
+    =>  OUr input tag must be an empty one!

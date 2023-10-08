@@ -12,7 +12,7 @@ Fields:
 - Wall_List: stores a list of all placed walls in the game.
 
 */
- class State {
+export class GameState {
     //This is run when the App initializes.
     constructor() {
         //Initialization value in time.
@@ -79,7 +79,7 @@ Fields:
 - Path_List: An object class that stores the path our current pawn has taken.
 - Wall_Count: Number of walls player has left. From 0-X only.
 */
- class Player {
+export class Player {
     //Use player init function to initialize properly. Initialized after session negotiation.
     constructor(shipName,tuple) {
         this.Name = shipName;  //Immutable Propeties - set on Init.
@@ -102,7 +102,7 @@ Fields:
     Used by the Global state class to hold all of our used walls. 
     */
 
- class WallList {
+export class Wall_List {
     constructor() {
         this.Wall_List = [];
         this.Remain_Walls = 8;    
