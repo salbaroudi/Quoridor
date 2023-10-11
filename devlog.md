@@ -671,12 +671,65 @@ If you **forget the comma**, you get:  -find.$ error. Your mold gets run as a ga
 
     - and now my code works!
 
-
-
-
-
-
 Errors Encountered on Build:
 
 "input is a void element tag and must neither have `children` nor use `dangerouslySetInnerHTML`."
     =>  OUr input tag must be an empty one!
+
+
+
+### October 11th:
+
+- HW6 is under control for now.  It is time to push ahead for devleopment.
+- Last time, I got my jQuery integrated into the react app.
+
+- The next step is to remove the %echo behaviours from the app, and start connecting Quoridor to our backend.
+
+- We need a basic state:
+    - That stores:
+        - A walllist
+        - A turn count
+        - Player Objects
+            - player positions, number of walls left, etc...
+
+Front End side: Network.js code needs to be fleshed out.
+    - **one app instance** will run both players (for now).
+    - for now, all network code can stay above the react render() loop.
+    - fix annoying CSS issue (so I can see the game).
+    - Hookup:
+        - Initialization packet (just hardcode the two names and send it off.).
+        - ON end of player move: send a move.
+        - On end of wall placement: send a wall.
+
+
+- After all this is implemented, I will subtract away the %echo code and clean up the QD front end.
+
+- I have actually been a bit confused the entire time. Our %echo app uses %give fact and subscription wires to send back all of our information to our app.
+- When we send a poke, we get data back based on the init subscription we setup on application load.
+- How do we send a poke ack and data back, without the wire?
+    - pokes can be rerouted to other arms or apps, but don't generally have their own return strucures. We have the poke-ack with a tang and cage (error stack trace)
+    => A poke is a "one off message". So you should not think about returning complex data using the poke structure.
+
+Note the following:
+
++$  gift
+  $%  [%fact paths=(list path) =cage]
+      [%kick paths=(list path) ship=(unit ship)]
+      [%watch-ack p=(unit tang)]
+      [%poke-ack p=(unit tang)]
+  ==
+
+We can't really give a %gift %watch-ack - as its datafield is for an error stack trace. if this is null, its a positve ack (by default).
+
+Strangely, the http-api for the node package does allow us to have an on success and on failure function for pokes
+    => This does not have any explicit arguments, and on success even assumes an empty ack. Don't rely on this!
+
+So before I start all of the above, I need a better mechanism for getting data back from the %Quoridor agent. We have to use subscribes, so we must
+use react state to do this. 
+
+How is a move made?
+1) Player makes a move, we hit the end of the player_move() loop.
+2) We make a call using http.api to send a poke with our player info and move.
+3) As per usual, our app processes the move, and sends a %fact with a response. This gets sent across our return path, back to the FE.
+4) our handleUpdate function is then called. We store our state for the user.
+5) We then must continue our loop. This will require a promise.

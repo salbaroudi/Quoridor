@@ -218,6 +218,9 @@ export function start_game_request() {
     //[!!!] Get user name from {window.ship}
     let p1name = "~sampel-palnet"; 
     let p2name = $("#at-p").val();
+
+    //poke_initplayers(p1name,p2name);
+
     //[!!!] Here we send an async request to our Back end, perform the negotiation.
     gameState.add_player(new GamePlayer(p1name, playerinit(1)));
     gameState.add_player(new GamePlayer(p2name, playerinit(2)));

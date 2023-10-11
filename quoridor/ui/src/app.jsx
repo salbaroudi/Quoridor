@@ -36,16 +36,14 @@ export function App() {
 
   
   useEffect(() => {
-   // async function init() {  //we don't go through action.hoon, because we are doing a subscribe.
-    //  api.subscribe( { app:"quoridor", path: '/values', event: handleUpdate } )
-    //}
-    //init()
-    console.log(playerinit(2))
+    async function init() {  //we don't go through action.hoon, because we are doing a subscribe.
+      api.subscribe( { app:"quoridor", path: '/values', event: handleUpdate } )
+    }
+    init()
     initializeGame()
   }, [] )
 
 
-  //all acks and data sent back will go through here...
   const handleUpdate = ( upd ) => {
     console.log("our update:")
     console.log(upd)
@@ -106,12 +104,12 @@ const jQueryTest = () =>
     } )
   }
 
-const sendplayer = (name) => {
+const poke_initplayers = (p1,p2) => {
   api.poke( {
     app: 'quoridor',
     mark: 'quoridor-action',
-    json: { sendplayer: { target:`~${window.ship}`, pname: name, wcount: 10}}
-  } )
+    json: { sendplayer: { target:`~${window.ship}`, p1name: p1, p2name: p2},
+  } })
 }
 
 //className=flex flex-col items-center justify-center min-h-screen
@@ -129,9 +127,6 @@ const sendplayer = (name) => {
       <div class="onerow">
       <button onClick={() => move()} style={{width:100}} className='border p-2 text-black-400'>Send Move</button>
       <button onClick={() => sendwall()} style={{width:100}} className='border p-2 text-black-400'>Send Wall</button>
-      <button onClick={() => sendplayer("~nodsup")} style={{width:100}} className='border p-2 text-black-400'>Send P1</button>
-      <button onClick={() => sendplayer("~todsup")} style={{width:100}} className='border p-2 text-black-400'>Send P2</button>
-      <button id="turnred" onClick={() => jQueryTest()} style={{width:100}} className='border p-2 text-black-400'>jQueryTest</button>
       </div>
 
         <br /><hr /><br />

@@ -29,6 +29,7 @@
   ^-  (quip card _this)
   ?>  ?=(%quoridor-action mark)
   =/  act  !<(action vase)
+  ~&  "mark="  ~&  mark  ~&  "vase="  ~&  vase
   ?-    -.act
       %push
     ~&  "our push act"  ~&  act 
