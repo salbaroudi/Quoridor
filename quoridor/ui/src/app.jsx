@@ -1,14 +1,39 @@
 import React, { useEffect, useState, useReducer } from 'react'
 import Urbit from '@urbit/http-api'
-//import $ from 'jquery'
+import $ from 'jquery';
 //import orangePawnImg from "./public/img/orange_pawn_rs_small.png"
 //import bluePawnImg from "./public/img/blue_pawn_rs_small.png"
+//  initializeGame, 
+//start_game_request,   hovers_and_clicks, main_click_on,   player_click_move,  player_click_wall, 
 
-import {GameState, GamePlayer, Wall_List, playerinit, initializeGame, start_game_request, main_turn_loop, hovers_and_clicks, player_click_move,
-player_click_wall, second_wall_click, keyboard_abort, setup_left_console, setup_help_box, player_status_init, 
-setup_board, toggle_player_status, unhighlight_old_pos, move_pawn,set_w2_keypress, wall_point_orientation, unselect_wall_segment, 
-select_wall_segment, status_remove_wall, hover_square_on, main_click_on,hover_wall_on, keydown_off, main_click_off_squares,
-main_click_off_walls, hover_square_off, hover_wall_off, status_box_off,check_pawn_move} from "./public/js/megafile.js"
+import {GameState, 
+  GamePlayer, 
+  Wall_List, 
+  playerinit, 
+  main_turn_loop, 
+second_wall_click, 
+setup_left_console, 
+setup_help_box, 
+player_status_init, 
+setup_board, 
+toggle_player_status, 
+unhighlight_old_pos, 
+move_pawn,set_w2_keypress, 
+wall_point_orientation, 
+unselect_wall_segment, 
+select_wall_segment, 
+status_remove_wall, 
+hover_square_on, 
+hover_wall_on, 
+keydown_off, 
+main_click_off_squares,
+main_click_off_walls, 
+hover_square_off, 
+hover_wall_off, 
+status_box_off, 
+check_pawn_move,
+log_to_console,
+log_turn_start} from "./public/js/megafile.js"
 
 const api = new Urbit( '', '', window.desk )
 api.ship = window.ship
@@ -34,9 +59,10 @@ export function App() {
   const [ state, dispatch ] = useReducer( reducer, [] )
   const [ inputValue, setInputValue ] = useState( "" )
 
-  
+
+  //Initialization Effect: Application starts-up here.
   useEffect(() => {
-    async function init() {  //we don't go through action.hoon, because we are doing a subscribe.
+    function init() {  //we don't go through action.hoon, because we are doing a subscribe.
       api.subscribe( { app:"quoridor", path: '/values', event: handleUpdate } )
     }
     init()
@@ -61,11 +87,6 @@ export function App() {
     }
   }
 
-const jQueryTest = () =>
-  {
-    console.log("JQuery works...")
-    $("#turnred").css("background-color", "red");
-}
   const push = () => {
     const val = parseInt( inputValue )
     if ( isNaN( val ) ) return
@@ -109,10 +130,176 @@ const poke_initplayers = (p1,p2) => {
     app: 'quoridor',
     mark: 'quoridor-action',
     json: { sendplayer: { target:`~${window.ship}`, p1name: p1, p2name: p2},
-  } })
+  } }) }
+
+
+//--------------------------  QApp Control Functions Are below (!)
+
+  var quorGameState;
+
+
+  /*
+    Called onLoad() of application. Should get hoisted to the top.
+*/
+function initializeGame() {
+  //gameState is an exported Global Variable we are using.
+  quorGameState = new GameState();
+  setup_left_console();
+  setup_help_box();
+  $(".send-request-button").on( "click", start_game_request);
+  log_to_console("Please enter an @p in the [Username] box to begin...");
 }
 
-//className=flex flex-col items-center justify-center min-h-screen
+  /*
+    Game starts when user enters @p and hits Send Request button.
+    This function initializes a game session.
+  */
+function start_game_request() {
+      //[!!!] Get user name from {window.ship}
+      let p1name = "~sampel-palnet"; 
+      let p2name = $("#at-p").val();
+    
+      //[!!!] Here we send an async request to our Back end, perform the negotiation.
+      quorGameState.add_player(new GamePlayer(p1name, playerinit(1)));
+      quorGameState.add_player(new GamePlayer(p2name, playerinit(2)));
+      //update status container UI.
+      player_status_init(p1name,p2name);
+      console.log(quorGameState);
+      setup_board(playerinit(1)[3],playerinit(2)[3]);
+      log_to_console("Game Start!");
+      main_control_loop();
+}
+
+//This function coordinates state control, network effects, and 
+//feeds data structure information into megafile.js functions
+//Re-Entry Point 1: Previous move was valid.
+function main_control_loop() {
+  let currPlayer = quorGameState.next_player();
+
+  //log player information
+  log_turn_start(quorGameState.get_turncount(), currPlayer.get_ship_name());
+  //setup next move
+  toggle_player_status(currPlayer);
+
+  //This allows us to enter the next stage of the functional loop.
+  //There are three move states: A complete piece move, a complete wall move, and a cancelled
+  //wall move. For the cancelled move, we call h_and_c(), else, we call main_control_loop to restart a loop.
+  //Re-Entry Point 2 (Invalid move made previously)
+  hovers_and_clicks(currPlayer);
+}
+
+/*
+    These side-effects needed to be bundled together, because
+    we can prematurely exit from the Wall Movement code.
+    A player can press the [ESC] key to cancel, or click the wrong
+    wall for its second point. So we have to reset the players move 
+    without calling next_player().
+*/
+function hovers_and_clicks(currPlayer) {
+  hover_square_on();
+  //hover_wall_on();
+  main_click_on(currPlayer);
+}
+
+
+/*
+    This starts our move sequence for a selected player.
+    Click events are turned off to start, to stop old events piling up.
+    Player can make one of two moves: {movePawn or placeWall}.
+*/
+function main_click_on(currPlayer) {
+  main_click_off_squares();
+  main_click_off_walls();
+  //Attach only **one** set of events.
+  $('div[id^="sq-"]').click(function() { player_click_move(currPlayer,$(this).attr("id"))});
+  //Check if we even have any walls.
+  if (currPlayer.get_wall_count() > 0) {
+      $('div[id^="wa-"]').click(function() { player_click_wall(currPlayer,$(this).attr("id"))});
+  }  //Give the player a friendly reminder on console.
+  else {
+      $('div[id^="wa-"]').click(function() { console.log(currPlayer.get_ship_name() +  " has run out of walls. Please move pawn to complete move.")});            
+  }
+}
+
+
+/*
+    Signature:  (playerObject, newId)  -->  Void (side-effect) 
+    Player clicking a square selects a move sequence. Perform the necessary actions.
+*/
+function player_click_move(currPlayer,newId) {
+  const oldId = currPlayer.get_board_pos();
+  unhighlight_old_pos(oldId);
+  check_pawn_move(oldId,newId);
+  move_pawn(oldId,newId,currPlayer.get_colour());
+  //Update our player, update our turn count.
+  currPlayer.update_board_pos(newId);
+  log_to_console(currPlayer.get_ship_name() + "has moved to square: " + newId);
+  //Next move. Go back to start.
+  main_control_loop()
+}
+
+function player_click_wall(currPlayer, newId) {
+  //First, deactivate all click moves for squares.
+  main_click_off_squares();
+  hover_square_off();
+  //highlight wall next
+  set_w2_keypress(currPlayer,newId);
+  select_wall_segment(newId);
+  //Now we wait - player presses [ESC], or chooses a second wall.
+}
+
+function set_w2_keypress(currPlayer,w1Id) {
+  //Clean up old events, again.
+  main_click_off_walls();
+  //just leave the hover events on for now
+  // add keyboard scan and second wall click events are added.
+  $("body").keydown(function(event) { 
+      if (event.keyCode === 27) {
+          keyboard_abort(currPlayer,w1Id);
+      }    
+  });
+  $('div[id^="wa-"]').click(function() { second_wall_click(currPlayer,w1Id,$(this).attr("id"))});
+}
+
+
+function second_wall_click(currPlayer,w1Id,w2Id) {
+  //If we get here, we construct our wall from the two points, add it, print it to console, 
+  //..reset everything,and then go back to main_turn_loop()
+  log_to_console(currPlayer.get_ship_name() + " has placed a wall.");
+
+  //Clean up all events.
+  main_click_off_walls();
+  hover_square_off();
+  //hover_wall_off();
+  keydown_off();
+
+  //Lets get the wall set, and highlihgted.
+  select_wall_segment(w2Id);
+  quorGameState.get_wall_list().push_new_wall(w1Id,w2Id);
+
+  //A wall has been used, now take away a wall from a player
+  status_remove_wall(currPlayer);
+  //This must be done after status_remove_wall()
+  currPlayer.decr_wall_count();
+
+  console.log(quorGameState.get_wall_list());
+  //Switch to next player...
+  main_control_loop();
+}
+
+function keyboard_abort(currPlayer,id) {
+//If we get here, we need to reset everything and go back to player click move
+  log_to_console("[ESC] key pressed. Aborting move.");
+  //remove all click events
+  //hover_wall_off();
+  keydown_off();
+  unselect_wall_segment(id);
+
+  //reset turn loop without changing player. This player still needs to move.
+  hovers_and_clicks(currPlayer);
+}
+
+
   return (
     <main className="">
       <input style={{width:200}} className='border' type='text' value={inputValue} onChange={(e) => setInputValue(e.target.value)}/>
@@ -590,7 +777,7 @@ const poke_initplayers = (p1,p2) => {
     </div>
 
 
-      <button id="toggle-button-console"> &gt_ </button>
+      <button id="toggle-button-console"> "&gt" _ </button>
       <div id="console-container" class="console-hidden">
           <pre id="console"></pre>
       </div>

@@ -729,7 +729,63 @@ use react state to do this.
 
 How is a move made?
 1) Player makes a move, we hit the end of the player_move() loop.
-2) We make a call using http.api to send a poke with our player info and move.
+2) We make a call using http.api to send a poke with our player info and move. 
 3) As per usual, our app processes the move, and sends a %fact with a response. This gets sent across our return path, back to the FE.
 4) our handleUpdate function is then called. We store our state for the user.
-5) We then must continue our loop. This will require a promise.
+5) We then must continue our loop. This will require await/async keywords, to handle promises.
+
+
+### September 12th 2023:
+
+-  First steps:
+    -  throw all the event loop functions into the file [X]
+    -  fix the awful CSS...[X]
+    Answer: Everything needs to be pasted in. They are separate namespaces.
+    - import initializeGame => it asks where GameState is (its in megafile!)
+    => It is too messy to just paste megafile into the App() container. That is a shitshow.
+
+- The documentation for globbing and docket files is pretty simple...we can probably adjust rollup to deal with namespacing issues.
+
+- using react with urbit. We used a template folder...? create-urbit app??
+
+At this point, I either rewrite all my code in React (using the Tic-Tac-Toe tutorial as a guide.) Or...
+
+
+### September 14th:
+
+- So I was able to get my code working in the end. The following things worked:
+    - started simple (didn't go into Rollup.js/Vite).
+    - changed export var gameState to just be a declaration.
+    - placed my two init() funcitons back in megafile.js
+
+    - Basically, I didn't import gameState (global variable), and when I tried to change it with the init() code that I pasted into App(){}, it caused Reference and Clobbering errors. The changes above fixed it.
+
+- We are still left with the following issue:  Our changes from the App are communicated from subscriber line, and this code is located in App.js(). We need to read our reducer store to update our Quoridor clients gamestate. Can it be done?
+
+- We either have a namespace issue or not. Can we call a trivial function from App(), in a megafile.js function.
+    => IN theory, everything should be imported, hoisted and rectified before the function runs, so there is no issue.
+    - Test Result: fail. Because I have a backwards dependency, which is cicular.
+
+- The only way this can work, is that we modularize our game loop functions, and the react app controls them accordingly.
+
+Error: RollupError: Illegal reassignment of import "gameState" in "src/app.jsx"
+    - I don't need to export this variable. I can just definie it in App.jsx (because thats where state should be)
+
+New Separatation for our Refactoring:
+
+App.jsx: The control code, network code and state management code needs to live here
+Megafile.js: UI, callback setting and data model needs to live here.
+
+Ideally, I would like Network, UI, DataModel, RuleChecking and such in their own files, with dependences pointing toward them (so App.jsx is dependent on everything only). But I'll do this after the first refactor.
+
+- classes/functions dependent on gameState global variable:
+    - main_turn_loop
+    - second_wall_click.get_wall_list().push_new_wall()
+
+- OUr data model is setup such that:
+    - GameState.js
+        - Player Queue (list of GamePlayers)
+        - Wall_List
+- and we can only get access to such items via the GameState. This means we must extract necessary state in app.jsx, and pass it to the imported functions. Some functions will have to be split up and made more atomic, for this to happen.
+
+- learning point: If I import a global (var) from a file, it is read-only - it can't be changed in the file it was imported to (gives us a rollup error).

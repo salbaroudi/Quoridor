@@ -1,6 +1,5 @@
 import $ from 'jquery';
 
-export let gameState = 0;
 
 export class GameState {
     //This is run when the App initializes.
@@ -199,130 +198,6 @@ export function playerinit(num) {
     return tuple;
 }
 
-/*
-    Called onLoad() of application. 
-*/
-export function initializeGame() {
-    gameState = new GameState();
-    setup_left_console();
-    setup_help_box();
-    $(".send-request-button").on( "click", start_game_request);
-    log_to_console("Please enter an @p in the [Username] box to begin...");
-}
-
-/*
-    Game starts when user enters @p and hits Send Request button.
-    This function initializes a game session.
-*/
-export function start_game_request() {
-    //[!!!] Get user name from {window.ship}
-    let p1name = "~sampel-palnet"; 
-    let p2name = $("#at-p").val();
-
-    //poke_initplayers(p1name,p2name);
-
-    //[!!!] Here we send an async request to our Back end, perform the negotiation.
-    gameState.add_player(new GamePlayer(p1name, playerinit(1)));
-    gameState.add_player(new GamePlayer(p2name, playerinit(2)));
-    //update status container UI.
-    player_status_init(p1name,p2name);
-    console.log(gameState);
-    setup_board(playerinit(1)[3],playerinit(2)[3]);
-    log_to_console("Game Start!");
-    main_turn_loop();
-}
-
-
-export function main_turn_loop() {
-    //select next player, incr turn count.
-    let currPlayer = gameState.next_player();
-
-    //Console print out, for reference:
-    log_to_console("Turn:"  + gameState.get_turncount() + " has begun.");
-    log_to_console("It's " + currPlayer.get_ship_name() + "'s turn.");
-    // Inspect state at every turn, for now.
-    console.log(currPlayer);
-
-    toggle_player_status(currPlayer);
-    hovers_and_clicks(currPlayer);
-    //Click events for Walls and Squares are set. Now we wait...
-}
-
-/*
-    These side-effects needed to be bundled together, because
-    we can prematurely exit from the Wall Movement code.
-    A player can press the [ESC] key to cancel, or click the wrong
-    wall for its second point. So we have to reset the players move 
-    without calling next_player().
-*/
-export function hovers_and_clicks(currPlayer) {
-    hover_square_on();
-    //hover_wall_on();
-    main_click_on(currPlayer);
-}
-
-/*
-    Signature:  (playerObject, newId)  -->  Void (side-effect) 
-    Player clicking a square selects a move sequence. Perform the necessary actions.
-    */
-export function player_click_move(currPlayer,newId) {
-    const oldId = currPlayer.get_board_pos();
-    unhighlight_old_pos(oldId);
-    check_pawn_move(oldId,newId);
-    move_pawn(oldId,newId,currPlayer.get_colour());
-    //Update our player, update our turn count.
-    currPlayer.update_board_pos(newId);
-    log_to_console(currPlayer.get_ship_name() + "has moved to square: " + newId);
-    //Next move. Go back to start.
-    main_turn_loop()
-}
-
-export function player_click_wall(currPlayer, newId) {
-    //First, deactivate all click moves for squares.
-    main_click_off_squares();
-    hover_square_off();
-    //highlight wall next
-    set_w2_keypress(currPlayer,newId);
-    select_wall_segment(newId);
-    //Now we wait - player presses [ESC], or chooses a second wall.
-}
-
-export function second_wall_click(currPlayer,w1Id,w2Id) {
-    //If we get here, we construct our wall from the two points, add it, print it to console, 
-    //..reset everything,and then go back to main_turn_loop()
-    log_to_console(currPlayer.get_ship_name() + " has placed a wall.");
-
-    //Clean up all events.
-    main_click_off_walls();
-    hover_square_off();
-    //hover_wall_off();
-    keydown_off();
-
-    //Lets get the wall set, and highlihgted.
-    select_wall_segment(w2Id);
-    gameState.get_wall_list().push_new_wall(w1Id,w2Id);
-
-    //A wall has been used, now take away a wall from a player
-    status_remove_wall(currPlayer);
-    //This must be done after status_remove_wall()
-    currPlayer.decr_wall_count();
-
-    console.log(gameState.get_wall_list());
-    //Switch to next player...
-    main_turn_loop();
-}
-
-export function keyboard_abort(currPlayer,id) {
-  //If we get here, we need to reset everything and go back to player click move
-    log_to_console("[ESC] key pressed. Aborting move.");
-    //remove all click events
-    //hover_wall_off();
-    keydown_off();
-    unselect_wall_segment(id);
-
-    //reset turn loop without changing player. This player still needs to move.
-    hovers_and_clicks(currPlayer);
-}
 
 /*  Console and Help Box Support Functions */
 
@@ -424,19 +299,6 @@ export function move_pawn(oldId,newId,color) {
 }
 
 
-export function set_w2_keypress(currPlayer,w1Id) {
-    //Clean up old events, again.
-    main_click_off_walls();
-    //just leave the hover events on for now
-    // add keyboard scan and second wall click events are added.
-    $("body").keydown(function(event) { 
-        if (event.keyCode === 27) {
-            keyboard_abort(currPlayer,w1Id);
-        }    
-    });
-    $('div[id^="wa-"]').click(function() { second_wall_click(currPlayer,w1Id,$(this).attr("id"))});
-}
-
 //In this function, we
 export function wall_point_orientation(parseId) {
 //id format:  "wa-ROW-COL"
@@ -455,9 +317,6 @@ export function wall_point_orientation(parseId) {
     else { console.error("Error: No odd number in row or col slot. Erroneous state.")}
     return result;
 }
-
-
-
 
 //[!!!] We currently don't check if wall segments are in a line...
 export function select_wall_segment(newId) {
@@ -493,9 +352,7 @@ export function status_remove_wall(currPlayer) {
     //exit
 }
 
-
 /* On Side-Effect Functions */
-
 //Attach hover mouse events to every square <div>
 export function hover_square_on() {
     $('div[id^="sq-"]').hover(function() {
@@ -514,24 +371,6 @@ export function hover_wall_on() {
       });
 }
 
-/*
-    This starts our move sequence for a selected player.
-    Click events are turned off to start, to stop old events piling up.
-    Player can make one of two moves: {movePawn or placeWall}.
-*/
-export function main_click_on(currPlayer) {
-        main_click_off_squares();
-        main_click_off_walls();
-        //Attach only **one** set of events.
-        $('div[id^="sq-"]').click(function() { player_click_move(currPlayer,$(this).attr("id"))});
-        //Check if we even have any walls.
-        if (currPlayer.get_wall_count() > 0) {
-            $('div[id^="wa-"]').click(function() { player_click_wall(currPlayer,$(this).attr("id"))});
-        }  //Give the player a friendly reminder on console.
-        else {
-            $('div[id^="wa-"]').click(function() { console.log("Player has run out of walls. Invalid Move.")});            
-        }
-    }
     
 
 
@@ -567,3 +406,9 @@ export function check_pawn_move(oldId,newId) {
     console.log("Checking Pawn Move...[OK]");
     return;
 }
+
+export function log_turn_start(tc,pname) {
+    log_to_console("Turn:"  + tc + " has begun.");
+    log_to_console("It's " + pname + "'s turn.");
+  }
+  
