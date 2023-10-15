@@ -10,8 +10,8 @@
     ?-    -.upd
       %pop  (frond 'pop' s+(scot %p target.upd)) 
       ::%init  (frond 'init' a+(turn val.upd numb))
-      %sendplayer  ::[Q: ]  we don't need this. Why does hoon complain??
-           %+  frond  'sendplayer'  ~
+      ::%sendplayer  ::[Q: ]  we don't need this. Why does hoon complain??
+      ::     %+  frond  'sendplayer'  ~
       %sendplayerinfo
            %+  frond  'sendplayernum'
              %-  pairs
@@ -47,6 +47,16 @@
                 ['p2row' (numb row.pos2.upd)]
                 ['p2col' (numb col.pos2.upd)]
             ==
+      %start-game-request  ~&  "our startgamerequest"  ~&  upd
+          %+  frond  'startinfo'
+            %-  pairs
+            :~  ['p1name' s+(scot %p p1name.upd)]
+                ['p2name' (numb row.pos1.upd)]
+            ==
+      %clearstate  ~&  "our clearstate"  ~&  upd
+          %+  frond  'ack'
+            %-  pairs
+            :~  ['result' s+(%t result.upd)]  ==
     ==
   --
 ++  grab

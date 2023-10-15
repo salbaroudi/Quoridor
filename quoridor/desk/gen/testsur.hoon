@@ -51,5 +51,8 @@
     |=  index=@ud
     =/  allplayers  (insertplayers 5)
     (~(got by allplayers) index)
+++  genemptymap
+    |=  index=@ud
+    =/  newplayermap  *playermap:quor2 newplayermap
 --
 

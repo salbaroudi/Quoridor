@@ -844,8 +844,31 @@ if (condition) {
     - the send_move function should actually call main_control_loop(),
     not the endpoint functions of a move.
 
-=> send_player_move
+
+- wall and move pokes have been setup. 
+- Next: Setup the initialization logic for our client.
+    - send an [%init target=~zod, p1name=@p, p2name=@p]
+        - our BE must determine wall counts, current position and send back player number.
 
 
+- I really need to finalize the initialization segment of my game.
+
+1) We send a subscription request to the client. This must always be done first.
+    => We must clean out the state when this is done (on reset of browser).
+        => Any player state or map is emptied.
+        => Turn count is zero.
+        => Wall List is also set to be empty by the client.
+    => Reducer state? Other than the init wire path, nothing needed.
 
 
+2) Once subscription wire is setup, the client sends a request with two user names.
+    => The client must send back which users are user1 and user2. The FE determines the colours and wallcounts.
+    => For now this is a trivial request, just send back what the FE sends, and parse it.
+    => fetch data packet, and alter gameState.
+
+3) Once the game is setup and running, we progress with move and wall packets.
+
+=> (!!) Restarting our browser restarts the backend, with this configuration
+- unknowns (do we need async/await for promises?)
+- Should we rely on Reacts GlobalStore more? Or just use it as a quick interface to fetch the data
+    => Do the latter for now.

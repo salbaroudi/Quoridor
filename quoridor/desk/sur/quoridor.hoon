@@ -7,11 +7,12 @@
       [%pop target=@p]
       [%move target=@p pos=position]
       [%sendwall target=@p pos1=position pos2=position]
-      [%sendplayer target=@p pname=@p wcount=@ud]
+      [%start-game-request target=@p p1name=@p p2name=@p]
+      [%clearstate target=@p]
   ==
 +$  update
   $%  [%init val=(list @) tc=@ud]  ::this doesn't appear in action, because this is a subscribe.
-      [%sendplayerinfo pnum=@ud pstart=position]
+      [%sendplayerinfo p1=player p2=player]
       action
   ==
 +$  ppos  position  ::Player position

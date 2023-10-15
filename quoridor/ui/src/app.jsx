@@ -125,13 +125,21 @@ export function App() {
     } )
   }
 
-const poke_initplayers = (p1,p2) => {
+const initplayers = (p1,p2) => {
   api.poke( {
     app: 'quoridor',
     mark: 'quoridor-action',
-    json: { sendplayer: { target:`~${window.ship}`, p1name: p1, p2name: p2},
+    json: { sendplayer: { target:`~${window.ship}`, p1name: p1, p2name: p2}
   } }) }
 
+
+const debugclearstate = () => {
+  api.poke( {
+    app: 'quoridor',
+    mark: 'quoridor-action',
+    json: { clearstate: { target:`~${window.ship}`}}
+  } ) 
+}
 
 //--------------------------  QApp Control Functions Are below (!)
 
@@ -158,7 +166,19 @@ function start_game_request() {
       //[!!!] Get user name from {window.ship}
       let p1name = "~sampel-palnet"; 
       let p2name = $("#at-p").val();
-    
+
+      //check name formatting
+      if ((p2name[0] == "~") && (p2name[7] == "-") && (p2name.length == 14)) {
+          initplayers(p1name,p2name);
+      }
+      else { 
+        log_to_console("Invalid @p detected. Check your spelling.");
+        return;
+      }
+  }
+
+
+function set_init_game_state(p1name,p2name) {
       //[!!!] Here we send an async request to our Back end, perform the negotiation.
       quorGameState.add_player(new GamePlayer(p1name, playerinit(1)));
       quorGameState.add_player(new GamePlayer(p2name, playerinit(2)));

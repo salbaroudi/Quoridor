@@ -58,18 +58,21 @@
     ~&  "our wall act"  ~&  act
     ?>  =(our.bowl target.act)
       :_  this  [%give %fact ~[/values] %quoridor-update !>(`update`act)]~
-    %sendplayer
+    %clearstate
+    ~&  "our clear act"  ~&  act
+    :_  %=  this  pmap  *playermap  tcount  0  ==  ~
+    %start-game-request
     ~&  "our sendplayer act"  ~&  act
     ?:  =(pmap ~)  ::is our map empty?
         =/  playnum  1  =/  playpos  ^-  position  [0 8]
-        =/  pstrut  ^-  player  [playnum pname.act playpos wcount.act]
+        =/  pstrut  ^-  player  [playnum p1name.act playpos 10]
         :_  %=  this  pmap  (my ~[[playnum pstrut]])  ==
-        [%give %fact ~[/values] %quoridor-update !>(`update`[%sendplayerinfo pnum=playnum pstart=playpos])]~
+        [%give %fact ~[/values] %quoridor-update !>(`update`[%start-game-request p1name=p1name.act p2name=p1name.act])]~
         ::Not case 
         =/  playnum  2  =/  playpos  ^-  position  [16 8]
-        =/  pstrut  ^-  player  [playnum pname.act playpos wcount.act]
+        =/  pstrut  ^-  player  [playnum p2name.act playpos 10]
         :_  %=  this  pmap  (~(put by pmap) [playnum pstrut])  ==
-        [%give %fact ~[/values] %quoridor-update !>(`update`[%sendplayerinfo pnum=playnum pstart=playpos])]~
+        [%give %fact ~[/values] %quoridor-update !>(`update`[%start-game-request p1name=p1name.act p2name=p1name.act])]~
   ==
 ::
 ++  on-peek
