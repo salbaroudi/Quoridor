@@ -141,8 +141,8 @@ export class Wall_List {
     */
     push_new_wall(p1,p2) {
         //Error checking here [!!!]
-        let ourWall = "<" + p1 +  "," + p2 + ">";
-        console.log("push_new_wall(): wall added: " +ourWall);
+        let ourWall = this.encode_wall_string(p1,p2);
+        console.log("push_new_wall(): wall added: " + ourWall);
         this.Wall_List.push(ourWall);
         this.wall_count_dec(); 
     }
@@ -154,6 +154,10 @@ export class Wall_List {
 
     get_walls_remain(){
         return this.Remain_Walls;
+    }
+
+    encode_wall_string(p1,p2) {
+        return "<" + p1 +  "," + p2 + ">";
     }
 }
 
@@ -349,7 +353,6 @@ export function status_remove_wall(currPlayer) {
     let nextWallDiv = $("#p" + currPlayer.get_number() + "w" +currPlayer.get_wall_count());
     console.log("selected: " + "#p" + currPlayer.get_number() + "w" +currPlayer.get_wall_count());
     nextWallDiv.attr("class", "wall-indicator-off");
-    //exit
 }
 
 /* On Side-Effect Functions */

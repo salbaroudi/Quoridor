@@ -106,22 +106,22 @@ export function App() {
     } )
   }
 
-  const move = () => {
+  const sendmove = (r,c) => {
     api.poke( {
       app: 'quoridor',
       mark: 'quoridor-action',
-      json: { move: { target:`~${window.ship}`, pos: {row:2, col:2}}}
+      json: { move: { target:`~${window.ship}`, pos: {row:r, col:c}}},
+      onSuccess:main_control_loop
     } )
   }
 
-  //we gen a random wall - doesnt matter if nonsensical.
-  const sendwall = () => {
-    let r1 = Math.floor(Math.random() * 16);
-    let r2 = Math.floor(Math.random() * 16);
+  const sendwall = (w1p1,w1p2,w2p1,w2p2) => {
+    console.log(w1p1);
     api.poke( {
       app: 'quoridor',
       mark: 'quoridor-action',
-      json: { wall: { target:`~${window.ship}`, pos1: {row:r1, col:r2}, pos2:{row:(r1), col:r2+2}}},
+      json: { sendwall: { target:`~${window.ship}`, pos1: {row:w1p1, col:w1p2}, pos2:{row:w2p1, col:w2p2}}},
+      onSuccess: main_control_loop,
     } )
   }
 
@@ -235,7 +235,7 @@ function player_click_move(currPlayer,newId) {
   currPlayer.update_board_pos(newId);
   log_to_console(currPlayer.get_ship_name() + "has moved to square: " + newId);
   //Next move. Go back to start.
-  main_control_loop()
+  send_player_move(newId);
 }
 
 function player_click_wall(currPlayer, newId) {
@@ -282,9 +282,9 @@ function second_wall_click(currPlayer,w1Id,w2Id) {
   //This must be done after status_remove_wall()
   currPlayer.decr_wall_count();
 
-  console.log(quorGameState.get_wall_list());
+  // console.log(quorGameState.get_wall_list());
   //Switch to next player...
-  main_control_loop();
+  send_player_wall(w1Id,w2Id);
 }
 
 function keyboard_abort(currPlayer,id) {
@@ -298,6 +298,21 @@ function keyboard_abort(currPlayer,id) {
   //reset turn loop without changing player. This player still needs to move.
   hovers_and_clicks(currPlayer);
 }
+
+function send_player_move(square) {
+  sendmove(parseInt(square.split("-")[1]),parseInt(square.split("-")[2]));
+}
+
+function send_player_wall(wp1,wp2) {
+    sendwall(parseInt(wp1.split("-")[1]),
+    parseInt(wp1.split("-")[2]),
+    parseInt(wp2.split("-")[1]),
+    parseInt(wp2.split("-")[2]),
+    ); 
+    //On api.poke onsuccess, we continue our game loop
+    //what happens onError ??
+}
+
 
 
   return (

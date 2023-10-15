@@ -789,3 +789,63 @@ Ideally, I would like Network, UI, DataModel, RuleChecking and such in their own
 - and we can only get access to such items via the GameState. This means we must extract necessary state in app.jsx, and pass it to the imported functions. Some functions will have to be split up and made more atomic, for this to happen.
 
 - learning point: If I import a global (var) from a file, it is read-only - it can't be changed in the file it was imported to (gives us a rollup error).
+
+- Understanding Hoisting:
+
+- using the "function" keyword hoists a function to the top of the functional scope.
+    - this is not true of arrow functions
+- let and const:
+    - block scoped
+    - if try to access outside of scope, get a Reference Error
+- var is hoisted to the top of the functional scope. It gets pulled through a block, even if its nested. Only the declaration is hoisted, however
+- Example:
+
+```
+function myfun() {
+
+//Var can be accessed here (but will return undefined)
+//let and const will throw an error in console.
+
+if (condition) {
+    var p1 = 0
+    let p2 = 0;
+    const p3 = 0;
+}
+}
+
+```
+- function declarations are hoisted.
+- function expressions, arrow functions, and function constructors are not (cannot call before definition).
+
+
+
+### September 15th:
+
+- I have separated my code out now. The state management and main control loops live in App.js, and the UI/some event and rule checking code live in megafile.js.
+- Instead of doing a refactor again (to put all javascript code into external module files), its time...to work on state. 
+
+- The first thing that needs to be done, is wall and move actions need to be set up.
+- A state handling mechanism with our Global Store also needs to be designed, to allow our game control loops and the GS functions to interact.
+
+- which control functions need network/state access?
+
+- start_game_request:
+    - send an %init request with data
+
+    - player_click_move():
+        - send a %move request to server
+
+    - second_wall_click():
+        - register a %wall 
+
+    - it is better to have dedicated functions that setup our requests and call network functionality, rather than crowd player_click_move
+    and second_wall_click.
+
+    - the send_move function should actually call main_control_loop(),
+    not the endpoint functions of a move.
+
+=> send_player_move
+
+
+
+
