@@ -6,7 +6,8 @@
   ==
 +$  state-0
   $:  values=(list @)
-      pmap=playermap
+      pmap=playermap  
+      wlist=walllist  
       tcount=@ud
   ==
 +$  card  card:agent:gall
@@ -18,7 +19,7 @@
 |_  =bowl:gall
 +*  this     .
     default  ~(. (default-agent this %|) bowl)
-++  on-init   on-init:default
+++  on-init   on-init:default  ::we will initialize in other arms.
 ++  on-save   !>(state)
 ++  on-load  
   |=  old=vase
@@ -31,24 +32,6 @@
   =/  act  !<(action vase)
   ~&  "mark="  ~&  mark  ~&  "vase="  ~&  vase
   ?-    -.act
-      %push
-    ~&  "our push act"  ~&  act 
-    ?:  =(our.bowl target.act)
-      :_  this(values [value.act values])
-      [%give %fact ~[/values] %quoridor-update !>(`update`act)]~
-    ?>  =(our.bowl src.bowl)
-    :_  this
-    [%pass /pokes %agent [target.act %quoridor] %poke mark vase]~
-  ::
-      %pop
-    ~&  "our pop act"  ~&  act 
-    ?:  =(our.bowl target.act)
-      :_  this(values ?~(values ~ t.values))
-      [%give %fact ~[/values] %quoridor-update !>(`update`act)]~
-    ?>  =(our.bowl src.bowl)
-    :_  this
-    [%pass /pokes %agent [target.act %quoridor] %poke mark vase]~
-  ::
     %move
     ~&  "our move act"  ~&  act
     ?>  =(our.bowl target.act)
@@ -58,21 +41,18 @@
     ~&  "our wall act"  ~&  act
     ?>  =(our.bowl target.act)
       :_  this  [%give %fact ~[/values] %quoridor-update !>(`update`act)]~
-    %clearstate
-    ~&  "our clear act"  ~&  act
-    :_  %=  this  pmap  *playermap  tcount  0  ==  ~
     %start-game-request
     ~&  "our sendplayer act"  ~&  act
     ?:  =(pmap ~)  ::is our map empty?
         =/  playnum  1  =/  playpos  ^-  position  [0 8]
         =/  pstrut  ^-  player  [playnum p1name.act playpos 10]
         :_  %=  this  pmap  (my ~[[playnum pstrut]])  ==
-        [%give %fact ~[/values] %quoridor-update !>(`update`[%start-game-request p1name=p1name.act p2name=p1name.act])]~
+        [%give %fact ~[/values] %quoridor-update !>(`update`[%start-game-request target=target.act p1name=p1name.act p2name=p1name.act])]~
         ::Not case 
         =/  playnum  2  =/  playpos  ^-  position  [16 8]
         =/  pstrut  ^-  player  [playnum p2name.act playpos 10]
         :_  %=  this  pmap  (~(put by pmap) [playnum pstrut])  ==
-        [%give %fact ~[/values] %quoridor-update !>(`update`[%start-game-request p1name=p1name.act p2name=p1name.act])]~
+        [%give %fact ~[/values] %quoridor-update !>(`update`[%start-game-request target=target.act p1name=p1name.act p2name=p1name.act])]~
   ==
 ::
 ++  on-peek
@@ -81,14 +61,12 @@
   ?+  path  (on-peek:default path)
     [%x %values ~]  ``noun+!>(values)
   ==
-++  on-watch  ::Our initial subscription goes here...
+++  on-watch  ::Our initial subscription goes here...The state is also reset.
   |=  =path
   ^-  (quip card _this)
   ?>  ?=([%values ~] path)
-  ~&  [%init val=values tc=tcount]  
-  :_  this
-  ::we need to match our update structure
-  [%give %fact ~ %quoridor-update !>(`update`[%init val=values tc=tcount])]~
+  :_  %=  this  pmap  *playermap  wlist  *walllist  tcount  0  ==
+  [%give %fact ~ %quoridor-update !>(`update`[%init tc=tcount])]~
 ++  on-arvo   on-arvo:default
 ++  on-leave  on-leave:default
 ++  on-agent  on-agent:default

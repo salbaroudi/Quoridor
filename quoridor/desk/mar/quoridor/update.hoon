@@ -8,29 +8,10 @@
     ^-  ^json
     ~&  "upd in update.hoon"  ~&  upd  
     ?-    -.upd
-      %pop  (frond 'pop' s+(scot %p target.upd)) 
-      ::%init  (frond 'init' a+(turn val.upd numb))
-      ::%sendplayer  ::[Q: ]  we don't need this. Why does hoon complain??
-      ::     %+  frond  'sendplayer'  ~
-      %sendplayerinfo
-           %+  frond  'sendplayernum'
-             %-  pairs
-             :~  ['pnum' (numb pnum.upd)]
-                 ['pstartrow' (numb row.pstart.upd)]
-                 ['pstartcol' (numb col.pstart.upd)]
-              ==
-      %init 
+      %init  ::zero means we reset our state, and are ready...
            %+  frond  'init'
              %-  pairs
-             :~  ['val' a+(turn val.upd numb)]
-                 ['tc' (numb tc.upd)]
-              ==
-      %push  ~&  "our push update"  ~&  upd  ::coming in from q.app, to send back to FE, looks like: [%push target=~zod value=8] 
-           %+  frond  'push'
-             %-  pairs
-             :~  ['target' s+(scot %p target.upd)]
-                 ['value' (numb value.upd)]
-              ==  
+              :~  ['tc' (numb tc.upd)]  ==
       %move  ~&  "our move update"  ~&  upd  
           %+  frond  'move'
              %-  pairs
@@ -51,12 +32,8 @@
           %+  frond  'startinfo'
             %-  pairs
             :~  ['p1name' s+(scot %p p1name.upd)]
-                ['p2name' (numb row.pos1.upd)]
+                ['p2name' s+(scot %p p2name.upd)]
             ==
-      %clearstate  ~&  "our clearstate"  ~&  upd
-          %+  frond  'ack'
-            %-  pairs
-            :~  ['result' s+(%t result.upd)]  ==
     ==
   --
 ++  grab

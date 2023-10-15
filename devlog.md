@@ -872,3 +872,50 @@ if (condition) {
 - unknowns (do we need async/await for promises?)
 - Should we rely on Reacts GlobalStore more? Or just use it as a quick interface to fetch the data
     => Do the latter for now.
+
+- said goodbye to %echo's FE state UI,and all the push and pop stuff in the BE. No more!
+
+For Later, some frond Examples and code:
+
+
+      ::%init   To remember how to frond a list correctly - remove later! 
+        ::   %+  frond  'init'
+         ::    %-  pairs
+           ::  :~  ['val' a+(turn val.upd numb)]
+            ::     ['tc' (numb tc.upd)]
+           ::   ==
+
+      ::%init  (frond 'init' a+(turn val.upd numb))
+      ::%sendplayer  ::[Q: ]  we don't need this. Why does hoon complain??
+      ::     %+  frond  'sendplayer'  ~
+
+::for a deeply nested wall structure
+::['p2name' (numb row.pos1.upd)]
+
+
+::      %clearstate  ~&  "our clearstate"  ~&  upd
+::          %+  frond  'ack'
+::            %-  pairs
+::            :~  ['result' s+(%t result.upd)]
+::            ==
+
+From our push and pop in poke arm:
+
+      %push
+    ~&  "our push act"  ~&  act 
+    ?:  =(our.bowl target.act)
+      :_  this(values [value.act values])
+      [%give %fact ~[/values] %quoridor-update !>(`update`act)]~
+    ?>  =(our.bowl src.bowl)
+    :_  this
+    [%pass /pokes %agent [target.act %quoridor] %poke mark vase]~
+  ::
+      %pop
+    ~&  "our pop act"  ~&  act 
+    ?:  =(our.bowl target.act)
+      :_  this(values ?~(values ~ t.values))
+      [%give %fact ~[/values] %quoridor-update !>(`update`act)]~
+    ?>  =(our.bowl src.bowl)
+    :_  this
+    [%pass /pokes %agent [target.act %quoridor] %poke mark vase]~
+  ::

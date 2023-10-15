@@ -38,27 +38,21 @@ log_turn_start} from "./public/js/megafile.js"
 const api = new Urbit( '', '', window.desk )
 api.ship = window.ship
 
+//This isn't used for now, as Quridors state is separate. Integrate later [!!!].
 function reducer( state, action ) {
   let newState = [ ...state ]
   switch ( action.type ) {
     case 'init':
       return action.init
-    case 'push':
-      newState.unshift(action.val)
-      return newState
-    case 'pop':
-      newState.shift()
-      return newState
     default:
-      console.log("Reached the default case!")
+      console.log("Warning: Unrecognized action detected. Check code.")
       return state
   }
 }
 
 export function App() {
-  const [ state, dispatch ] = useReducer( reducer, [] )
+    const [ state, dispatch ] = useReducer( reducer, [] )
   const [ inputValue, setInputValue ] = useState( "" )
-
 
   //Initialization Effect: Application starts-up here.
   useEffect(() => {
@@ -69,41 +63,18 @@ export function App() {
     initializeGame()
   }, [] )
 
-
+//Here we grab our values from the subscriber wire. But we don't send actions to the reducer.
+//Instead, we change state in the quorGameState structure of the Quoridor FE.
   const handleUpdate = ( upd ) => {
     console.log("our update:")
     console.log(upd)
     if ( 'init' in upd ) {
-      dispatch({type:'init', init:upd.init.val})
-    }
-    else if ( 'push' in upd ) {
-      dispatch({type:'push', val:upd.push.value})
-    }
-    else if ( 'pop' in upd ) {
-      dispatch( { type:'pop' } )
+      //dispatch({type:'init', init:upd.init.tc})
+      console.log("init turncount= " + upd.init.tc)
     }
     else if ( 'move' in upd) {
       dispatch( { type:'move' } )
     }
-  }
-
-  const push = () => {
-    const val = parseInt( inputValue )
-    if ( isNaN( val ) ) return
-    api.poke( {
-      app: 'quoridor',
-      mark: 'quoridor-action',
-      json: { push: { target:`~${window.ship}`, value:val } }
-    } )
-    setInputValue( "" )
-  }
-
-  const pop = () => {
-    api.poke( {
-      app: 'quoridor',
-      mark: 'quoridor-action',
-      json: { pop: `~${window.ship}` }
-    } )
   }
 
   const sendmove = (r,c) => {
@@ -337,23 +308,6 @@ function send_player_wall(wp1,wp2) {
 
   return (
     <main className="">
-      <input style={{width:200}} className='border' type='text' value={inputValue} onChange={(e) => setInputValue(e.target.value)}/>
-      <div>
-        <button onClick={() => push()} style={{width:100}} className='border p-2 text-black-400'>Push</button>
-        <button onClick={() => pop()} style={{width:100}} className='border p-2 text-black-400'>Pop</button>
-        <p>Our stack</p>
-        {state.map((eachValue, index) => {
-          return (<li key={index}>{eachValue}</li>)
-        })}
-      </div>
-      <div class="onerow">
-      <button onClick={() => move()} style={{width:100}} className='border p-2 text-black-400'>Send Move</button>
-      <button onClick={() => sendwall()} style={{width:100}} className='border p-2 text-black-400'>Send Wall</button>
-      </div>
-
-        <br /><hr /><br />
-
-
         <div class="main-container">
           <div class="excelfont"><b> Quoridor </b></div>
           <div class="board-container">
