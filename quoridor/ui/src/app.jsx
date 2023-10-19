@@ -66,51 +66,65 @@ export function App() {
 //Here we grab our values from the subscriber wire. But we don't send actions to the reducer.
 //Instead, we change state in the quorGameState structure of the Quoridor FE.
   const handleUpdate = ( upd ) => {
-    console.log("our update:")
-    console.log(upd)
-    if ( 'init' in upd ) {
+    if ( 'init' in upd ) {  //our initialization has been succesful. Start the game.
       //dispatch({type:'init', init:upd.init.tc})
-      console.log("init turncount= " + upd.init.tc)
+      console.log("Server reset state on refesh. Can begin a new game...")
     }
-    else if ( 'move' in upd) {
-      dispatch( { type:'move' } )
+    else if ('passign' in upd) {
+      //dispatch( { type:'move' } )
+      console.log("Gall Response: Our player assignment is:")
+      console.log(upd)
+      set_init_game_state(upd.passign.p1, upd.passign.p2)
+   }
+    else if ('okmove' in upd) {
+      //dispatch( { type:'move' } )
+      console.log("Gall Response: Accepted Move:")
+      console.log(upd)
+      //now restart our game loop.
+      main_control_loop();
+    }
+    else if ('okwall' in upd) {
+      console.log("Gall Response: Accepted Wall Placement:")
+      console.log(upd)
+      main_control_loop()
     }
   }
 
-  const sendmove = (r,c) => {
+  const sendmove = (r,c,playnum) => {
     api.poke( {
       app: 'quoridor',
       mark: 'quoridor-action',
-      json: { move: { target:`~${window.ship}`, pos: {row:r, col:c}}},
-      onSuccess:main_control_loop
+      json: { sendmove: { target:`~${window.ship}`, pos: {row:r, col:c}, pnum:playnum}},
     } )
   }
 
-  const sendwall = (w1p1,w1p2,w2p1,w2p2) => {
-    console.log(w1p1);
+//Rollup/React don't minify this function properly. If I name the input things like "wpr1", it doesn't
+//change the variable names in the innermost json. So simple lettering it is ¯\_(ツ)_/¯
+  const sendwall = (a,b,c,d,pnum) => {
     api.poke( {
       app: 'quoridor',
       mark: 'quoridor-action',
-      json: { sendwall: { target:`~${window.ship}`, pos1: {row:w1p1, col:w1p2}, pos2:{row:w2p1, col:w2p2}}},
-      onSuccess: main_control_loop,
-    } )
+      json: { sendwall: { 
+        target:`~${window.ship}`,
+        pnum:pnum,
+         wp1: {
+          row:a, 
+          col:b}, 
+        wp2:{
+          row:c, 
+          col:d}}},
+    })
   }
 
+//After our init() is called, and subscribe wire has been setup, then we negotiate the players.
+//Can assume FE and BE state is reset by this point.
 const initplayers = (p1,p2) => {
   api.poke( {
     app: 'quoridor',
     mark: 'quoridor-action',
-    json: { sendplayer: { target:`~${window.ship}`, p1name: p1, p2name: p2}
+    json: { setupplayers: { target:`~${window.ship}`, p1name: p1, p2name: p2}
   } }) }
 
-
-const debugclearstate = () => {
-  api.poke( {
-    app: 'quoridor',
-    mark: 'quoridor-action',
-    json: { clearstate: { target:`~${window.ship}`}}
-  } ) 
-}
 
 //--------------------------  QApp Control Functions Are below (!)
 
@@ -131,24 +145,24 @@ function initializeGame() {
 
   /*
     Game starts when user enters @p and hits Send Request button.
-    This function initializes a game session.
   */
 function start_game_request() {
       //[!!!] Get user name from {window.ship}
       let p1name = "~sampel-palnet"; 
       let p2name = $("#at-p").val();
 
-      //check name formatting
+      //simple check:  name formatting
       if ((p2name[0] == "~") && (p2name[7] == "-") && (p2name.length == 14)) {
-          initplayers(p1name,p2name);
+          initplayers(p1name,p2name);  //send our request to the Gall App.
       }
       else { 
-        log_to_console("Invalid @p detected. Check your spelling.");
+        log_to_console("Invalid @p detected. Check your spelling and try again.");
         return;
       }
   }
 
 
+//Once our server has been reset, we can initialize our game
 function set_init_game_state(p1name,p2name) {
       //[!!!] Here we send an async request to our Back end, perform the negotiation.
       quorGameState.add_player(new GamePlayer(p1name, playerinit(1)));
@@ -225,8 +239,9 @@ function player_click_move(currPlayer,newId) {
   //Update our player, update our turn count.
   currPlayer.update_board_pos(newId);
   log_to_console(currPlayer.get_ship_name() + "has moved to square: " + newId);
-  //Next move. Go back to start.
-  send_player_move(newId);
+  //As we check with local rule logic, we can write our state **before** the server authenticates it.
+  //In later versions, the order of these operations will change [!!!]
+  send_player_move(newId,currPlayer.get_number());
 }
 
 function player_click_wall(currPlayer, newId) {
@@ -274,8 +289,8 @@ function second_wall_click(currPlayer,w1Id,w2Id) {
   currPlayer.decr_wall_count();
 
   // console.log(quorGameState.get_wall_list());
-  //Switch to next player...
-  send_player_wall(w1Id,w2Id);
+  //Intermediate function in order to process input.
+  send_player_wall(w1Id,w2Id,currPlayer.get_number());
 }
 
 function keyboard_abort(currPlayer,id) {
@@ -290,16 +305,16 @@ function keyboard_abort(currPlayer,id) {
   hovers_and_clicks(currPlayer);
 }
 
-function send_player_move(square) {
-  sendmove(parseInt(square.split("-")[1]),parseInt(square.split("-")[2]));
+function send_player_move(square,pnum) {
+  sendmove(parseInt(square.split("-")[1]),parseInt(square.split("-")[2]),pnum);
 }
 
-function send_player_wall(wp1,wp2) {
+function send_player_wall(wp1,wp2,pnum) {
     sendwall(parseInt(wp1.split("-")[1]),
     parseInt(wp1.split("-")[2]),
     parseInt(wp2.split("-")[1]),
     parseInt(wp2.split("-")[2]),
-    ); 
+    pnum); 
     //On api.poke onsuccess, we continue our game loop
     //what happens onError ??
 }

@@ -12,27 +12,23 @@
            %+  frond  'init'
              %-  pairs
               :~  ['tc' (numb tc.upd)]  ==
-      %move  ~&  "our move update"  ~&  upd  
-          %+  frond  'move'
-             %-  pairs
-             :~  ['target' s+(scot %p target.upd)]
-                 ['row' (numb row.pos.upd)]
-                 ['col' (numb col.pos.upd)]
-              ==
-      %sendwall  ~&  "our move update"  ~&  upd
-          %+  frond  'wall'
+      %passign  ~&  "our passign is"  ~&  upd
+          %+  frond  'passign'
             %-  pairs
-            :~  ['target' s+(scot %p target.upd)]
-                ['p1row' (numb row.pos1.upd)]
-                ['p1col' (numb col.pos1.upd)]
-                ['p2row' (numb row.pos2.upd)]
-                ['p2col' (numb col.pos2.upd)]
+            :~  ['p1' s+(scot %p p1.upd)]
+                ['p2' s+(scot %p p2.upd)]
             ==
-      %start-game-request  ~&  "our startgamerequest"  ~&  upd
-          %+  frond  'startinfo'
+      %okmove  ~&  "our okmove is"  ~&  upd
+          %+  frond  'okmove'
             %-  pairs
-            :~  ['p1name' s+(scot %p p1name.upd)]
-                ['p2name' s+(scot %p p2name.upd)]
+            :~  ['status' s+status.upd]
+              ['tc' (numb tc.upd)]
+            ==
+      %okwall  ~&  "our okwall is"  ~&  upd
+          %+  frond  'okwall'
+            %-  pairs
+            :~  ['status' s+status.upd]
+              ['tc' (numb tc.upd)]
             ==
     ==
   --

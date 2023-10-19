@@ -919,3 +919,59 @@ From our push and pop in poke arm:
     :_  this
     [%pass /pokes %agent [target.act %quoridor] %poke mark vase]~
   ::
+
+
+## September 16th:
+
+- continuting with the stateupgrade branch, it is time to add %moves and %walls, and manipulate our state.
+- how do we deal with asynch responses?
+    => For now, we rely on the subscriber wire and the updateHandler function. This will continue our game loop.
+        => Will need to be done more formally with await/Promise manipulation, later on...
+
+
+For Safekeeping:
+
+      %move  ~&  "our move update"  ~&  upd  
+          %+  frond  'move'
+             %-  pairs
+             :~  ['target' s+(scot %p target.upd)]
+                 ['row' (numb row.pos.upd)]
+                 ['col' (numb col.pos.upd)]
+              ==
+      %sendwall  ~&  "our move update"  ~&  upd
+          %+  frond  'wall'
+            %-  pairs
+            :~  ['target' s+(scot %p target.upd)]
+                ['p1row' (numb row.pos1.upd)]
+                ['p1col' (numb col.pos1.upd)]
+                ['p2row' (numb row.pos2.upd)]
+                ['p2col' (numb col.pos2.upd)]
+            ==
+
+
+## September 18th:
+
+- Yesterday I was able to finally finish my state upgrade. The app works, with two players being served by one FE and one BE.
+- Now, I need to start using Ames, to get two clients to communicate with each other.
+
+- Apps that Demonstrate an Ames request:
+    - Flap
+    - Groups/Messaging App.
+
+
+- I don't really have time to get these apps functioning. The code needs to be read carefully, and tested+integrated in small stages.
+    => The usual "Ship-of-Theseus" approach. applies.
+
+- The Ames documentation is quite hard. It seems we need a %plea to send data over the network, or we need to invoke Ames arms to send requests. This will be quite hard...
+    => The Hut app needs 
+
+#### Turning to App Distribution (Instead):
+
+- I am on Zuse 418. Will this be a problem for the install? What sys version will the judges be using (412?)
+- It just looks as if the app needs to run on a fakezod and be discoverd. Is that all?
+
+
+### The Groups App Tutorial:
+
+- This app apparently demonstrates communication between many ships.
+

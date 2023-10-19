@@ -32,27 +32,32 @@
   =/  act  !<(action vase)
   ~&  "mark="  ~&  mark  ~&  "vase="  ~&  vase
   ?-    -.act
-    %move
+    %sendmove 
     ~&  "our move act"  ~&  act
-    ?>  =(our.bowl target.act)
-      :_  this  [%give %fact ~[/values] %quoridor-update !>(`update`act)]~
-  ::
+      =/  pselect  (~(got by pmap) pnum.act)  ~&  pselect  
+      =/  modplayer  ^-  player  [pnum.act name.pselect pos.act wallcount.pselect]
+       :_  %=  this  pmap  (~(put by pmap) [pnum.act modplayer])  tcount  .+  tcount  ==
+      [%give %fact ~[/values] %quoridor-update !>(`update`[%okmove status='valid' tc=tcount])]~
+
     %sendwall
-    ~&  "our wall act"  ~&  act
-    ?>  =(our.bowl target.act)
-      :_  this  [%give %fact ~[/values] %quoridor-update !>(`update`act)]~
-    %start-game-request
-    ~&  "our sendplayer act"  ~&  act
-    ?:  =(pmap ~)  ::is our map empty?
-        =/  playnum  1  =/  playpos  ^-  position  [0 8]
-        =/  pstrut  ^-  player  [playnum p1name.act playpos 10]
-        :_  %=  this  pmap  (my ~[[playnum pstrut]])  ==
-        [%give %fact ~[/values] %quoridor-update !>(`update`[%start-game-request target=target.act p1name=p1name.act p2name=p1name.act])]~
-        ::Not case 
-        =/  playnum  2  =/  playpos  ^-  position  [16 8]
-        =/  pstrut  ^-  player  [playnum p2name.act playpos 10]
-        :_  %=  this  pmap  (~(put by pmap) [playnum pstrut])  ==
-        [%give %fact ~[/values] %quoridor-update !>(`update`[%start-game-request target=target.act p1name=p1name.act p2name=p1name.act])]~
+    ~&  "our wall act"  ~&  act  ::?>  =(our.bowl target.act)
+      ::Make a wall, add to wlist
+      =/  newwall  ^-  wall  [wp1.act wp2.act] 
+      =/  modlist  ^-  walllist  :-  newwall  wlist
+      ::Access player, subtract a wall
+      =/  prec  (~(got by pmap) pnum.act)
+      =/  modplayer  ^-  player  [pnum.act name.prec ppos.prec (dec wallcount.prec)]
+      ::Update playermap and walllist, send a gift.
+      :_  %=  this  wlist  modlist  tcount  .+  tcount  pmap  (~(put by pmap) [pnum.act modplayer])  ==
+      [%give %fact ~[/values] %quoridor-update !>(`update`[%okwall status='valid' tc=tcount])]~
+
+    %setupplayers
+    ~&  "our setup-players act"  ~&  act
+    ?>  =(pmap ~)  ::is our map empty?
+        =/  playnum1  1  =/  playpos1  ^-  position  [0 8]  =/  pstrut1  ^-  player  [playnum1 p1name.act playpos1 10]
+        =/  playnum2  2  =/  playpos2  ^-  position  [16 8]  =/  pstrut2  ^-  player  [playnum2 p2name.act playpos2 10]
+        :_  %=  this  pmap  (my ~[[playnum1 pstrut1] [playnum2 pstrut2]])  tcount  .+  tcount  ==
+        [%give %fact ~[/values] %quoridor-update !>(`update`[%passign p1=p1name.act p2=p2name.act])]~
   ==
 ::
 ++  on-peek
@@ -61,7 +66,7 @@
   ?+  path  (on-peek:default path)
     [%x %values ~]  ``noun+!>(values)
   ==
-++  on-watch  ::Our initial subscription goes here...The state is also reset.
+++  on-watch  ::Our initial subscription goes here...The state is also reset. This occurs when we refresh page, and init() is called.
   |=  =path
   ^-  (quip card _this)
   ?>  ?=([%values ~] path)
