@@ -974,4 +974,83 @@ For Safekeeping:
 ### The Groups App Tutorial:
 
 - This app apparently demonstrates communication between many ships.
+- mapped out the pathways, and looked at the code. now its time to design our interactions.
+- the solution to communicating between two ships is just mutual subscriptions, and passing cards. I don't need to 
+  worry about Ames much.
+  - for zuse 412K, you just |bump your app in Dojo to see if it upgrades. Usually, it works.
 
+
+
+### Nov 3rd:
+
+#### Designing the Initiation Sequence for Two-Players:
+
+Two players decide (outside of the Quoridor app) to play a game of Quoridor.
+
+0) Both players must open/reload the FE of the Application. Call the players X and Y.  
+    - For each player, the %init subscription wire is hit.
+    - For the BE, the ++on-watch arm is hit, and a subscribe wire is placed on the /values path.
+    - IF the app has a non sigg'ed (empty) state, we must overwrite the state accordingly. Use a gate for this.
+    - We send back an %init update, to clear the state in FE and begin our initialization sequence.
+
+2) Player X types in the @p of player Y, and hits the [Send Request ->] button.
+    - A poke request from the FE is passed to the backend, as [%setupplayers target=@p p1name=@p p2name=@p]
+    - The ++on-poke arm is invoked. 
+        - first, check if the poke is from our ship, or from some other player (local/remote branching)
+            - switch to the local branch:
+                - switching on %setupplayers.
+                    - Check to see if there is a running game. If so, reset the game with the reset game function.
+                    - Since our local FE requested a new game, we can set ourselves up as player 1.
+                        - our (list card this) that we return is as follows:
+                            - formulate a card to make a subscribe request to our remote player.
+                                - so %pass %agent %watch  /wire path formulated as /game/<timestamp or entropy>
+                            - END.
+
+    Player Y's Agent:
+        - receives the %pass %watch card to its ++on-watch arm. 
+            - Gall/System sends a %watch-ack (automatically).
+            
+            - check if game currently running. Reset it if not sigg'ed.
+            - insert the src.bowl ship as new player in pmap
+            - insert our.bowl ship as player 2 in pmap 
+            - Init %give %fact Card 1:  ::Note, this is NOT done with action/update, so no need to worry about grab/grow/
+                - send an init %fact with state, to write to Player 1.
+            - Generate a %gift %fact card to FE -> Tell the front end that a game has started. update [%gamestart  vase(..player info)]
+
+    Player X's Agent:
+        - ++on-agent arm recieves an initialization %give %fact. This finalizes and starts game, [%finalize game]
+        - updates state
+        - Generates a Gift Card for the FE -> [%gamestart  vase(..player info)]
+
+
+3) At this point, both clients have been set up, and should understand who is player 1 and 2. Player 1 makes a move.
+    - from the FE, a [%sendmove target=@p pos=position pnum=@ud] is sent to the BE.
+    - the ++on-poke arm checks if local/remote
+    - switch on %sendmove
+        - update the current player position.
+        - increase turn count by one.
+    - Two cards:
+        1) %give %fact across the /games wire, communicate the move to player 2
+        2) %give %fact to our FE - now it is P2's turn, and we need to wait.
+
+    - While this is going on, Player 2 enters the "waiting" state.
+        - it recieves a %give %fact via wire from Player 1.
+        - it sends a %give fact to the FE, updating teh screen with the player 1's move.
+
+4) By this point, the behaviour in (3) should loop until a reset/termination condition is detected.
+    - FE must be in a "make move" or "wait for other player" state.
+
+5) After a move phase, the FE rule checker must determine if a win has occured.
+    - If a win occurs, a [%win] poke is sent to the BE.
+    - ++onpoke arm processes the local win,
+        - a %give %fact card is sent to the other player.
+        - a %give %fact is sent to the FE, verifying the Win!
+
+    - Other Player:
+        - ++on-agent arm revieces the %give fact win packet.
+        - %give fact is routed to FE, to inform the other player that they lost.
+
+After this point, the game has reached its final state. A reset must occur.
+
+
+5) The FE
