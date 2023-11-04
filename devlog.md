@@ -994,7 +994,7 @@ Two players decide (outside of the Quoridor app) to play a game of Quoridor.
     - We send back an %init update, to clear the state in FE and begin our initialization sequence.
 
 2) Player X types in the @p of player Y, and hits the [Send Request ->] button.
-    - A poke request from the FE is passed to the backend, as [%setupplayers target=@p p1name=@p p2name=@p]
+    - A poke request from the FE is passed to the backend, as [%requestgame target=@p p1name=@p p2name=@p]
     - The ++on-poke arm is invoked. 
         - first, check if the poke is from our ship, or from some other player (local/remote branching)
             - switch to the local branch:
@@ -1053,4 +1053,10 @@ Two players decide (outside of the Quoridor app) to play a game of Quoridor.
 After this point, the game has reached its final state. A reset must occur.
 
 
-5) The FE
+
+### November 4th:
+
+- Setting up new dev environment:
+    - use the Hoon cheat sheet - stop using online docs so much.
+    - merge the current branch, make a new branch (initsequence)
+    
