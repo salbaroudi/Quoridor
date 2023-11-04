@@ -1054,3 +1054,11 @@ After this point, the game has reached its final state. A reset must occur.
 
 
 5) The FE
+
+
+### Nov 4th:
+    - FF'ed main to stateupgrade.
+    - pushed main one trivial commit ahead.
+    - kept stateupgrade branch pointer (for history). Made a new branch pointer (initsequence).
+    - commit and move ahead on initseuqence, do a huge merge on main at the very end (fun...).
+
