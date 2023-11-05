@@ -6,6 +6,7 @@
 +$  action  ::these have to match our action structures.
   $%  [%sendmove target=@p pos=position pnum=@ud]
       [%sendwall target=@p pnum=@ud wp1=position wp2=position]
+      [%newgamerequest p2name=@p]
       [%setupplayers target=@p p1name=@p p2name=@p]
   ==
 +$  update

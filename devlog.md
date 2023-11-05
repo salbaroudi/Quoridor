@@ -988,10 +988,12 @@ For Safekeeping:
 Two players decide (outside of the Quoridor app) to play a game of Quoridor.
 
 0) Both players must open/reload the FE of the Application. Call the players X and Y.  
-    - For each player, the %init subscription wire is hit.
-    - For the BE, the ++on-watch arm is hit, and a subscribe wire is placed on the /values path.
-    - IF the app has a non sigg'ed (empty) state, we must overwrite the state accordingly. Use a gate for this.
-    - We send back an %init update, to clear the state in FE and begin our initialization sequence.
+    - [X] For each player, the %init subscription wire is hit.
+    - [X] For the BE, the ++on-watch arm is hit, and a subscribe wire is placed on the /qdata path.
+        - on-watch must be switched on remote/local, use the |^ pattern
+            - because the FE and other BE agent will subscribe to our local BE
+    - [/] IF the app has a non sigg'ed (empty) state, we must overwrite the state accordingly. Use a gate for this.
+    - [X] We send back an %init update, to clear the state in FE and begin our initialization sequence.
 
 2) Player X types in the @p of player Y, and hits the [Send Request ->] button.
     - A poke request from the FE is passed to the backend, as [%setupplayers target=@p p1name=@p p2name=@p]
@@ -999,8 +1001,6 @@ Two players decide (outside of the Quoridor app) to play a game of Quoridor.
         - first, check if the poke is from our ship, or from some other player (local/remote branching)
             - switch to the local branch:
                 - switching on %setupplayers.
-                    - Check to see if there is a running game. If so, reset the game with the reset game function.
-                    - Since our local FE requested a new game, we can set ourselves up as player 1.
                         - our (list card this) that we return is as follows:
                             - formulate a card to make a subscribe request to our remote player.
                                 - so %pass %agent %watch  /wire path formulated as /game/<timestamp or entropy>
@@ -1009,6 +1009,10 @@ Two players decide (outside of the Quoridor app) to play a game of Quoridor.
     Player Y's Agent:
         - receives the %pass %watch card to its ++on-watch arm. 
             - Gall/System sends a %watch-ack (automatically).
+            - Or sends a watch-failure/error. Or the subscribe doesn't work. Player X on-agent arm needs to deal with this.
+                - sign: watch-ack: just print "successful to console"
+                - sign: watch-nack: there is an error, report to player X FE to try again?
+                - what if player Y cannot be reached? => Test this manually.
             
             - check if game currently running. Reset it if not sigg'ed.
             - insert the src.bowl ship as new player in pmap
@@ -1061,4 +1065,29 @@ After this point, the game has reached its final state. A reset must occur.
     - pushed main one trivial commit ahead.
     - kept stateupgrade branch pointer (for history). Made a new branch pointer (initsequence).
     - commit and move ahead on initseuqence, do a huge merge on main at the very end (fun...).
+    - need a second galaxy ship (~fes) to be built.
+        - as I upgrade the code base, the code must be identical for both agents. so...
+            - alter cp2zod -> cp2all to copy over files.
+    - bump ~zod from zuse 418 to 412. Fes should be OK. 
+        - strangely, the latest dev-pill doesn't progress beyond 415?
+        => Fake zods don't have network access.
+    - For now, I just develop on two fake zods. Upgrading Zuse from 415/418 -> 412 can be dealt with later.
+    - Notice: All three hackaton contestants used Moons to distribute their apps. So they ran treaty from their apps.
+        => You can also do this from a comet. So not being present on Azimuth (L1/L2) =/> you cant use Ames:glob or distribute software.
+            - really, any type of entity (galaxy....comet) can distribute software on the network.
+    - its best to develop on two fake zods for now. If issues occur, I can cart both instances over to two moons.
+        => In the end, my dev desk will be hosted on a moon and |treaty'ed on the network.
+
+    - Paths are used to route subscription requests or data to an agent.
+    - wires are used to route responses.
+
+### Time To Begin:
+
+    - [X] for ++on-watch, we have just one subscribe wire. Call it `/qdata`.
+    - [X] |^  (local) (remote) ++remote ++local  code pattern has been implemented in ++on-poke.
+    - getting knee deep in subscription mechanisms. Our session requires 4 subscriptions: 2 subscriptions, between FE and BE for each agent, and a 2 way subscription between the two BE agents.
+        - getting this working, and then programming the "win" condition to terminate should be the first goal, not a DFS into the requirements.
+     
+
+
 

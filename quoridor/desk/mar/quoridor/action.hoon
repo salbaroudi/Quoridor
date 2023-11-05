@@ -19,6 +19,7 @@
         ::[%wall [%target 'zod'] [%pos1  [row=X col=Y] [%pos1  [row=X col=Y]]
         [%sendwall (ot ~[target+(se %p) pnum+ni wp1+(ot ~[row+ni col+ni]) wp2+(ot ~[row+ni col+ni])])] 
         [%setupplayers (ot ~[target+(se %p) p1name+(se %p) p2name+(se %p)])]
+        [%newgamerequest (ot ~[p2name+(se %p)])]
     ==
   --
 ++  grad  %noun

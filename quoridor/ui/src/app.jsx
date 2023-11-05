@@ -57,7 +57,7 @@ export function App() {
   //Initialization Effect: Application starts-up here.
   useEffect(() => {
     function init() {  //we don't go through action.hoon, because we are doing a subscribe.
-      api.subscribe( { app:"quoridor", path: '/values', event: handleUpdate } )
+      api.subscribe( { app:"quoridor", path: '/qdata', event: handleUpdate } )
     }
     init()
     initializeGame()
@@ -118,12 +118,20 @@ export function App() {
 
 //After our init() is called, and subscribe wire has been setup, then we negotiate the players.
 //Can assume FE and BE state is reset by this point.
-const initplayers = (p1,p2) => {
+const setupplayers = (p1,p2) => {
   api.poke( {
     app: 'quoridor',
     mark: 'quoridor-action',
     json: { setupplayers: { target:`~${window.ship}`, p1name: p1, p2name: p2}
   } }) }
+
+  const newgamerequest = (p2) => {
+    api.poke( {
+      app: 'quoridor',
+      mark: 'quoridor-action',
+      json: { newgamerequest: {p2name: p2}
+    } }) }
+  
 
 
 //--------------------------  QApp Control Functions Are below (!)
@@ -148,12 +156,14 @@ function initializeGame() {
   */
 function start_game_request() {
       //[!!!] Get user name from {window.ship}
-      let p1name = "~sampel-palnet"; 
+      //let p1name = "~sampel-palnet"; 
       let p2name = $("#at-p").val();
 
       //simple check:  name formatting
-      if ((p2name[0] == "~") && (p2name[7] == "-") && (p2name.length == 14)) {
-          initplayers(p1name,p2name);  //send our request to the Gall App.
+      //(p2name[0] == "~") && (p2name[7] == "-") && (p2name.length == 14)
+      //reminder: get node.js @p checker from github
+      if (true) {
+          newgamerequest(p2name);  //send our request to the Gall App.
       }
       else { 
         log_to_console("Invalid @p detected. Check your spelling and try again.");
