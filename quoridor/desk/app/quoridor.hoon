@@ -66,9 +66,7 @@
             [%give %fact ~[/qdata] %quoridor-update !>(`update`[%passign p1=p1name.act p2=p2name.act])]~
         %newgamerequest
         ~&  "newgamerequest made"  ~&  act
-        ::Assumed that the refresh has cleared out game state.
-        ::first subscribe and see what happens before checking game state.
-        :_  this  ~::[%pass /qdata %agent [p2name.act %quoridor] %watch /qdata]
+        :_  this  [%pass /qdata-wire %agent [p2name.act %quoridor] %watch /qdata]~
       ==
     ++  remotepoke  
       |=  act=action
@@ -81,30 +79,46 @@
     [%x %qdata ~]  ``noun+!>(values)
   ==
 ::For incoming subscriptions.
-++  on-watch  ::Our initial subscription goes here...The state is also reset. This occurs when we refresh page, and init() is called.
-  |=  =path
-    ::|^  ^-  (quip card _this)
+++  on-watch  ::somehow, the compiler knows that both gated arms return a card:this structure.
+  |=  =path  
     ^-  (quip card _this)
-      ~&  "onwatch hit, path="  ~&  path  
-      :_  %=  this  pmap  *playermap  wlist  *walllist  tcount  0  ==
-        [%give %fact ~[path] %quoridor-update !>(`update`[%init tc=tcount])]~
-      ::Only have one subscribe path - crash out if some other wire is handed to app.
-      ::?>  ?=([%qdata ~] path)
-      ::?:  =(our.bowl src.bowl)
-        ::(local path)
-        ::(remote path)
-
-      ::++  local  ::This handles the Front-End's Subscribe Request.
-      ::|=  =path
-       ::   :_  %=  this  pmap  *playermap  wlist  *walllist  tcount  0  ==
-        ::  [%give %fact ~[path] %quoridor-update !>(`update`[%init tc=tcount])]~
-      ::++  remote    
-       :: |=  =path  
-        :::_  this  ~
-    ::--
-++  on-arvo   on-arvo:default
+    |^  ::...how i learned to stop worrying and love the bar-ket.
+      ?~  path  !!  ?:  =(our.bowl src.bowl)  (localarm path)  (remotearm path)
+      ++  localarm
+        |=  path=(list @ta)
+          :_  %=  this  pmap  *playermap  wlist  *walllist  tcount  0  ==
+          [%give %fact ~[path] %quoridor-update !>(`update`[%init tc=tcount])]~
+      ++  remotearm
+        |=  path=(list @ta)
+        ~&  "remotearm path arg"  ~&  path  :_  this  ~
+    --
+++  on-arvo   on-arvo:default  ::responses from other vanes.
 ++  on-leave  on-leave:default
-::for subscription updates
-++  on-agent  on-agent:default
+::for subscription updates, and responses from external agents.
+++  on-agent
+  |=  [=wire =sign:agent:gall]
+    ^-  (quip card _this)
+  ?>  ?=([%qdata-wire ~] wire)
+  ?+    -.sign  (on-agent:default wire sign)
+      %watch-ack
+    ?~  p.sign
+      ~&  >  src.bowl  ~&  >  'subscribe succeeded!'
+      [~ this]
+      ~&  >>>  src.bowl  ~&  >>>  'subscribe failed!'
+    [~ this]
+  ::
+::      %kick
+  ::  %-  (slog '%delta-follower: Got kick, resubscribing...' ~)
+   :: :-  ^-  (list card)
+    ::    :~  [%pass /values-wire %agent [src.bowl %delta] %watch /values]
+    ::    ==
+  ::  this
+  ::
+    ::%fact
+    ::~&  >>  fact+p.cage.sign
+    ::?>  ?=(%delta-update p.cage.sign)
+    ::~&  >>  !<(update q.cage.sign)
+    ::[~ this]
+  ==
 ++  on-fail   on-fail:default
 --
