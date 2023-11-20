@@ -1089,5 +1089,36 @@ After this point, the game has reached its final state. A reset must occur.
         - getting this working, and then programming the "win" condition to terminate should be the first goal, not a DFS into the requirements.
      
 
+### Weekend: Nov 17th:
+
+- finally made some progress on my game initialization code. 
+    - was stuck on a find.$ error for a long time. I even went over cores all over again, to no avail.
+    In the end the error was the following:
+
+```
+  !:  |=  =path  
+    ^-  (quip card _this)
+    |^  ::...how i learned to stop worrying and love the bar-ket.
+      ?~  path  !!  ?:  =(our.bowl src.bowl)  (localarm path)  (remotearm path)
+      ++  localarm  ::Refreshing the page removes our old subscriptions, for now....
+      ::apparently, we don't need a case for %leave. Arvo/Gall will deal with it (?)
+        |=  path=(list @ta)
+
+```
+
+- setting |=  =path for the most nested gate caused the $ error. I am not sure why this is, as I have seen this coding pattern work in other contexts. I guess there are too many paths floating around (strucure and face), and the compiler just gets confused.
+
+- So far, I have implemented the following:
+
+- on FE browser reset (=> on watch local arm): send a card cancelling the old subscription. Both clients need to do this, to eliminate their old subscriptions.
+- poke: start game request:  makes a watch request to a target client. Target client recieves this on the on-watch:remote arm.
+- here players are initialized for target, and a response %fact is sent back, so initiator can configure the game for themselves.
+
+- i still need to deal with the subscription errors, and processing the cage. how do I process a cage??
+
+- Needed to read up on:
+++on-agent ++on-watch, cards, cages...etc.
+- my app bounces around betwen on-watch, agent and poke, basically.
+
 
 

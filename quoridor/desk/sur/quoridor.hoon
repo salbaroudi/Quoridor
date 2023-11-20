@@ -8,6 +8,7 @@
       [%sendwall target=@p pnum=@ud wp1=position wp2=position]
       [%newgamerequest p2name=@p]
       [%setupplayers target=@p p1name=@p p2name=@p]
+      [%clearstate p=@ud]
   ==
 +$  update
   $%  [%init tc=@ud]  ::this doesn't appear in action, because this is a subscribe action.
