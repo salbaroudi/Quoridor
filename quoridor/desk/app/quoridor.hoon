@@ -135,10 +135,14 @@
     ~&  "what a sign looks like:"  ~&  sign
     ::  We take our fact, with its data, and define our player 1 and 2
     ?>  ?=(%quoridor-update p.cage.sign)
-    ::our update type union, to cast our q.cage serialized data....
-    ~&  >>  !<(update q.cage.sign)
-    :: now, lets setup our game for the initiating player.
-    [~ this]
+    ::setup our initial structure.  ::send a response card to the front end.
+    =/  decage  !<(update q.cage.sign)  ~&  decage
+    ?+  -.decage  `this
+      %passign
+      =/  playnum1  1  =/  playpos1  ^-  position  [0 8]  =/  pstrut1  ^-  player  [playnum1 p1.decage playpos1 10]
+      =/  playnum2  2  =/  playpos2  ^-  position  [16 8]  =/  pstrut2  ^-  player  [playnum2 p2.decage playpos2 10]
+      :_  %=  this  pmap  (my ~[[playnum1 pstrut1] [playnum2 pstrut2]])  tcount  .+  tcount  ourpnum  1  ==  ~
+    ==
   ==
 ++  on-fail   on-fail:default
 --

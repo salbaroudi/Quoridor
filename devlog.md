@@ -1121,4 +1121,49 @@ After this point, the game has reached its final state. A reset must occur.
 - my app bounces around betwen on-watch, agent and poke, basically.
 
 
+###  Nov 20th:
+
+-  Figured out cages.  A cage is a structure that looks like the following:  [p=[%mark] q=[ - serealized data]]
+- a cage is nested inside a sign, for example:
+
+"what a sign looks like:"
+[ %fact
+    cage
+  [ p=%quoridor-update
+      q
+    [   #t/
+        upd
+      ?(
+        [%init tc=@ud]
+        [%okmove status=@t tc=@ud]
+        [%okwall status=@t tc=@ud]
+        [%passign p1=@p p2=@p]
+      )
+      q=[31.075.950.044.340.592 0 255]
+    ]
+  ]
+]
+Our actual q value, unserialized and cast by our update looks like:
+>>  [%passign p1=~zod p2=~fes]
+
+This is done with the following code:      ~&  >>  !<(update q.cage.sign)
+
+
+## November 21st:
+
+- for cages, there is an issue of using the decoded value (such as p1 or p2). The hoon compiler thinks things are underspecified.
+- typecasting explicitly ^-  is not enough, nor is testing for sig. We get a find-fork error.
+- how do we specify existance enough?  The huts app gives the ansewr:
+
+```
+    ?>  ?=(%quoridor-update p.cage.sign)
+    ::setup our initial structure.  ::send a response card to the front end.
+    =/  decage  !<(update q.cage.sign)  ~&  decage
+    ?+  -.decage  `this
+      %passign
+      =/  playnum1  1  =/  playpos1  ^-  position  [0 8]  =/  pstrut1  ^-  player  [playnum1 p1.decage playpos1 10]
+      =/  playnum2  2  =/  playpos2  ^-  position  [16 8]  =/  pstrut2  ^-  player  [playnum2 p2.decage playpos2 10]
+      :_  %=  this  pmap  (my ~[[playnum1 pstrut1] [playnum2 pstrut2]])  tcount  .+  tcount  ourpnum  1  ==  ~
+    ==
+```
 
