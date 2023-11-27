@@ -1167,3 +1167,55 @@ This is done with the following code:      ~&  >>  !<(update q.cage.sign)
     ==
 ```
 
+## November 25th:
+
+- Now we have the basic handshake setup. It is time to implement functionality for the main game.
+
+- send a %passign card to each FE, so they know who takes the first turn.
+
+- implement %move:
+    - this is just a poke to the BE, in which local state object is updated.
+    - send a %fact card to our other BE, which causes a state update there, and a %fact is sent to the other FE to update the UI.
+
+- implement %wall
+    - exact same strucutre of functionality for %move, but just with %wall functions and control forking.
+
+
+-  looks like %quoridor sends two cards to the FE (for zod), causing a double update (pushes game state to move 2, and misaligns the moves between two FE agents.
+
+- You can't easily just clear the sup.bowl, other than with |nuke.  What else can we do?
+- those hexadeximal wires are actually http-api forming subscriptions with Eyre. Need to learn more about Eyre:
+
+#### Eyre:
+
+- Eyre calls apps, not (usually) the other way around.
+- airlock library contains http-api
+    - this system uses the Eyre External API 
+    - when we setup a subscribe to %quoridor, we are really setting up a channel between Eyre and our FE
+    - channels are NOT subscriptions. Think of a channel as a session, and we can have multiple subscribes (with paths), per channel.
+    - we can eliminate all subscriptions, with api.cancel() and api.reset().
+
+    - what happens when i reload the FE (glob), and call the reset and cancel functions??
+    - Answer:  Nothing!  Back end sup.bowl stays teh same.
+
+    - To clear all the sup.bowl subscriptions, I ran |nuke and then |rein %quoridor. 
+
+    - So we are back to start...
+
+- time to implement the reverse subscription (from ~fes to ~zod). And then post the card from ~zod to the FE.
+
+- when i resubscribe FE to Eyre, I only see one entry in sup.bowl. Not multiple entries.
+- our %clearstate  poke does clear out the wex.bowl (incoming subscriptions), thankfully! 
+
+- Accedentally created a ~zod infinite loop with:
+
+```
+      %passign  ::[!!!]
+      =/  playnum1  1  =/  playpos1  ^-  position  [0 8]  =/  pstrut1  ^-  player  [playnum1 p1.decage playpos1 10]
+      =/  playnum2  2  =/  playpos2  ^-  position  [16 8]  =/  pstrut2  ^-  player  [playnum2 p2.decage playpos2 10]
+      :_  %=  this  pmap  (my ~[[playnum1 pstrut1] [playnum2 pstrut2]])  tcount  .+  tcount  ourpnum  1  ==  ~
+      ::[%give %fact ~[/qdata] %quoridor-update !>(`update`[%passign p1=p1.decage p2=p2.decage])]~
+```
+
+And bricked my zod :(. Will rebuild a new zod tomorrow. Cards are getting complicated, and I think I am overusing wires+paths, which is causing confusion. Will need to redesign the handshake codebase accordingly.
+

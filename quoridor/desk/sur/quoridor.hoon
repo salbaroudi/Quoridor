@@ -7,6 +7,7 @@
   $%  [%sendmove target=@p pos=position pnum=@ud]
       [%sendwall target=@p pnum=@ud wp1=position wp2=position]
       [%newgamerequest p2name=@p]
+      [%hellosub target=@p]
       [%setupplayers target=@p p1name=@p p2name=@p]
       [%clearstate p=@ud]
   ==

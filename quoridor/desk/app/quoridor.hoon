@@ -67,17 +67,28 @@
             [%give %fact ~[/qdata] %quoridor-update !>(`update`[%passign p1=p1name.act p2=p2name.act])]~
         %newgamerequest  ::We reset our state  resubscribe.  it is **assumed** that a browser reset has sent a %leave card (below)
         ~&  "newgamerequest made"  ~&  act
-          :_  %=  this  pmap  *playermap  wlist  *walllist  tcount  0  ourpnum  0  ==
+          :_  this
           [%pass /qdata-wire %agent [p2name.act %quoridor] %watch /qdata]~
+        %hellosub  ::Lets set up our subscription ring first. Old Game is deleted!
+          ~&  "hello sub request"  ~&  act
+          :_  this
+          [%pass /(scot %p our.bowl)/wire %agent [target.act %quoridor] %watch /qsub]~
         %clearstate
           ~&  'clear state has been requested'
           ?:  =(our.bowl ~zod)  ::send to ~fes
             :_  %=  this  pmap  *playermap  wlist  *walllist  tcount  0  ourpnum  0  ==
-            [%pass /qdata-wire %agent [~fes %quoridor] %leave ~]~
+            :~  [%pass /(scot %p our.bowl)/wire %agent [~fes %quoridor] %leave ~]  ::Bye fes!
+                [%give %kick ~[/qdata] ~]  ::Bye FE!
+                [%give %kick ~[/qsub] ~]  ::Bye FE!
+                [%give %kick ~[/qsub-frontend] ~]
+            ==
             ::else send to ~zod
             :_  %=  this  pmap  *playermap  wlist  *walllist  tcount  0  ourpnum  0  ==
-            [%pass /qdata-wire %agent [~zod %quoridor] %leave ~]~
-
+            :~  [%pass /(scot %p our.bowl)/wire %agent [~zod %quoridor] %leave ~]  ::Bye zod!
+                [%give %kick ~[/qdata] ~]
+                [%give %kick ~[/qsub] ~]  ::Bye FE!
+                [%give %kick ~[/qsub-frontend] ~]
+            ==
       ==
     ++  remotepoke  
       |=  act=action
@@ -95,19 +106,16 @@
     ^-  (quip card _this)
     |^  ::...how i learned to stop worrying and love the bar-ket.
       ?~  path  !!  ?:  =(our.bowl src.bowl)  (localarm path)  (remotearm path)
-      ++  localarm  ::Just renew the FE subscriptions, for now.
-      ::apparently, we don't need a case for %leave. Arvo/Gall will deal with it (?)
-        |=  path=(list @ta)  ~&  "localarm:on-watch FE subscribe... " 
+      ++  localarm  ::Front End Subscription
+        |=  path=(list @ta)  ~&  "localarm:on-watch FE subscribe... "  ~&  "path is:"  ~&  path
             :_  this  [%give %fact ~[path] %quoridor-update !>(`update`[%init tc=tcount])]~
-      ++  remotearm  ::Once we get here, we finalize our game state, and report back to our other app.
-        |=  path=(list @ta)  ::the person who made the sub request is P1. We are P2.
-        ~&  >  src.bowl  ~&  >  " has requested a game. Accepting and confirming."
-          =/  playnum1  1  =/  playpos1  ^-  position  [0 8]  =/  pstrut1  ^-  player  [playnum1 src.bowl playpos1 10]
-          =/  playnum2  2  =/  playpos2  ^-  position  [16 8]  =/  pstrut2  ^-  player  [playnum2 our.bowl playpos2 10]
-          :_  %=  this  pmap  (my ~[[playnum1 pstrut1] [playnum2 pstrut2]])  tcount  .+  tcount  ourpnum  2  ==
-          :: We give back an init fact (one with an empty wire) to the subscriber
-          :: By default, we now switch into "waiting" for a move/wall poke for p1
-          [%give %fact ~ %quoridor-update !>(`update`[%passign p1=src.bowl p2=our.bowl])]~
+      ++  remotearm  :: This is our poke->subscribe path. Used by all participants.
+        |=  path=(list @ta)  
+          ~&  >  src.bowl  ~&  >  " has requested a sub. Accepting."
+          ::System (Gall/Ames) will automatically send an %ack. Here, we check to see if we have a sub.
+          ?:  =(wex.bowl ~)  ::If we have no subs, initiate one back.
+            :_  this  [%pass /(scot %p our.bowl)/wire %agent [src.bowl %quoridor] %watch /qsub]~
+            :_  this  ~
     --
 ++  on-arvo   on-arvo:default  ::responses from other vanes.
 ++  on-leave  on-leave:default
@@ -115,33 +123,28 @@
 ++  on-agent
   |=  [=wire =sign:agent:gall]
     ^-  (quip card _this)
-  ?>  ?=([%qdata-wire ~] wire)
+  ::?>  ?=(/(scot %p our.bowl)/wire wire)
+  ~&  'on-agent called'  ~&  'our wire='  ~&  wire  
   ?+    -.sign  (on-agent:default wire sign)
       %watch-ack
     ?~  p.sign
-      ~&  >  src.bowl  ~&  >  'subscribe succeeded!'
+      ~&  >  'Subscribe to'  ~&  src.bowl  ~&  'has succeeded.'
       [~ this]
-      ~&  >>>  src.bowl  ~&  >>>  'subscribe failed!'
+      ~&  >>>  'Subscribe to'  ~&  src.bowl  ~&  'has failed (!!).'
     [~ this]
-  ::
-::      %kick
-  ::  %-  (slog '%delta-follower: Got kick, resubscribing...' ~)
-   :: :-  ^-  (list card)
-    ::    :~  [%pass /values-wire %agent [src.bowl %delta] %watch /values]
-    ::    ==
-  ::  this
     %fact
     ~&  >>  fact+p.cage.sign  ~&  'we have recieved a fact from '  ~&  src.bowl
-    ~&  "what a sign looks like:"  ~&  sign
+    ::~&  >  "outgoing subs"  ~&  >  wex.bowl  ~&  >  "incoming subs"  ~&  >  sup.bowl
     ::  We take our fact, with its data, and define our player 1 and 2
     ?>  ?=(%quoridor-update p.cage.sign)
     ::setup our initial structure.  ::send a response card to the front end.
     =/  decage  !<(update q.cage.sign)  ~&  decage
     ?+  -.decage  `this
-      %passign
+      %passign  ::[!!!]
       =/  playnum1  1  =/  playpos1  ^-  position  [0 8]  =/  pstrut1  ^-  player  [playnum1 p1.decage playpos1 10]
       =/  playnum2  2  =/  playpos2  ^-  position  [16 8]  =/  pstrut2  ^-  player  [playnum2 p2.decage playpos2 10]
       :_  %=  this  pmap  (my ~[[playnum1 pstrut1] [playnum2 pstrut2]])  tcount  .+  tcount  ourpnum  1  ==  ~
+      ::[%give %fact ~[/qdata] %quoridor-update !>(`update`[%passign p1=p1.decage p2=p2.decage])]~
     ==
   ==
 ++  on-fail   on-fail:default

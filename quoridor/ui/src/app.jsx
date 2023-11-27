@@ -43,7 +43,13 @@ function reducer( state, action ) {
   let newState = [ ...state ]
   switch ( action.type ) {
     case 'init':
+      console.log("action.init:")
+      console.log(action.init)
       return action.init
+    case 'passign':
+      console.log("action.passign:")
+      console.log(action.passign)
+      return action.passign
     default:
       console.log("Warning: Unrecognized action detected. Check code.")
       return state
@@ -57,7 +63,8 @@ export function App() {
   //Initialization Effect: Application starts-up here.
   useEffect(() => {
     function init() {  //we don't go through action.hoon, because we are doing a subscribe.
-      api.subscribe( { app:"quoridor", path: '/qdata', event: handleUpdate } )
+      api.reset()
+      api.subscribe( { app:"quoridor", path: '/qsub-frontend', event: handleUpdate } )
     }
     init()
     initializeGame()
@@ -69,11 +76,12 @@ export function App() {
     if ( 'init' in upd ) {  //our initialization has been succesful. Start the game.
       //dispatch({type:'init', init:upd.init.tc})
       console.log("Server reset state on refesh. Can begin a new game...")
+      console.log(upd)
     }
     else if ('passign' in upd) {
       //dispatch( { type:'move' } )
       console.log("Gall Response: Our player assignment is:")
-      console.log(upd)
+      console.log(upd)      
       set_init_game_state(upd.passign.p1, upd.passign.p2)
    }
     else if ('okmove' in upd) {
@@ -97,6 +105,17 @@ export function App() {
       json: { sendmove: { target:`~${window.ship}`, pos: {row:r, col:c}, pnum:playnum}},
     } )
   }
+
+  const apicancel = ()  =>  {
+    console.log("calling cancel...")
+    api.cancel()
+  }
+
+  const apireset = ()  =>  {
+    console.log("calling reset...")
+    api.reset()
+  }
+
 
 //Rollup/React don't minify this function properly. If I name the input things like "wpr1", it doesn't
 //change the variable names in the innermost json. So simple lettering it is ¯\_(ツ)_/¯
@@ -125,11 +144,11 @@ const setupplayers = (p1,p2) => {
     json: { setupplayers: { target:`~${window.ship}`, p1name: p1, p2name: p2}
   } }) }
 
-  const newgamerequest = (p2) => {
+  const hellosub = (p2) => {
     api.poke( {
       app: 'quoridor',
       mark: 'quoridor-action',
-      json: { newgamerequest: {p2name: p2}
+      json: { hellosub: {target: p2}
     } }) }
   
 
@@ -148,6 +167,9 @@ function initializeGame() {
   setup_left_console();
   setup_help_box();
   $(".send-request-button").on( "click", start_game_request);
+  $("#sq-end-cancel-button").on( "click", apicancel);
+  $("#sq-end-cancel-button").on( "click", apireset);
+
   log_to_console("Please enter an @p in the [Username] box to begin...");
 }
 
@@ -163,7 +185,7 @@ function start_game_request() {
       //(p2name[0] == "~") && (p2name[7] == "-") && (p2name.length == 14)
       //reminder: get node.js @p checker from github
       if (true) {
-          newgamerequest(p2name);  //send our request to the Gall App.
+          hellosub(p2name);  //send our request to the Gall App.
       }
       else { 
         log_to_console("Invalid @p detected. Check your spelling and try again.");
@@ -753,6 +775,8 @@ function send_player_wall(wp1,wp2,pnum) {
           <label class="input-label" for="at-p">Username:</label>
           <input class="input-username" type="text"  id="at-p" />
           <button id="sq-end-request-button" class="send-request-button"> Send Request &#8599;</button>
+          <button id="sq-end-cancel-button" class="send-request-button"> Cancel &#8599;</button>
+          <button id="sq-end-reset-button" class="send-request-button"> Reset &#8599;</button>
         </div>
       </div>
 
