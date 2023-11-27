@@ -1219,3 +1219,16 @@ This is done with the following code:      ~&  >>  !<(update q.cage.sign)
 
 And bricked my zod :(. Will rebuild a new zod tomorrow. Cards are getting complicated, and I think I am overusing wires+paths, which is causing confusion. Will need to redesign the handshake codebase accordingly.
 
+### Nov 27th:
+
+Some interesting testing results found.
+
+1)  The json.hoon file in 412K differs from 415K. So When I copy over the files with cp2all, the old json file gets copied, 
+leading to /mar cant find $ errors in the console.
+
+2) I can send a %hello sub from ~fes (415K) to ~zod (412K), but not the other way around! Zod just hangs, and if i try twice I get a duplicate subscription error.  Our subscription is not registered by ~fes, and no %ack is sent by ~fes. Strange...
+
+It looks like I will have to upgrade ~fes to 412K, somehow...
+    => tried to |bump .  lead to a generator failure
+
+- upgrading to 412K seems to work.  Both agents subscribe to one anotehr (witha  few weird details that need to be investigated...next time).
