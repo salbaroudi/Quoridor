@@ -4,7 +4,7 @@
 +$  position  [row=row col=col]
 +$  wall  [wp1=position wp2=position]
 +$  action  ::these have to match our action structures.
-  $%  [%sendmove target=@p pos=position pnum=@ud]
+  $%  [%pawnmove target=@p pos=position pnum=@ud]
       [%sendwall target=@p pnum=@ud wp1=position wp2=position]
       [%newgame p2name=@p]
       [%hellosub target=@p]
@@ -18,8 +18,10 @@
       :: lead to an infinte death loop for ~zod-02 (mixed up paths/wires). RIP zod o7.
       [%festart p1=@p p2=@p]  
       [%acceptgame ok=@ud]
-      [%okmove status=@t tc=@ud]
+      [%okmove player=@p pos=position tc=@ud]
+      [%intmove pnum=@ud player=@p pos=position tc=@ud]  ::redundant, but to guard against the short-circuit risks.
       [%okwall status=@t tc=@ud]
+      ::[%intwall player=@p pos=position tc=@ud]
   ==
 +$  ppos  position  ::Player position
 +$  wallcount  @ud  :: From 10...0

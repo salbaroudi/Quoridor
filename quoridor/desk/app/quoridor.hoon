@@ -41,12 +41,15 @@
     ++  localpoke
     |=  act=action
       ?-  -.act
-        %sendmove 
+        %pawnmove 
         ::~&  "move action"  ~&  act
           =/  pselect  (~(got by pmap) pnum.act)  ~&  pselect  
           =/  modplayer  ^-  player  [pnum.act name.pselect pos.act wallcount.pselect]
+          ~&  our.bowl  ~&  "has recorded a new move from the FE."
           :_  %=  this  pmap  (~(put by pmap) [pnum.act modplayer])  tcount  .+  tcount  ==
-          [%give %fact ~[/qdata] %quoridor-update !>(`update`[%okmove status='valid' tc=tcount])]~
+          :~  [%give %fact ~[/qsub-frontend] %quoridor-update !>(`update`[%okmove player=name.pselect pos=pos.act tc=(add tcount 1)])]
+          [%give %fact ~[/qsub] %quoridor-update !>(`update`[%intmove pnum=pnum.act player=name.pselect pos=pos.act tc=(add tcount 1)])]
+          ==
         %sendwall
         ~&  "wall action"  ~&  act  ::?>  =(our.bowl target.act)
           ::Make a wall, add to wlist
@@ -165,16 +168,22 @@
         ~&  "Sending an acceptance update to other player, and update to FE"
         :_  %=  this  pmap  (my ~[[playnum1 pstrut1] [playnum2 pstrut2]])  tcount  .+  tcount  ourpnum  2  ==
         :~  [%give %fact ~[/qsub] %quoridor-update !>(`update`[%acceptgame ok=1])]
-        [%give %fact ~[/qsub-frontend] %quoridor-update !>(`update`[%festart p1=p1.decage p2=p2.decage])]
-        ==
-      
+        [%give %fact ~[/qsub-frontend] %quoridor-update !>(`update`[%festart p1=p1.decage p2=p2.decage])]  ==
+
         %acceptgame
         ~&  our.bowl  ~&  "has recieved an %acceptgame fact. The game can now begin. It's p1's turn!"
         =/  p1select  (~(got by pmap) 1)  =/  p2select  (~(got by pmap) 2)
         ~&  >  name.p1select  ~&  >  name.p2select
         :_  this
         [%give %fact ~[/qsub-frontend] %quoridor-update !>(`update`[%festart p1=name.p1select p2=name.p2select])]~
-      ==
-    ==
+      
+        %intmove
+        ~&  our.bowl  ~&  "has recieved an %intgame fact. Updating BE state, and sending to"  ~&  our.bowl  ~&  "'s FE!"
+        =/  pselect  (~(got by pmap) pnum.decage)  ~&  pselect  
+        =/  modplayer  ^-  player  [pnum.decage name.pselect pos.decage wallcount.pselect]
+        :_  %=  this  pmap  (~(put by pmap) [pnum.decage modplayer])  ==
+        [%give %fact ~[/qsub-frontend] %quoridor-update !>(`update`[%intmove pnum=pnum.decage player=name.pselect pos=pos.decage tc=tc.decage])]~    
+     ==
+  ==
 ++  on-fail   on-fail:default
 --

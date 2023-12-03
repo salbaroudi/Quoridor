@@ -19,9 +19,21 @@
                 ['p2' s+(scot %p p2.upd)]
             ==
       %okmove  ::~&  "our okmove is"  ~&  upd
+      ::       [%okmove player=@p pos=position tc=@ud]
           %+  frond  'okmove'
             %-  pairs
-            :~  ['status' s+status.upd]
+            :~  ['player' s+(scot %p player.upd)]
+              ['posrow' (numb row.pos.upd)]
+              ['poscol' (numb col.pos.upd)]
+              ['tc' (numb tc.upd)]
+            ==
+      %intmove  ::~&  "our okmove is"  ~&  upd
+      ::       [%okmove player=@p pos=position tc=@ud]
+          %+  frond  'intmove'
+            %-  pairs
+            :~  ['player' s+(scot %p player.upd)]
+              ['posrow' (numb row.pos.upd)]
+              ['poscol' (numb col.pos.upd)]
               ['tc' (numb tc.upd)]
             ==
       %okwall  ::~&  "our okwall is"  ~&  upd
@@ -30,6 +42,7 @@
             :~  ['status' s+status.upd]
               ['tc' (numb tc.upd)]
             ==
+      
       %acceptgame  ::~&  "our acceptgame is"  ~&  upd
           %+  frond  'acceptgame'
             %-  pairs

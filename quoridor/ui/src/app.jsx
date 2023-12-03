@@ -82,10 +82,25 @@ export function App() {
     }
     else if ('okmove' in upd) {
       //dispatch( { type:'move' } )
-      console.log("Gall Response: Accepted Move:")
+      console.log("Gall Response: Accepted Move from: "  + upd.okmove.player)
       console.log(upd)
       //now restart our game loop.
       main_control_loop();
+    }
+    else if ('intmove' in upd) {
+      console.log("intmove recieved:")
+      console.log(upd)
+
+    //if the move is not from this player...  
+    if (upd.intmove.player != ('~' + `${window.ship}`)) {
+      // update current Player Structure
+      let boardPosStr = "" + upd.intmove.posrow + "." + upd.intmove.poscos
+      process_move(currPlayer,boardPosStr) //this should just do it all!
+    }
+    //If the move was from the player, the board + player structure was already updated before
+    //the move was sent to BE, so we don't have to worry.
+    //The above code is **only** for the other player that was waiting.
+    main_control_loop();  
     }
     else if ('okwall' in upd) {
       console.log("Gall Response: Accepted Wall Placement:")
@@ -102,7 +117,7 @@ export function App() {
     api.poke( {
       app: 'quoridor',
       mark: 'quoridor-action',
-      json: { sendmove: { target:`~${window.ship}`, pos: {row:r, col:c}, pnum:playnum}},
+      json: { pawnmove: { target:`~${window.ship}`, pos: {row:r, col:c}, pnum:playnum}},
     } )
   }
 
@@ -156,6 +171,7 @@ const setupplayers = (p1,p2) => {
 //--------------------------  QApp Control Functions Are below (!)
 
   var quorGameState;
+  var currPlayer;
 
 
   /*
@@ -210,7 +226,7 @@ function set_init_game_state(p1name,p2name) {
 //feeds data structure information into megafile.js functions
 //Re-Entry Point 1: Previous move was valid.
 function main_control_loop() {
-  let currPlayer = quorGameState.next_player();
+  currPlayer = quorGameState.next_player();
 
   //log player information
   log_turn_start(quorGameState.get_turncount(), currPlayer.get_ship_name());
@@ -221,7 +237,12 @@ function main_control_loop() {
   //There are three move states: A complete piece move, a complete wall move, and a cancelled
   //wall move. For the cancelled move, we call h_and_c(), else, we call main_control_loop to restart a loop.
   //Re-Entry Point 2 (Invalid move made previously)
-  hovers_and_clicks(currPlayer);
+  if (currPlayer.Name == ('~' + `${window.ship}`)) {
+    hovers_and_clicks(currPlayer);
+  }  //Else, just sit there.
+  else {
+    log_to_console(`${window.ship}`  + " is waiting...")
+  }
 }
 
 /*
@@ -263,16 +284,20 @@ function main_click_on(currPlayer) {
     Player clicking a square selects a move sequence. Perform the necessary actions.
 */
 function player_click_move(currPlayer,newId) {
-  const oldId = currPlayer.get_board_pos();
-  unhighlight_old_pos(oldId);
-  check_pawn_move(oldId,newId);
-  move_pawn(oldId,newId,currPlayer.get_colour());
-  //Update our player, update our turn count.
-  currPlayer.update_board_pos(newId);
-  log_to_console(currPlayer.get_ship_name() + "has moved to square: " + newId);
+  process_move(currPlayer,newId)
   //As we check with local rule logic, we can write our state **before** the server authenticates it.
   //In later versions, the order of these operations will change [!!!]
   send_player_move(newId,currPlayer.get_number());
+}
+
+function process_move(currPlayer,newId)  {
+    const oldId = currPlayer.get_board_pos();
+    unhighlight_old_pos(oldId);
+    check_pawn_move(oldId,newId);
+    move_pawn(oldId,newId,currPlayer.get_colour());
+    //Update our player, update our turn count.
+    currPlayer.update_board_pos(newId);
+    log_to_console(currPlayer.get_ship_name() + "has moved to square: " + newId);
 }
 
 function player_click_wall(currPlayer, newId) {
