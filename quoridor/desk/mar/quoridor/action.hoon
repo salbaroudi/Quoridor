@@ -11,7 +11,7 @@
     =,  dejs:format
     |=  jon=json
     ^-  action
-    ~&  "in action, our jon:"  ~&  jon
+    ::~&  "in action, our jon:"  ~&  jon
     %.  jon
     %-  of
     :~  :: [%semdmove target=~zod pos=[row=X col=Y] pnum=1]
@@ -19,7 +19,7 @@
         ::[%wall [%target 'zod'] [%pos1  [row=X col=Y] [%pos1  [row=X col=Y]]
         [%sendwall (ot ~[target+(se %p) pnum+ni wp1+(ot ~[row+ni col+ni]) wp2+(ot ~[row+ni col+ni])])] 
         [%setupplayers (ot ~[target+(se %p) p1name+(se %p) p2name+(se %p)])]
-        [%newgamerequest (ot ~[p2name+(se %p)])]
+        [%newgame (ot ~[p2name+(se %p)])]
         [%hellosub (ot ~[target+(se %p)])]
         [%clearstate (ot ~[p+ni])]
     ==

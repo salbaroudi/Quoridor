@@ -233,19 +233,6 @@ These functions are kept here as to make app.js a bit more clean.
 
 /*  Constants that are used in various ui.js functions */
 
-// Hides the connect bar, and show the player boards.
-export function player_status_init(p1name,p2name) {
-    //hide the start game console.
-    $("#connect-container").attr("class",
-    "hidden " + $("#connect-container").attr("class"));
-    //Make Player1 and Player2 visible.
-    console.log(p1name);
-    console.log($("#player-title1").html());
-    $("#player-title1").html("Player 1: " + p1name);
-    $("#player-title2").html("Player 2: " + p2name);
-    $("#player-container").attr("class", "player-container");
-}
-
 //Place our pieces on the board 
 export function setup_board(p1start,p2start) {
     const bluePawnImg = $('<img />', {
@@ -262,6 +249,20 @@ export function setup_board(p1start,p2start) {
     bluePawnImg.appendTo(blueCell);
     orangePawnImg.appendTo(orangeCell);
 }
+
+
+export function player_status_init(p1name,p2name) {
+    //hide the start game console.
+    $("#connect-container").attr("class",
+    "hidden " + $("#connect-container").attr("class"));
+    //Make Player1 and Player2 visible.
+    console.log(p1name);
+    console.log($("#player-title1").html());
+    $("#player-title1").html("Player 1: " + p1name);
+    $("#player-title2").html("Player 2: " + p2name);
+    $("#player-container").attr("class", "player-container");
+}
+
 
 //This function highlights the players status box, and also highlights the pawn square.
 export function toggle_player_status(player) {

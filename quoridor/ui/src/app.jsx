@@ -13,8 +13,8 @@ import {GameState,
   main_turn_loop, 
 second_wall_click, 
 setup_left_console, 
-setup_help_box, 
-player_status_init, 
+setup_help_box,  
+player_status_init,
 setup_board, 
 toggle_player_status, 
 unhighlight_old_pos, 
@@ -73,17 +73,13 @@ export function App() {
 //Here we grab our values from the subscriber wire. But we don't send actions to the reducer.
 //Instead, we change state in the quorGameState structure of the Quoridor FE.
   const handleUpdate = ( upd ) => {
+    console.log("The Update:")
+    console.log(upd)
     if ( 'init' in upd ) {  //our initialization has been succesful. Start the game.
       //dispatch({type:'init', init:upd.init.tc})
       console.log("Server reset state on refesh. Can begin a new game...")
       console.log(upd)
     }
-    else if ('passign' in upd) {
-      //dispatch( { type:'move' } )
-      console.log("Gall Response: Our player assignment is:")
-      console.log(upd)      
-      set_init_game_state(upd.passign.p1, upd.passign.p2)
-   }
     else if ('okmove' in upd) {
       //dispatch( { type:'move' } )
       console.log("Gall Response: Accepted Move:")
@@ -95,6 +91,10 @@ export function App() {
       console.log("Gall Response: Accepted Wall Placement:")
       console.log(upd)
       main_control_loop()
+    }
+    else if ("festart" in upd) {
+      console.log("successfully detected the start of the game. handshake and setup complete!")
+      set_init_game_state(upd.festart.p1, upd.festart.p2)
     }
   }
 
@@ -192,8 +192,7 @@ function start_game_request() {
         return;
       }
   }
-
-
+  
 //Once our server has been reset, we can initialize our game
 function set_init_game_state(p1name,p2name) {
       //[!!!] Here we send an async request to our Back end, perform the negotiation.
