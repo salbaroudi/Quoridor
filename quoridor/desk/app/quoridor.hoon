@@ -42,15 +42,15 @@
     |=  act=action
       ?-  -.act
         %pawnmove 
-        ::~&  "move action"  ~&  act
           =/  pselect  (~(got by pmap) pnum.act)  ~&  pselect  
           =/  modplayer  ^-  player  [pnum.act name.pselect pos.act wallcount.pselect]
           ~&  our.bowl  ~&  "has recorded a new move from the FE."
           :_  %=  this  pmap  (~(put by pmap) [pnum.act modplayer])  tcount  .+  tcount  ==
           :~  [%give %fact ~[/qsub-frontend] %quoridor-update !>(`update`[%okmove player=name.pselect pos=pos.act tc=(add tcount 1)])]
+          :: Reminder:: ~fes is subscribed to qsub, thats why the fact gets there. player=name.pselect has nothing to do with it!!! 
           [%give %fact ~[/qsub] %quoridor-update !>(`update`[%intmove pnum=pnum.act player=name.pselect pos=pos.act tc=(add tcount 1)])]
           ==
-        %sendwall
+        %wallmove
         ~&  "wall action"  ~&  act  ::?>  =(our.bowl target.act)
           ::Make a wall, add to wlist
           =/  newwall  ^-  wall  [wp1.act wp2.act] 
@@ -58,9 +58,12 @@
           ::Access player, subtract a wall
           =/  prec  (~(got by pmap) pnum.act)
           =/  modplayer  ^-  player  [pnum.act name.prec ppos.prec (dec wallcount.prec)]
-          ::Update playermap and walllist, send a gift.
+          ::Update playermap and walllist, send a gift
+          ::[%intwall pnum=@ud player=@p w1p1=@ud w1p2=@ud w2p1=@ud w2p2=@ud tc=@ud]
           :_  %=  this  wlist  modlist  tcount  .+  tcount  pmap  (~(put by pmap) [pnum.act modplayer])  ==
-          [%give %fact ~[/qdata] %quoridor-update !>(`update`[%okwall status='valid' tc=tcount])]~
+          :~  [%give %fact ~[/qsub-frontend] %quoridor-update !>(`update`[%okwall player=name.prec w1p1=row.wp1.newwall w1p2=col.wp1.newwall w2p1=row.wp2.newwall w2p2=col.wp2.newwall tc=tcount])]
+              [%give %fact ~[/qsub] %quoridor-update !>(`update`[%intwall pnum=pnum.act player=name.prec w1p1=row.wp1.newwall w1p2=col.wp1.newwall w2p1=row.wp2.newwall w2p2=col.wp2.newwall tc=tcount])]      
+          ==
         %setupplayers
         ~&  "setuplayers"  ~&  act
         ?>  =(pmap ~)  ::is our map empty?
@@ -183,7 +186,20 @@
         =/  modplayer  ^-  player  [pnum.decage name.pselect pos.decage wallcount.pselect]
         :_  %=  this  pmap  (~(put by pmap) [pnum.decage modplayer])  ==
         [%give %fact ~[/qsub-frontend] %quoridor-update !>(`update`[%intmove pnum=pnum.decage player=name.pselect pos=pos.decage tc=tc.decage])]~    
-     ==
+     
+        %intwall
+        ~&  our.bowl  ~&  "has recieved an %intwall fact. Updating BE state, and sending to"  ~&  our.bowl  ~&  "'s FE!"
+        ~&  "decage::"  ~&  decage
+        :: Decrease player count
+        =/  pselect  (~(got by pmap) pnum.decage)  ~&  pselect  
+        =/  modplayer  ^-  player  [pnum.decage name.pselect ppos.pselect (dec wallcount.pselect)]
+        :: Alter our wall list!
+        ::       [%intwall pnum=@ud player=@p w1p1=@ud w1p2=@ud w2p1=@ud w2p2=@ud tc=@ud]
+        =/  newwall  ^-  wall  [[w1p1.decage w1p2.decage] [w2p1.decage w2p2.decage]]  ~&  newwall 
+        =/  modlist  ^-  walllist  :-  newwall  wlist
+        :_  %=  this  pmap  (~(put by pmap) [pnum.decage modplayer])  ==
+        [%give %fact ~[/qsub-frontend] %quoridor-update !>(`update`[%intwall pnum=pnum.decage player=name.pselect w1p1=row.wp1.newwall w1p2=col.wp1.newwall w2p1=row.wp2.newwall w2p2=col.wp2.newwall tc=tcount])]~
+    ==
   ==
 ++  on-fail   on-fail:default
 --

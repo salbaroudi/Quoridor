@@ -1232,3 +1232,71 @@ It looks like I will have to upgrade ~fes to 412K, somehow...
     => tried to |bump .  lead to a generator failure
 
 - upgrading to 412K seems to work.  Both agents subscribe to one anotehr (witha  few weird details that need to be investigated...next time).
+
+
+### Dec 16th:
+
+Decided to experiment with React Imports again. Sadly, the structure I have for importing my jQuery files is fixed.
+Things I tried:
+
+- using simple imports "import "./afile.js" " does not work.
+- using a default functional bundler does not work: I get void (0) errors.
+
+```
+const fun1 =  () => { ...}
+const fun2 =  () => { ...}
+
+const bundler = {
+    fun1, fun2,
+}
+
+...
+import bund as bundler from "./afile.js"
+import * as bundler from "./afile.js"
+
+}
+
+```
+- Trying to import a react facing functionm (with support funtions left in the file) does not work. Even worse, 
+no errors are reported when the functions are not called (!). leading to weird runtime errors. For example:
+
+```
+import {myfun} from "myfile.js"
+
+
+...
+
+export function myfun() {
+    return test2() + "!!!"
+}
+
+export function test2() {
+    return "Hello"
+}
+
+```
+
+Will just return "!!!". It just skips over the function.  
+
+The Bundler module (Rollup) has some quite strange effects. In theory, it should be possible to have levels of imports, but
+this likely requires some heavy customization to rollup, which is beyond my experience level. I could spend hours trying to figure it 
+out, but its better just to find an expert who can resolve it in 15 minutes.
+
+- So I am stuck with the rather nasty import system I have. I might as well delete the old segmented files, as they will never be used at this point.  I just have to import every single function from one file, and that sucks (for now).
+
+
+So I am near the end of my project now. I just need to do the following:
+-  get moves working [X]
+- and walls working [X]
+- code a basic win condition (for rule checker)
+-  reduce BE code redundancy, gate all of the code to make the gall app much cleaner.
+-  get images working [X].
+-  clean up CSS issues. 
+-  clean up front end
+    - proper comments [X]
+    - remove redundant functions 
+-  document the project (give an outline of how it works).
+- directory and file cleanout.
+
+So here we go...
+

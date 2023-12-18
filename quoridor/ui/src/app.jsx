@@ -1,55 +1,27 @@
 import React, { useEffect, useState, useReducer } from 'react'
 import Urbit from '@urbit/http-api'
 import $ from 'jquery';
-//import orangePawnImg from "./public/img/orange_pawn_rs_small.png"
-//import bluePawnImg from "./public/img/blue_pawn_rs_small.png"
-//  initializeGame, 
-//start_game_request,   hovers_and_clicks, main_click_on,   player_click_move,  player_click_wall, 
 
-import {GameState, 
-  GamePlayer, 
-  Wall_List, 
-  playerinit, 
-  main_turn_loop, 
-second_wall_click, 
-setup_left_console, 
-setup_help_box,  
-player_status_init,
-setup_board, 
-toggle_player_status, 
-unhighlight_old_pos, 
-move_pawn,set_w2_keypress, 
-wall_point_orientation, 
-unselect_wall_segment, 
-select_wall_segment, 
-status_remove_wall, 
-hover_square_on, 
-hover_wall_on, 
-keydown_off, 
-main_click_off_squares,
-main_click_off_walls, 
-hover_square_off, 
-hover_wall_off, 
-status_box_off, 
-check_pawn_move,
-log_to_console,
-log_turn_start} from "./public/js/megafile.js"
+//At least in VS Code, some of the imports below are highlighted as not used.
+//They *are* used - by Rollup to knit everything together. Ignore such warnings.
+import {GameState, GamePlayer, playerinit, Wall_List,
+setup_left_console, setup_help_box, wall_point_orientation, 
+player_status_init,toggle_player_status, unhighlight_old_pos, 
+unselect_wall_segment, select_wall_segment, status_remove_wall, 
+hover_square_on, hover_wall_on, keydown_off, main_click_off_squares,
+main_click_off_walls, hover_square_off, hover_wall_off, status_box_off, 
+check_pawn_move,log_to_console, log_turn_start} from "./public/js/megafile.js"
 
 const api = new Urbit( '', '', window.desk )
 api.ship = window.ship
 
-//This isn't used for now, as Quridors state is separate. Integrate later [!!!].
+//This isn't used for now, as Quridors state is separate.
 function reducer( state, action ) {
   let newState = [ ...state ]
   switch ( action.type ) {
     case 'init':
-      console.log("action.init:")
       console.log(action.init)
       return action.init
-    case 'passign':
-      console.log("action.passign:")
-      console.log(action.passign)
-      return action.passign
     default:
       console.log("Warning: Unrecognized action detected. Check code.")
       return state
@@ -60,9 +32,10 @@ export function App() {
     const [ state, dispatch ] = useReducer( reducer, [] )
   const [ inputValue, setInputValue ] = useState( "" )
 
-  //Initialization Effect: Application starts-up here.
+  //Application starts-up here.
+  //We don't go through action.hoon, because we are doing a subscribe.
   useEffect(() => {
-    function init() {  //we don't go through action.hoon, because we are doing a subscribe.
+    function init() {  
       api.reset()
       api.subscribe( { app:"quoridor", path: '/qsub-frontend', event: handleUpdate } )
     }
@@ -70,47 +43,45 @@ export function App() {
     initializeGame()
   }, [] )
 
-//Here we grab our values from the subscriber wire. But we don't send actions to the reducer.
-//Instead, we change state in the quorGameState structure of the Quoridor FE.
+//Here we grab our values from the subscribe wire. But we don't send actions to the reducer.
+//Instead, handleUpdate dispatches our jQuery Quoridor functions to do the work.
   const handleUpdate = ( upd ) => {
-    console.log("The Update:")
-    console.log(upd)
-    if ( 'init' in upd ) {  //our initialization has been succesful. Start the game.
-      //dispatch({type:'init', init:upd.init.tc})
-      console.log("Server reset state on refesh. Can begin a new game...")
+    if ( 'init' in upd ) {
+      console.log("FE has started up.")
       console.log(upd)
+      return  //don't call main_control_loop() yet!
     }
     else if ('okmove' in upd) {
-      //dispatch( { type:'move' } )
-      console.log("Gall Response: Accepted Move from: "  + upd.okmove.player)
+      console.log("%okmove from BE recieved: "  + upd.okmove.player)
       console.log(upd)
-      //now restart our game loop.
-      main_control_loop();
+      let sqID = "sq-" + upd.okmove.posrow + "-" + upd.okmove.poscol
+      process_move(currPlayer, sqID)
     }
     else if ('intmove' in upd) {
-      console.log("intmove recieved:")
+      console.log("%intmove recieved from other players BE:")
       console.log(upd)
-
-    //if the move is not from this player...  
-    if (upd.intmove.player != ('~' + `${window.ship}`)) {
-      // update current Player Structure
-      let boardPosStr = "" + upd.intmove.posrow + "." + upd.intmove.poscos
-      process_move(currPlayer,boardPosStr) //this should just do it all!
+      process_move(currPlayer,"sq-" + upd.intmove.posrow + "-" + upd.intmove.poscol) //this should just do it all!
     }
-    //If the move was from the player, the board + player structure was already updated before
-    //the move was sent to BE, so we don't have to worry.
-    //The above code is **only** for the other player that was waiting.
-    main_control_loop();  
+    else if ('intwall' in upd) {
+      console.log("intwall recieved:")
+      console.log(upd)
+      //form our wall segment one and two.
+      let w1Id = "wa-" + upd.intwall.w1p1 + "-" +  upd.intwall.w1p2;
+      let w2Id = "wa-" + upd.intwall.w2p1 + "-" +  upd.intwall.w2p2;
+      select_wall_segment(w1Id);
+      process_walls(currPlayer,w1Id,w2Id) 
     }
     else if ('okwall' in upd) {
       console.log("Gall Response: Accepted Wall Placement:")
       console.log(upd)
-      main_control_loop()
     }
     else if ("festart" in upd) {
       console.log("successfully detected the start of the game. handshake and setup complete!")
       set_init_game_state(upd.festart.p1, upd.festart.p2)
+      return
     }
+    //most cases roll off the branch, and call m_c_l().
+    main_control_loop();  
   }
 
   const sendmove = (r,c,playnum) => {
@@ -120,25 +91,15 @@ export function App() {
       json: { pawnmove: { target:`~${window.ship}`, pos: {row:r, col:c}, pnum:playnum}},
     } )
   }
-
-  const apicancel = ()  =>  {
-    console.log("calling cancel...")
-    api.cancel()
-  }
-
-  const apireset = ()  =>  {
-    console.log("calling reset...")
-    api.reset()
-  }
-
-
 //Rollup/React don't minify this function properly. If I name the input things like "wpr1", it doesn't
-//change the variable names in the innermost json. So simple lettering it is ¯\_(ツ)_/¯
-  const sendwall = (a,b,c,d,pnum) => {
+//change the variable names in the innermost json. I have no idea why.
+//So simple lettering it is ¯\_(ツ)_/¯
+//In other news, I started worrying and learned to hate code minification+bundling ;( .
+  const wallmove = (a,b,c,d,pnum) => {
     api.poke( {
       app: 'quoridor',
       mark: 'quoridor-action',
-      json: { sendwall: { 
+      json: { wallmove: { 
         target:`~${window.ship}`,
         pnum:pnum,
          wp1: {
@@ -150,15 +111,7 @@ export function App() {
     })
   }
 
-//After our init() is called, and subscribe wire has been setup, then we negotiate the players.
-//Can assume FE and BE state is reset by this point.
-const setupplayers = (p1,p2) => {
-  api.poke( {
-    app: 'quoridor',
-    mark: 'quoridor-action',
-    json: { setupplayers: { target:`~${window.ship}`, p1name: p1, p2name: p2}
-  } }) }
-
+  //This callback initializes our handshake between two players.
   const hellosub = (p2) => {
     api.poke( {
       app: 'quoridor',
@@ -166,26 +119,16 @@ const setupplayers = (p1,p2) => {
       json: { hellosub: {target: p2}
     } }) }
   
-
-
-//--------------------------  QApp Control Functions Are below (!)
+//---------- QApp Control State and Functions Below:
 
   var quorGameState;
   var currPlayer;
 
-
-  /*
-    Called onLoad() of application. Should get hoisted to the top.
-*/
 function initializeGame() {
-  //gameState is an exported Global Variable we are using.
   quorGameState = new GameState();
   setup_left_console();
   setup_help_box();
   $(".send-request-button").on( "click", start_game_request);
-  $("#sq-end-cancel-button").on( "click", apicancel);
-  $("#sq-end-cancel-button").on( "click", apireset);
-
   log_to_console("Please enter an @p in the [Username] box to begin...");
 }
 
@@ -193,33 +136,30 @@ function initializeGame() {
     Game starts when user enters @p and hits Send Request button.
   */
 function start_game_request() {
-      //[!!!] Get user name from {window.ship}
-      //let p1name = "~sampel-palnet"; 
-      let p2name = $("#at-p").val();
+  let p2name = $("#at-p").val();
 
-      //simple check:  name formatting
-      //(p2name[0] == "~") && (p2name[7] == "-") && (p2name.length == 14)
-      //reminder: get node.js @p checker from github
-      if (true) {
-          hellosub(p2name);  //send our request to the Gall App.
-      }
-      else { 
-        log_to_console("Invalid @p detected. Check your spelling and try again.");
-        return;
-      }
+  //simple check:  name formatting
+  //(p2name[0] == "~") && (p2name[7] == "-") && (p2name.length == 14)
+  //reminder: get node.js @p checker from github
+  if (true) {
+      hellosub(p2name);  //send our request to the Gall App.
   }
+  else { 
+    log_to_console("Invalid @p detected. Check your spelling and try again.");
+    return;
+  }
+}
   
 //Once our server has been reset, we can initialize our game
 function set_init_game_state(p1name,p2name) {
-      //[!!!] Here we send an async request to our Back end, perform the negotiation.
-      quorGameState.add_player(new GamePlayer(p1name, playerinit(1)));
-      quorGameState.add_player(new GamePlayer(p2name, playerinit(2)));
-      //update status container UI.
-      player_status_init(p1name,p2name);
-      console.log(quorGameState);
-      setup_board(playerinit(1)[3],playerinit(2)[3]);
-      log_to_console("Game Start!");
-      main_control_loop();
+  quorGameState.add_player(new GamePlayer(p1name, playerinit(1)));
+  quorGameState.add_player(new GamePlayer(p2name, playerinit(2)));
+  //update status container UI.
+  player_status_init(p1name,p2name);
+  console.log(quorGameState);
+  setup_board(playerinit(1)[3],playerinit(2)[3]);
+  log_to_console("Game Start!");
+  main_control_loop();
 }
 
 //This function coordinates state control, network effects, and 
@@ -227,10 +167,8 @@ function set_init_game_state(p1name,p2name) {
 //Re-Entry Point 1: Previous move was valid.
 function main_control_loop() {
   currPlayer = quorGameState.next_player();
-
-  //log player information
   log_turn_start(quorGameState.get_turncount(), currPlayer.get_ship_name());
-  //setup next move
+  //sets the orange name bar at bottom of screen.
   toggle_player_status(currPlayer);
 
   //This allows us to enter the next stage of the functional loop.
@@ -239,8 +177,12 @@ function main_control_loop() {
   //Re-Entry Point 2 (Invalid move made previously)
   if (currPlayer.Name == ('~' + `${window.ship}`)) {
     hovers_and_clicks(currPlayer);
-  }  //Else, just sit there.
-  else {
+  }
+  else {  //Deactivate the board. User waits.
+    main_click_off_squares()
+    main_click_off_walls()
+    hover_square_off()
+    hover_wall_off()
     log_to_console(`${window.ship}`  + " is waiting...")
   }
 }
@@ -254,10 +196,9 @@ function main_control_loop() {
 */
 function hovers_and_clicks(currPlayer) {
   hover_square_on();
-  //hover_wall_on();
+  //hover_wall_on();  was buggy, disabled.
   main_click_on(currPlayer);
 }
-
 
 /*
     This starts our move sequence for a selected player.
@@ -277,25 +218,17 @@ function main_click_on(currPlayer) {
       $('div[id^="wa-"]').click(function() { console.log(currPlayer.get_ship_name() +  " has run out of walls. Please move pawn to complete move.")});            
   }
 }
-
-
-/*
-    Signature:  (playerObject, newId)  -->  Void (side-effect) 
-    Player clicking a square selects a move sequence. Perform the necessary actions.
-*/
 function player_click_move(currPlayer,newId) {
-  process_move(currPlayer,newId)
-  //As we check with local rule logic, we can write our state **before** the server authenticates it.
-  //In later versions, the order of these operations will change [!!!]
+  //A move is validated after the BE sends an %ok or %int response, not before.
   send_player_move(newId,currPlayer.get_number());
 }
 
+//updates the board and data structures, after an %ok or %int has been recieved by updateHandler.
 function process_move(currPlayer,newId)  {
     const oldId = currPlayer.get_board_pos();
     unhighlight_old_pos(oldId);
     check_pawn_move(oldId,newId);
     move_pawn(oldId,newId,currPlayer.get_colour());
-    //Update our player, update our turn count.
     currPlayer.update_board_pos(newId);
     log_to_console(currPlayer.get_ship_name() + "has moved to square: " + newId);
 }
@@ -323,10 +256,8 @@ function set_w2_keypress(currPlayer,w1Id) {
   $('div[id^="wa-"]').click(function() { second_wall_click(currPlayer,w1Id,$(this).attr("id"))});
 }
 
-
 function second_wall_click(currPlayer,w1Id,w2Id) {
   //If we get here, we construct our wall from the two points, add it, print it to console, 
-  //..reset everything,and then go back to main_turn_loop()
   log_to_console(currPlayer.get_ship_name() + " has placed a wall.");
 
   //Clean up all events.
@@ -335,7 +266,17 @@ function second_wall_click(currPlayer,w1Id,w2Id) {
   //hover_wall_off();
   keydown_off();
 
-  //Lets get the wall set, and highlihgted.
+  //A bunch of functionality put in a function, to assist the %intmove update processing.
+  process_walls(currPlayer,w1Id,w2Id);
+
+  //Intermediate function in order to process input.
+  send_player_wall(w1Id,w2Id,currPlayer.get_number());
+}
+
+//Remember: This doesn't process the first segment, because of the way the 
+//wall action functions are chained (see above). You need to call select_wall_segment()
+//for segment one, manually.
+function process_walls(currPlayer,w1Id,w2Id) {
   select_wall_segment(w2Id);
   quorGameState.get_wall_list().push_new_wall(w1Id,w2Id);
 
@@ -343,10 +284,6 @@ function second_wall_click(currPlayer,w1Id,w2Id) {
   status_remove_wall(currPlayer);
   //This must be done after status_remove_wall()
   currPlayer.decr_wall_count();
-
-  // console.log(quorGameState.get_wall_list());
-  //Intermediate function in order to process input.
-  send_player_wall(w1Id,w2Id,currPlayer.get_number());
 }
 
 function keyboard_abort(currPlayer,id) {
@@ -365,18 +302,36 @@ function send_player_move(square,pnum) {
   sendmove(parseInt(square.split("-")[1]),parseInt(square.split("-")[2]),pnum);
 }
 
+
 function send_player_wall(wp1,wp2,pnum) {
-    sendwall(parseInt(wp1.split("-")[1]),
+    wallmove(parseInt(wp1.split("-")[1]),
     parseInt(wp1.split("-")[2]),
     parseInt(wp2.split("-")[1]),
     parseInt(wp2.split("-")[2]),
     pnum); 
-    //On api.poke onsuccess, we continue our game loop
-    //what happens onError ??
 }
 
+function setup_board(p1start,p2start) {  
+  $("<div class='bluepawn'> [&#9673;] </div>").appendTo("#" + p1start);
+  $("<div class='orangepawn'> [&#9673;] </div>").appendTo("#" + p2start);
+}
 
+function move_pawn(oldId,newId,color) {
+  const oldCell = $("#" + oldId);
+  const newCell = $("#" + newId);
 
+  let pPawn = $("<div class='bluepawn'> [&#9673;] </div>");
+  if (color == "orange") {
+    pPawn = $("<div class='orangepawn'> [&#9673;] </div>");
+  }
+  oldCell.empty();
+  pPawn.appendTo("#" + newId);
+  //remove old square highlight.
+  oldCell.attr("css", "ref-cell-square");
+  newCell.attr("css", "ref-cell-square");
+}
+
+//A lot of squares and boxes lie below... :S
   return (
     <main className="">
         <div class="main-container">
@@ -544,7 +499,7 @@ function send_player_wall(wp1,wp2,pnum) {
               </div>
               <div id="54" class="ref-cell-grid">
                 <div id="sq-10-8" class="ref-cell-square"></div> 
-                <div id="v10-9" class="ref-cell-r-wall"></div> 
+                <div id="wa10-9" class="ref-cell-r-wall"></div> 
                 <div id="wa-9-8" class="ref-cell-b-wall"></div> 
               </div>
               <div id="55" class="ref-cell-grid">
@@ -799,8 +754,6 @@ function send_player_wall(wp1,wp2,pnum) {
           <label class="input-label" for="at-p">Username:</label>
           <input class="input-username" type="text"  id="at-p" />
           <button id="sq-end-request-button" class="send-request-button"> Send Request &#8599;</button>
-          <button id="sq-end-cancel-button" class="send-request-button"> Cancel &#8599;</button>
-          <button id="sq-end-reset-button" class="send-request-button"> Reset &#8599;</button>
         </div>
       </div>
 
@@ -839,7 +792,7 @@ function send_player_wall(wp1,wp2,pnum) {
     </div>
 
 
-      <button id="toggle-button-console"> "&gt" _ </button>
+      <button id="toggle-button-console"> &gt;_ </button>
       <div id="console-container" class="console-hidden">
           <pre id="console"></pre>
       </div>

@@ -5,7 +5,7 @@
 +$  wall  [wp1=position wp2=position]
 +$  action  ::these have to match our action structures.
   $%  [%pawnmove target=@p pos=position pnum=@ud]
-      [%sendwall target=@p pnum=@ud wp1=position wp2=position]
+      [%wallmove target=@p pnum=@ud wp1=position wp2=position]
       [%newgame p2name=@p]
       [%hellosub target=@p]
       [%setupplayers target=@p p1name=@p p2name=@p]
@@ -20,8 +20,8 @@
       [%acceptgame ok=@ud]
       [%okmove player=@p pos=position tc=@ud]
       [%intmove pnum=@ud player=@p pos=position tc=@ud]  ::redundant, but to guard against the short-circuit risks.
-      [%okwall status=@t tc=@ud]
-      ::[%intwall player=@p pos=position tc=@ud]
+      [%okwall player=@p w1p1=@ud w1p2=@ud w2p1=@ud w2p2=@ud tc=@ud]
+      [%intwall pnum=@ud player=@p w1p1=@ud w1p2=@ud w2p1=@ud w2p2=@ud tc=@ud]
   ==
 +$  ppos  position  ::Player position
 +$  wallcount  @ud  :: From 10...0

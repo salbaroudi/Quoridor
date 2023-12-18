@@ -306,3 +306,14 @@ visibility:hidden;
   z-index: 999; /* Ensure the button is above the console */
 
 }
+
+
+.orangepawn {
+  font-size:48px;
+  color:orange;
+}
+
+.bluepawn {
+  font-size:48px;
+  color:blue;
+}

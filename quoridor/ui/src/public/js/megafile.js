@@ -1,5 +1,8 @@
 import $ from 'jquery';
 
+/*   Object Classes Below 
+------------------------------
+*/
 
 export class GameState {
     //This is run when the App initializes.
@@ -116,7 +119,6 @@ export class GamePlayer {
 }
 
 /*
-    Remember: Change number of walls for updatd board [!!!]
     Used by the Global state class to hold all of our used walls. 
     */
 
@@ -161,22 +163,6 @@ export class Wall_List {
     }
 }
 
-/* This is the main file, which knits together all of our functionality, and
-contains all of our event programming to run the game loop.
-
-It uses functions from other files to perform its work. Including:
-
-- ui.js
-- rulechecker.js
-- network.js
-
-These three files do what you would expect them to do.
-
-Some of the functionality between the files is intertwined, so it can't
-be perfectly separated. I have chosen to include all event setting/removal
-functions to be in ui.js, to keep this file a bit cleaner.
-*/
-
 /*
 Shortens our constuctor inputs, and makes initialization easier.
 Input: Integers: 1,2,3,4 only. Report error otherwise.
@@ -204,11 +190,9 @@ export function playerinit(num) {
 
 
 /*  Console and Help Box Support Functions */
-
 export function setup_left_console() {
     $('#toggle-button-console').click(function () {
         $("#console-container").toggleClass("console-hidden");
-        console.log($("#console-container").attr("class"));
     });
 }
  
@@ -218,7 +202,6 @@ export function setup_help_box() {
     });
 }
 
-
 export function log_to_console(message) {
     const consCont = $("#console-container");
     consCont.append(message + "<br />");
@@ -226,30 +209,14 @@ export function log_to_console(message) {
     consCont.scrollTop(consCont[0].scrollHeight);
 }
 
+export function log_turn_start(tc,pname) {
+    log_to_console("Turn:"  + tc + " has begun.");
+    log_to_console("It's " + pname + "'s turn.");
+  }
 
 /* Contains UI modification functions, and event "on/off" functions.
 These functions are kept here as to make app.js a bit more clean.
 */
-
-/*  Constants that are used in various ui.js functions */
-
-//Place our pieces on the board 
-export function setup_board(p1start,p2start) {
-    const bluePawnImg = $('<img />', {
-        id: 'bluepawn',
-        src: 'public/img/blue_pawn_rs_small.png',
-        });
-    const orangePawnImg = $('<img />', {
-        id: 'orangepawn',
-        src: '/public/img/orange_pawn_rs_small.png',
-        });
-    
-    const blueCell = $("#" + p1start);
-    const orangeCell = $("#" + p2start);
-    bluePawnImg.appendTo(blueCell);
-    orangePawnImg.appendTo(orangeCell);
-}
-
 
 export function player_status_init(p1name,p2name) {
     //hide the start game console.
@@ -262,7 +229,6 @@ export function player_status_init(p1name,p2name) {
     $("#player-title2").html("Player 2: " + p2name);
     $("#player-container").attr("class", "player-container");
 }
-
 
 //This function highlights the players status box, and also highlights the pawn square.
 export function toggle_player_status(player) {
@@ -278,37 +244,12 @@ export function unhighlight_old_pos(oldId) {
     $("#" + oldId).attr("class", "ref-cell-square");
 }
 
+/*id format:  "wa-ROW-COL"
+A horizontal wall has an odd number in the row slot.
+A vertical wall has an odd number in the column slot.
+*/
 
-export function move_pawn(oldId,newId,color) {
-    const bluePawnImg = $('<img />', {
-        id: 'bluepawn',
-        src: 'public/img/blue_pawn_rs_small.png',
-        });
-    const orangePawnImg = $('<img />', {
-        id: 'orangepawn',
-        src: '/public/img/orange_pawn_rs_small.png',
-        });
-    const oldCell = $("#" + oldId);
-    const newCell = $("#" + newId);
-    let pPawn = bluePawnImg;
-    if (color == "orange") {
-        pPawn = orangePawnImg;
-    }
-
-    //empty old cell, place image in new cell
-    oldCell.empty();
-    pPawn.appendTo("#" + newId);
-    //remove old square highlight.
-    oldCell.attr("css", "ref-cell-square");
-    newCell.attr("css", "ref-cell-square");
-}
-
-
-//In this function, we
 export function wall_point_orientation(parseId) {
-//id format:  "wa-ROW-COL"
-//A horizontal wall has an odd number in the row slot.
-//A vertical wall has an odd number in the column slot.
     let result ="";
     let splits = parseId.split("-");
     if ((splits[0] != "wa")  && (splits.length != 3)){
@@ -323,7 +264,6 @@ export function wall_point_orientation(parseId) {
     return result;
 }
 
-//[!!!] We currently don't check if wall segments are in a line...
 export function select_wall_segment(newId) {
     //Need to check if its a vertical or horizontal wall, and act accordingly.
     let result = wall_point_orientation(newId);
@@ -359,6 +299,8 @@ export function status_remove_wall(currPlayer) {
 /* On Side-Effect Functions */
 //Attach hover mouse events to every square <div>
 export function hover_square_on() {
+    hover_square_off()
+
     $('div[id^="sq-"]').hover(function() {
         $(this).attr("class", "ref-cell-square square-lighter");
       }, function() {
@@ -374,9 +316,6 @@ export function hover_wall_on() {
         $(this).css('background-color', '#000096');
       });
 }
-
-    
-
 
 /* Off Side-Effect Functions */
 export function keydown_off() {
@@ -404,15 +343,10 @@ export function status_box_off() {
     $('div[id^="player-title"]').attr("class", "player-title");
 }
 
+/* Rule Checking Functionality is found below */
 
-// [!!!] Dummy function for now. Define it later.
 export function check_pawn_move(oldId,newId) {
     console.log("Checking Pawn Move...[OK]");
     return;
 }
 
-export function log_turn_start(tc,pname) {
-    log_to_console("Turn:"  + tc + " has begun.");
-    log_to_console("It's " + pname + "'s turn.");
-  }
-  
