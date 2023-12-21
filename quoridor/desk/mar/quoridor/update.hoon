@@ -6,20 +6,18 @@
   ++  json
     =,  enjs:format
     ^-  ^json
-    ::~&  "upd in update.hoon"  ~&  upd  
     ?-    -.upd
-      %init  ::zero means we reset our state, and are ready...
+      %init  ::tc=0 signals to FE that the app has started up.
            %+  frond  'init'
              %-  pairs
               :~  ['tc' (numb tc.upd)]  ==
-      %passign  ::~&  "our passign is"  ~&  upd
+      %passign  ::~& 
           %+  frond  'passign'
             %-  pairs
             :~  ['p1' s+(scot %p p1.upd)]
                 ['p2' s+(scot %p p2.upd)]
             ==
-      %okmove  ::~&  "our okmove is"  ~&  upd
-      ::       [%okmove player=@p pos=position tc=@ud]
+      %okmove  
           %+  frond  'okmove'
             %-  pairs
             :~  ['player' s+(scot %p player.upd)]
@@ -27,8 +25,7 @@
               ['poscol' (numb col.pos.upd)]
               ['tc' (numb tc.upd)]
             ==
-      %intmove  ::~&  "our okmove is"  ~&  upd
-      ::       [%okmove player=@p pos=position tc=@ud]
+      %intmove 
           %+  frond  'intmove'
             %-  pairs
             :~  ['player' s+(scot %p player.upd)]
@@ -37,7 +34,7 @@
               ['poscol' (numb col.pos.upd)]
               ['tc' (numb tc.upd)]
             ==
-      %okwall  ~&  "our okwall is"  ~&  upd
+      %okwall
           %+  frond  'okwall'
             %-  pairs
             :~  ['player' s+(scot %p player.upd)]
@@ -47,7 +44,7 @@
               ['w2p1' (numb w2p1.upd)]
               ['w2p2' (numb w2p2.upd)]
             ==
-      %intwall  ~&  "our okwall is"  ~&  upd
+      %intwall 
           %+  frond  'intwall'
             %-  pairs
             :~  ['player' s+(scot %p player.upd)]
@@ -58,12 +55,12 @@
               ['w2p1' (numb w2p1.upd)]
               ['w2p2' (numb w2p2.upd)]
             ==
-      %acceptgame  ::~&  "our acceptgame is"  ~&  upd
+      %acceptgame  
           %+  frond  'acceptgame'
             %-  pairs
             :~  ['ok' (numb ok.upd)]
             ==
-      %festart  ::~&  "our passign is"  ~&  upd
+      %festart  
           %+  frond  'festart'
             %-  pairs
             :~  ['p1' s+(scot %p p1.upd)]

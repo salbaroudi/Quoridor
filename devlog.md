@@ -1288,15 +1288,17 @@ out, but its better just to find an expert who can resolve it in 15 minutes.
 So I am near the end of my project now. I just need to do the following:
 -  get moves working [X]
 - and walls working [X]
+- Proper BE Commenting, and reduction of ~&s [X]
 - code a basic win condition (for rule checker)
 -  reduce BE code redundancy, gate all of the code to make the gall app much cleaner.
+-  can we add a verbatim option, to turn on messages? Would make things cleaner []
 -  get images working [X].
--  clean up CSS issues. 
+-  clean up CSS issues. [/] 
 -  clean up front end
     - proper comments [X]
     - remove redundant functions 
 -  document the project (give an outline of how it works).
-- directory and file cleanout.
+- directory and file cleanout. [X]
 
 So here we go...
 
